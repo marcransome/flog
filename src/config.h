@@ -23,6 +23,8 @@
 #ifndef FLOG_CONFIG_H
 #define FLOG_CONFIG_H
 
+#include <stdbool.h>
+
 typedef enum FlogConfigLevelData {
     Info,
     Debug,
@@ -46,5 +48,7 @@ void flog_config_set_level(FlogConfig *config, FlogConfigLevel level);
 
 const char * flog_config_get_message(const FlogConfig *config);
 void flog_config_set_message(FlogConfig *config, const char *message);
+
+bool flog_config_has_message(const FlogConfig *config);
 
 #endif //FLOG_CONFIG_H

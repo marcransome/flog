@@ -33,14 +33,17 @@ flog_usage(void) {
         "    %s [options]\n"
         "\n"
         "Help Options:\n"
-        "    -h, --help     Show this help message\n"
+        "    -h, --help       Show this help message\n"
         "\n"
         "Application Options:\n"
-        "    -s, --subsystem Specify an optional subsystem\n"
-        "    -c, --category  Specify an optional category\n"
-        "    -l, --level     Specify the log level (default: info)\n"
-        "    -m, --message   Log message\n"
-        "    -v, --version   Print the version string\n"
+        "    -s, --subsystem  Specify an optional subsystem string\n"
+        "    -c, --category   Specify an optional category string\n"
+        "    -l, --level      Specify the log level (default: info)\n"
+        "    -m, --message    Log message\n"
+        "    -v, --version    Print the version string\n"
+        "\n"
+        "Log Levels:\n"
+        "    info, debug, error, fault\n"
         "\n",
         PROGRAM_NAME,
         PROGRAM_VERSION,
