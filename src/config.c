@@ -95,7 +95,7 @@ flog_config_new(int argc, char *argv[]) {
     argc -= optind;
     argv += optind;
 
-    if (argc > 0) {
+    if (argc > 0 || !flog_config_has_message(config)) {
         flog_usage();
         exit(1);
     }
@@ -173,4 +173,9 @@ void flog_config_set_message(FlogConfig *config, const char *message) {
         // TODO review os/log.h and print per-level warnings based on maximum supported length for each level
         fprintf(stderr, "%s: long messages may be truncated by the unified logging system\n", PROGRAM_NAME);
     }
+}
+
+bool
+flog_config_has_message(const FlogConfig *config) {
+    return strlen(flog_config_get_message(config)) > 0 ? true : false;
 }
