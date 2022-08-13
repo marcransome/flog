@@ -41,11 +41,13 @@ static struct option longopts[] = {
     { "message",    required_argument,  NULL,  'm' },
     { "subsystem",  required_argument,  NULL,  's' },
     { "category",   required_argument,  NULL,  'c' },
-    { "help",       no_argument,        NULL,  'h' }
+    { "help",       no_argument,        NULL,  'h' },
+    { "private",    no_argument,        NULL,  'p' }
 };
 
 struct FlogConfigData {
     FlogConfigLevel level;
+    FlogConfigMessageType message_type;
     char subsystem[SUBSYSTEM_LEN];
     char category[CATEGORY_LEN];
     char message[MESSAGE_LEN];
@@ -64,7 +66,9 @@ flog_config_new(int argc, char *argv[]) {
         exit(errno);
     }
 
+    // Default config values
     flog_config_set_level(config, Info);
+    flog_config_set_message_type(config, Public);
 
     int ch;
     while ((ch = getopt_long(argc, argv, "vhl:m:s:c:", longopts, NULL)) != -1) {
@@ -86,6 +90,9 @@ flog_config_new(int argc, char *argv[]) {
                 break;
             case 'c':
                 flog_config_set_category(config, optarg);
+                break;
+            case 'p':
+                flog_config_set_message_type(config, Private);
                 break;
             case '?':
                 // getopt_long() generates errors for missing arguments
@@ -173,6 +180,16 @@ void flog_config_set_message(FlogConfig *config, const char *message) {
         // TODO review os/log.h and print per-level warnings based on maximum supported length for each level
         fprintf(stderr, "%s: long messages may be truncated by the unified logging system\n", PROGRAM_NAME);
     }
+}
+
+FlogConfigMessageType
+flog_config_get_message_type(const FlogConfig *config) {
+    return config->message_type;
+}
+
+void
+flog_config_set_message_type(FlogConfig *config, FlogConfigMessageType message_type) {
+    config->message_type = message_type;
 }
 
 bool
