@@ -36,7 +36,7 @@ struct FlogCliData {
 FlogCli *
 flog_cli_new(FlogConfig *config) {
     if (config == NULL) {
-        fprintf(stderr, "%s: ", PROGRAM_NAME);
+        fprintf(stderr, "%s: no configuration provided\n", PROGRAM_NAME);
         exit(1);
     }
 
@@ -87,7 +87,7 @@ flog_commit_message(FlogCli *flog) {
             os_log_fault(flog->log, OS_LOG_FORMAT_STRING, message);
             break;
         default:
-            fprintf(stderr, "%s: unknown log level variant", PROGRAM_NAME);
+            fprintf(stderr, "%s: unknown log level variant\n", PROGRAM_NAME);
             exit(1);
     }
 }

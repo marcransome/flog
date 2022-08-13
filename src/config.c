@@ -116,7 +116,7 @@ flog_config_get_subsystem(const FlogConfig *config) {
 void
 flog_config_set_subsystem(FlogConfig *config, const char *subsystem) {
     if (strlcpy(config->subsystem, subsystem, SUBSYSTEM_LEN) >= SUBSYSTEM_LEN) {
-        fprintf(stderr, "%s: specify a subsystem value up to a maximum of %d characters", PROGRAM_NAME, SUBSYSTEM_LEN - 1);
+        fprintf(stderr, "%s: specify a subsystem value up to a maximum of %d characters\n", PROGRAM_NAME, SUBSYSTEM_LEN - 1);
         exit(1);
     }
 }
@@ -129,7 +129,7 @@ flog_config_get_category(const FlogConfig *config) {
 void
 flog_config_set_category(FlogConfig *config, const char *category) {
     if (strlcpy(config->category, category, CATEGORY_LEN) >= CATEGORY_LEN) {
-        fprintf(stderr, "%s: specify a category value up to a maximum of %d characters", PROGRAM_NAME, CATEGORY_LEN - 1);
+        fprintf(stderr, "%s: specify a category value up to a maximum of %d characters\n", PROGRAM_NAME, CATEGORY_LEN - 1);
         exit(1);
     }
 }
@@ -157,7 +157,7 @@ flog_config_parse_level(const char *str) {
     } else if (strcmp(str, "fault") == 0) {
         level = Fault;
     } else {
-        fprintf(stderr, "%s: unknown log level '%s'", PROGRAM_NAME, str);
+        fprintf(stderr, "%s: unknown log level '%s'\n", PROGRAM_NAME, str);
         exit(1);
     }
 
@@ -171,6 +171,6 @@ const char * flog_config_get_message(const FlogConfig *config) {
 void flog_config_set_message(FlogConfig *config, const char *message) {
     if (strlcpy(config->message, message, MESSAGE_LEN) >= MESSAGE_LEN) {
         // TODO review os/log.h and print per-level warnings based on maximum supported length for each level
-        fprintf(stderr, "%s: long messages may be truncated by the unified logging system", PROGRAM_NAME);
+        fprintf(stderr, "%s: long messages may be truncated by the unified logging system\n", PROGRAM_NAME);
     }
 }
