@@ -129,7 +129,7 @@ flog_config_get_category(const FlogConfig *config) {
 void
 flog_config_set_category(FlogConfig *config, const char *category) {
     if (strlcpy(config->category, category, CATEGORY_LEN) >= CATEGORY_LEN) {
-        fprintf(stderr, "%s: specify a category value up to a maximum of %d characters", PROGRAM_NAME, SUBSYSTEM_LEN - 1);
+        fprintf(stderr, "%s: specify a category value up to a maximum of %d characters", PROGRAM_NAME, CATEGORY_LEN - 1);
         exit(1);
     }
 }
