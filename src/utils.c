@@ -41,7 +41,7 @@ flog_usage(void) {
         "    -c, --category <name>    Specify an optional category name\n"
         "    -l, --level <level>      Specify the log level (default: info)\n"
         "    -m, --message <message>  Log message\n"
-        "    -p, --private            Make the log message private\n"
+        "    -p, --private            Mark the log message private\n"
         "\n"
         "Log Levels:\n"
         "    info, debug, error, fault\n"
