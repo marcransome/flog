@@ -7,7 +7,7 @@
 
 ### Installation
 
-`flog` is currenttly a _work-in-progress_ and no binary packages are currently provided. See the [Building](#building) section if you would like to use it before these are made available.
+`flog` is currenttly a _work-in-progress_ and no binary packages are provided at present. See the [Building](#building) section if you would like to use it before these are made available.
 
 ### Logging messages
 
