@@ -25,14 +25,64 @@
 
 #include "config.h"
 
+/*! \file flog.h
+ *
+ *  Logger object and associated functions for command-line logging system.
+ */
+
+/*! \brief An opaque type representing a FlogCli logger object. */
 typedef struct FlogCliData FlogCli;
 
+/*! \brief Create a FlogCli object to be used for logging messages to the unified logging system.
+ *
+ *  \param config A pointer to a FlogConfig object
+ *
+ *  \pre \c config is \e not \c NULL
+ *
+ *  \return A pointer to a FrogCli object
+ */
 FlogCli * flog_cli_new(FlogConfig *config);
+
+/*! \brief Free a FlogCli object.
+ *
+ *  \param flog A pointer to the FlogCli object that should be freed
+ *
+ *  \pre \c flog is \e not \c NULL
+ *
+ *  \return void
+ */
 void flog_cli_free(FlogCli *flog);
 
+/*! \brief Get the FlogConfig object associated with a FlogCli object.
+ *
+ *  \param flog A pointer to the FlogCli object
+ *
+ *  \pre \c flog is \e not \c NULL
+ *
+ *  \return A pointer to the FlogConfig object associated with the FlogCli object
+ */
 FlogConfig * flog_cli_get_config(const FlogCli *flog);
+
+/*! \brief Set the FlogConfig object associated with a FlogCli object.
+ *
+ *  \param flog   A pointer to the FlogCli object
+ *  \param config A pointer to the FlogConfig object
+ *
+ *  \pre \c flog is \e not \c NULL
+ *  \pre \c config is \e not \c NULL
+ *
+ *  \return void
+ */
 void flog_cli_set_config(FlogCli *flog, FlogConfig *config);
 
+/*! \brief Commit the current log message to the unified logging system.
+ *
+ *  \param flog A pointer to the FlogCli object
+ *
+ *  \pre \c flog is \e not \c NULL
+ *
+ *  \return void
+ */
 void flog_commit_message(FlogCli *flog);
 
 #endif //FLOG_H
