@@ -23,6 +23,7 @@
 #include "flog.h"
 #include <os/log.h>
 #include <sys/errno.h>
+#include <assert.h>
 #include "defs.h"
 #include "config.h"
 
@@ -39,10 +40,7 @@ struct FlogCliData {
 
 FlogCli *
 flog_cli_new(FlogConfig *config) {
-    if (config == NULL) {
-        fprintf(stderr, "%s: no configuration provided\n", PROGRAM_NAME);
-        exit(1);
-    }
+    assert(config != NULL);
 
     FlogCli *flog = calloc(1, sizeof(struct FlogCliData));
     if (flog == NULL) {
@@ -57,22 +55,34 @@ flog_cli_new(FlogConfig *config) {
 
 void
 flog_cli_free(FlogCli *flog) {
-    os_release(flog->log);
+    assert(flog != NULL);
+
+    if (flog->log != NULL) {
+        os_release(flog->log);
+    }
+
     free(flog);
 }
 
 FlogConfig *
 flog_cli_get_config(const FlogCli *flog) {
+    assert(flog != NULL);
+
     return flog->config;
 }
 
 void
 flog_cli_set_config(FlogCli *flog, FlogConfig *config) {
+    assert(flog != NULL);
+    assert(config != NULL);
+
     flog->config = config;
 }
 
 void
 flog_commit_message(FlogCli *flog) {
+    assert(flog != NULL);
+
     FlogConfig *config = flog_cli_get_config(flog);
     if (flog_config_get_message_type(config) == Public) {
         flog_commit_public_message(flog);
@@ -81,7 +91,10 @@ flog_commit_message(FlogCli *flog) {
     }
 }
 
-void flog_commit_public_message(FlogCli *flog) {
+void
+flog_commit_public_message(FlogCli *flog) {
+    assert(flog != NULL);
+
     FlogConfig *config = flog_cli_get_config(flog);
     FlogConfigLevel level = flog_config_get_level(config);
     const char *message = flog_config_get_message(config);
@@ -105,7 +118,10 @@ void flog_commit_public_message(FlogCli *flog) {
     }
 }
 
-void flog_commit_private_message(FlogCli *flog) {
+void
+flog_commit_private_message(FlogCli *flog) {
+    assert(flog != NULL);
+
     FlogConfig *config = flog_cli_get_config(flog);
     FlogConfigLevel level = flog_config_get_level(config);
     const char *message = flog_config_get_message(config);

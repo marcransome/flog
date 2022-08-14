@@ -23,7 +23,21 @@
 #ifndef FLOG_UTILS_H
 #define FLOG_UTILS_H
 
+/*! \file utils.h
+ *
+ *  General helper functions for common operations.
+ */
+
+/*! \brief Print usage information.
+ *
+ *  \return void
+ */
 void flog_usage(void);
+
+/*! \brief Print the version string.
+ *
+ *  \return void
+ */
 void flog_version(void);
 
 #endif //FLOG_UTILS_H
