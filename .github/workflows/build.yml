@@ -21,4 +21,4 @@ jobs:
           cd build
           cmake ..
           cmake --build .
-          ./flog
+          ./flog --help
