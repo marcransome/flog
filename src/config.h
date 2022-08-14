@@ -32,6 +32,11 @@ typedef enum FlogConfigLevelData {
     Fault
 } FlogConfigLevel;
 
+typedef enum FlogConfigMessageTypeData {
+    Public,
+    Private,
+} FlogConfigMessageType;
+
 typedef struct FlogConfigData FlogConfig;
 
 FlogConfig * flog_config_new(int argc, char *argv[]);
@@ -48,6 +53,9 @@ void flog_config_set_level(FlogConfig *config, FlogConfigLevel level);
 
 const char * flog_config_get_message(const FlogConfig *config);
 void flog_config_set_message(FlogConfig *config, const char *message);
+
+FlogConfigMessageType flog_config_get_message_type(const FlogConfig *config);
+void flog_config_set_message_type(FlogConfig *config, FlogConfigMessageType message_type);
 
 bool flog_config_has_message(const FlogConfig *config);
 

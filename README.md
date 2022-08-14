@@ -29,6 +29,8 @@ Override the default log level using the `-l|--level` option and one of the valu
 flog -l fault -s uk.co.fidgetbox -c general -m 'unrecoverable failure'
 ```
 
+:warning: Log message strings are _public_ by default and can be accessed using the `log(1)` command or [Console](https://support.apple.com/en-gb/guide/console/welcome/mac) app. To mark a message as private add the `--private` option to the command. Doing so will redact the message string, and this will display as `'<private>'` when accessed using the previously mentioned methods. [Device Management Profiles](https://developer.apple.com/documentation/devicemanagement/systemlogging) can be used to grant access to private log messages.
+
 ### Reading log messages
 
 Refer to the `log(1)` man page provided on macOS-based system for extensive documentation on how to access system wide log messages, or alternatively use the [Console](https://support.apple.com/en-gb/guide/console/welcome/mac) app.
