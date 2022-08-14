@@ -32,6 +32,7 @@
 
 /*! \brief An enumerated type representing the log level. */
 typedef enum FlogConfigLevelData {
+    Default,
     Info,
     Debug,
     Error,

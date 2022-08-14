@@ -39,12 +39,12 @@ flog_usage(void) {
         "Application Options:\n"
         "    -s, --subsystem <name>   Specify an optional subsystem name\n"
         "    -c, --category <name>    Specify an optional category name\n"
-        "    -l, --level <level>      Specify the log level (default: info)\n"
+        "    -l, --level <level>      Specify the log level ('default' if not provided)\n"
         "    -m, --message <message>  Log message\n"
         "    -p, --private            Mark the log message private\n"
         "\n"
         "Log Levels:\n"
-        "    info, debug, error, fault\n"
+        "    default, info, debug, error, fault\n"
         "\n",
         PROGRAM_NAME,
         PROGRAM_VERSION,

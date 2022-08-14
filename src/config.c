@@ -68,7 +68,7 @@ flog_config_new(int argc, char *argv[]) {
     }
 
     // Default config values
-    flog_config_set_level(config, Info);
+    flog_config_set_level(config, Default);
     flog_config_set_message_type(config, Public);
 
     int ch;
@@ -168,7 +168,9 @@ FlogConfigLevel
 flog_config_parse_level(const char *str) {
     FlogConfigLevel level;
 
-    if (strcmp(str, "info") == 0) {
+    if (strcmp(str, "default") == 0) {
+        level = Default;
+    } else if (strcmp(str, "info") == 0) {
         level = Info;
     } else if (strcmp(str, "debug") == 0) {
         level = Debug;

@@ -100,6 +100,9 @@ flog_commit_public_message(FlogCli *flog) {
     const char *message = flog_config_get_message(config);
 
     switch (level) {
+        case Default:
+            os_log(flog->log, OS_LOG_FORMAT_PUBLIC, message);
+            break;
         case Info:
             os_log_info(flog->log, OS_LOG_FORMAT_PUBLIC, message);
             break;
@@ -127,6 +130,9 @@ flog_commit_private_message(FlogCli *flog) {
     const char *message = flog_config_get_message(config);
 
     switch (level) {
+        case Default:
+            os_log(flog->log, OS_LOG_FORMAT_PRIVATE, message);
+            break;
         case Info:
             os_log_info(flog->log, OS_LOG_FORMAT_PRIVATE, message);
             break;

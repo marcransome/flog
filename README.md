@@ -11,7 +11,7 @@
 
 ### Logging messages
 
-To log a message using the default `info` log level:
+To log a message using `default` log level:
 
 ```bash
 flog -m '<message>'
