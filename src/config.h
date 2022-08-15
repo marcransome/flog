@@ -165,7 +165,7 @@ void flog_config_set_message(FlogConfig *config, const char *message);
  *  \param args   A pointer to an array of null-terminated strings representing
  *                command-line arguments
  *
- *  \pre \c items is greater than \c 0
+ *  \pre \c count is greater than \c 0
  *  \pre \c args is \e not \c NULL
  *
  *  \return void
