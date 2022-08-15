@@ -29,17 +29,17 @@
 #include <sys/errno.h>
 #include <string.h>
 #include <assert.h>
+#include <stdbool.h>
 
 #define SUBSYSTEM_LEN 257
 #define CATEGORY_LEN 257
-#define MESSAGE_LEN 1024
+#define MESSAGE_LEN 8193
 
 FlogConfigLevel flog_config_parse_level(const char *str);
 
 static struct option longopts[] = {
     { "version",    no_argument,        NULL,  'v' },
     { "level",      required_argument,  NULL,  'l' },
-    { "message",    required_argument,  NULL,  'm' },
     { "subsystem",  required_argument,  NULL,  's' },
     { "category",   required_argument,  NULL,  'c' },
     { "help",       no_argument,        NULL,  'h' },
@@ -72,7 +72,7 @@ flog_config_new(int argc, char *argv[]) {
     flog_config_set_message_type(config, Public);
 
     int ch;
-    while ((ch = getopt_long(argc, argv, "vhl:m:s:c:", longopts, NULL)) != -1) {
+    while ((ch = getopt_long(argc, argv, "vhl:s:c:p", longopts, NULL)) != -1) {
         switch (ch) {
             case 'h':
                 flog_usage();
@@ -80,9 +80,6 @@ flog_config_new(int argc, char *argv[]) {
             case 'v':
                 flog_version();
                 exit(0);
-            case 'm':
-                flog_config_set_message(config, optarg);
-                break;
             case 'l':
                 flog_config_set_level(config, flog_config_parse_level(optarg));
                 break;
@@ -100,13 +97,13 @@ flog_config_new(int argc, char *argv[]) {
                 exit(1);
         }
     }
-    argc -= optind;
-    argv += optind;
 
-    if (argc > 0 || !flog_config_has_message(config)) {
+    if (argc - optind == 0) {
         flog_usage();
         exit(1);
     }
+
+    flog_config_set_message_from_args(config, argc - optind, &argv[optind]);
 
     return config;
 }
@@ -199,8 +196,34 @@ flog_config_set_message(FlogConfig *config, const char *message) {
     assert(message != NULL);
 
     if (strlcpy(config->message, message, MESSAGE_LEN) >= MESSAGE_LEN) {
-        // TODO review os/log.h and print per-level warnings based on maximum supported length for each level
-        fprintf(stderr, "%s: long messages may be truncated by the unified logging system\n", PROGRAM_NAME);
+        fprintf(stderr, "%s: message was truncated to %d characters\n", PROGRAM_NAME, MESSAGE_LEN - 1);
+    }
+}
+
+void
+flog_config_set_message_from_args(FlogConfig *config, size_t count, char *args[]) {
+    assert(count > 0);
+    assert(args != NULL);
+
+    bool message_truncated = false;
+    char message_buff[MESSAGE_LEN] = {0};
+    for(int i = 0; i < count; i++){
+        if (strlcat(message_buff, args[i], MESSAGE_LEN) >= MESSAGE_LEN) {
+            message_truncated = true;
+        }
+        if (i != i - 1) {
+            if (strlcat(message_buff, " ", MESSAGE_LEN) >= MESSAGE_LEN) {
+                message_truncated = true;
+            }
+        }
+    }
+
+    if (strlcpy(config->message, message_buff, MESSAGE_LEN) >= MESSAGE_LEN) {
+        message_truncated = true;
+    }
+
+    if (message_truncated) {
+        fprintf(stderr, "%s: message was truncated to %d characters\n", PROGRAM_NAME, MESSAGE_LEN - 1);
     }
 }
 
@@ -214,11 +237,4 @@ flog_config_get_message_type(const FlogConfig *config) {
 void
 flog_config_set_message_type(FlogConfig *config, FlogConfigMessageType message_type) {
     config->message_type = message_type;
-}
-
-bool
-flog_config_has_message(const FlogConfig *config) {
-    assert(config != NULL);
-
-    return strlen(flog_config_get_message(config)) > 0 ? true : false;
 }

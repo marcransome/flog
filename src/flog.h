@@ -23,12 +23,12 @@
 #ifndef FLOG_H
 #define FLOG_H
 
-#include "config.h"
-
 /*! \file flog.h
  *
  *  Logger object and associated functions for command-line logging system.
  */
+
+#include "config.h"
 
 /*! \brief An opaque type representing a FlogCli logger object. */
 typedef struct FlogCliData FlogCli;

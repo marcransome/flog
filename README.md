@@ -14,19 +14,19 @@
 To log a message using `default` log level:
 
 ```bash
-flog -m '<message>'
+flog '<message>'
 ```
 
 Optionally specify a _subsystem_ and/or _category_ using the `-s|--subsystem` and `-c|--category` options:
 
 ```bash
-flog -s uk.co.fidgetbox -c general -m 'informational message'
+flog -s uk.co.fidgetbox -c general 'informational message'
 ```
 
 Override the default log level using the `-l|--level` option and one of the values `info`, `debug`, `error` or `fault`:
 
 ```bash
-flog -l fault -s uk.co.fidgetbox -c general -m 'unrecoverable failure'
+flog -l fault -s uk.co.fidgetbox -c general 'unrecoverable failure'
 ```
 
 :warning: Log message strings are _public_ by default and can be accessed using the `log(1)` command or [Console](https://support.apple.com/en-gb/guide/console/welcome/mac) app. To mark a message as private add the `--private` option to the command. Doing so will redact the message string, and this will display as `'<private>'` when accessed using the previously mentioned methods. [Device Management Profiles](https://developer.apple.com/documentation/devicemanagement/systemlogging) can be used to grant access to private log messages.
