@@ -209,7 +209,7 @@ flog_config_set_message_from_args(FlogConfig *config, size_t count, char *args[]
 
     bool message_truncated = false;
     char message_buff[MESSAGE_LEN] = {0};
-    for(int i = 0; i < count; i++){
+    for (int i = 0; i < count; i++) {
         if (strlcat(message_buff, args[i], MESSAGE_LEN) >= MESSAGE_LEN) {
             message_truncated = true;
         }
