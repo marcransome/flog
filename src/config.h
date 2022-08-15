@@ -23,12 +23,12 @@
 #ifndef FLOG_CONFIG_H
 #define FLOG_CONFIG_H
 
-#include <stdbool.h>
-
 /*! \file config.h
  *
  *  Configuration object and associated functions for command-line logging system.
  */
+
+#include <stddef.h>
 
 /*! \brief An enumerated type representing the log level. */
 typedef enum FlogConfigLevelData {
@@ -156,6 +156,22 @@ const char * flog_config_get_message(const FlogConfig *config);
  */
 void flog_config_set_message(FlogConfig *config, const char *message);
 
+/*! \brief Set the log message for a FlogConfig object by combining multiple
+ *         command-line arguments.
+ *
+ *  \param config A pointer to the FlogConfig object
+ *  \param count  The number of command line arguments to concatenate into
+ *                the message string
+ *  \param args   A pointer to an array of null-terminated strings representing
+ *                command-line arguments
+ *
+ *  \pre \c count is greater than \c 0
+ *  \pre \c args is \e not \c NULL
+ *
+ *  \return void
+ */
+void flog_config_set_message_from_args(FlogConfig *config, size_t count, char *args[]);
+
 /*! \brief Get the log message type from a FlogConfig object.
  *
  *  \param config A pointer to the FlogConfig object
@@ -177,15 +193,5 @@ FlogConfigMessageType flog_config_get_message_type(const FlogConfig *config);
  *  \return void
  */
 void flog_config_set_message_type(FlogConfig *config, FlogConfigMessageType type);
-
-/*! \brief Check whether the FlogConfig object has log message set or not.
- *
- *  \param config A pointer to the FlogConfig object
- *
- *  \pre \c config is \e not \c NULL
- *
- *  \return \c true if the FlogConfig object has a log message, \c false if not
- */
-bool flog_config_has_message(const FlogConfig *config);
 
 #endif //FLOG_CONFIG_H
