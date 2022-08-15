@@ -97,13 +97,15 @@ flog_config_new(int argc, char *argv[]) {
                 exit(1);
         }
     }
+    argc -= optind;
+    argv += optind;
 
-    if (argc - optind == 0) {
+    if (argc == 0) {
         flog_usage();
         exit(1);
     }
 
-    flog_config_set_message_from_args(config, argc - optind, &argv[optind]);
+    flog_config_set_message_from_args(config, argc, argv);
 
     return config;
 }
