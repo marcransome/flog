@@ -42,7 +42,7 @@ flog -l fault -s uk.co.fidgetbox -c general 'unrecoverable failure'
 
 ### Reading log messages
 
-Refer to the `log(1)` man page provided on macOS-based system for extensive documentation on how to access system wide log messages, or alternatively use the [Console](https://support.apple.com/en-gb/guide/console/welcome/mac) app.
+Refer to the `log(1)` man page provided on macOS-based systems for extensive documentation on how to access system wide log messages, or alternatively use the [Console](https://support.apple.com/en-gb/guide/console/welcome/mac) app.
 
 ## Building
 
