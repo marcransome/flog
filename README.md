@@ -51,7 +51,7 @@ Refer to the `log(1)` man page provided on macOS-based system for extensive docu
 * A C17 compiler
 * CMake (version 3.22 or later)
 
-## Building from source
+### Building from source
 
 From the top-level project directory:
 
