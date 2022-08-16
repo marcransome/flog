@@ -24,6 +24,7 @@
 #include <os/log.h>
 #include <sys/errno.h>
 #include <assert.h>
+#include <stdlib.h>
 #include "defs.h"
 #include "config.h"
 
@@ -117,7 +118,7 @@ flog_commit_public_message(FlogCli *flog) {
             break;
         default:
             fprintf(stderr, "%s: unknown log level variant\n", PROGRAM_NAME);
-            exit(1);
+            exit(EXIT_FAILURE);
     }
 }
 
@@ -147,6 +148,6 @@ flog_commit_private_message(FlogCli *flog) {
             break;
         default:
             fprintf(stderr, "%s: unknown log level variant\n", PROGRAM_NAME);
-            exit(1);
+            exit(EXIT_FAILURE);
     }
 }
