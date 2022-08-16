@@ -55,6 +55,9 @@ typedef struct FlogConfigData FlogConfig;
  *  \param argv A pointer to an array of null-terminated strings representing
  *              command-line arguments
  *
+ *  \pre \c argc is greater than \c 0
+ *  \pre \c argv is \e not \c NULL
+ *
  *  \return A pointer to a FlogConfig object
  */
 FlogConfig * flog_config_new(int argc, char *argv[]);

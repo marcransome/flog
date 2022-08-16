@@ -37,7 +37,7 @@
 
 FlogConfigLevel flog_config_parse_level(const char *str);
 
-static struct option longopts[] = {
+static struct option long_options[] = {
     { "version",    no_argument,        NULL,  'v' },
     { "level",      required_argument,  NULL,  'l' },
     { "subsystem",  required_argument,  NULL,  's' },
@@ -56,6 +56,9 @@ struct FlogConfigData {
 
 FlogConfig *
 flog_config_new(int argc, char *argv[]) {
+    assert(argc > 0);
+    assert(argv != NULL);
+
     if (argc == 1) {
         flog_usage();
         exit(EXIT_FAILURE);
@@ -72,7 +75,7 @@ flog_config_new(int argc, char *argv[]) {
     flog_config_set_message_type(config, Public);
 
     int ch;
-    while ((ch = getopt_long(argc, argv, "vhl:s:c:p", longopts, NULL)) != -1) {
+    while ((ch = getopt_long(argc, argv, "vhl:s:c:p", long_options, NULL)) != -1) {
         switch (ch) {
             case 'h':
                 flog_usage();
@@ -213,7 +216,7 @@ flog_config_set_message_from_args(FlogConfig *config, size_t count, char *args[]
         if (strlcat(message_buff, args[i], MESSAGE_LEN) >= MESSAGE_LEN) {
             message_truncated = true;
         }
-        if (i != i - 1) {
+        if (i != count - 1) {
             if (strlcat(message_buff, " ", MESSAGE_LEN) >= MESSAGE_LEN) {
                 message_truncated = true;
             }
