@@ -76,10 +76,10 @@ flog_config_new(int argc, char *argv[]) {
         switch (ch) {
             case 'h':
                 flog_usage();
-                exit(0);
+                exit(EXIT_SUCCESS);
             case 'v':
                 flog_version();
-                exit(0);
+                exit(EXIT_SUCCESS);
             case 'l':
                 flog_config_set_level(config, flog_config_parse_level(optarg));
                 break;
