@@ -7,7 +7,7 @@
 
 ### Installation
 
-`flog` is currenttly a _work-in-progress_ and no binary packages are provided at present. See the [Building](#building) section if you would like to use it before these are made available.
+`flog` is currently a _work-in-progress_, however a fully functional _pre-release_ of version `1.0.0` is available for [download](https://github.com/marcransome/flog/releases/tag/1.0.0-pre-release) as a universal macOS binary with support for both Intel `x86_64` and Apple `arm64` architectures. Please note that pre-release versions are _not_ code signed.
 
 ### Logging messages
 
