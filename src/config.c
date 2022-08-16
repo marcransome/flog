@@ -58,7 +58,7 @@ FlogConfig *
 flog_config_new(int argc, char *argv[]) {
     if (argc == 1) {
         flog_usage();
-        exit(1);
+        exit(EXIT_FAILURE);
     }
 
     FlogConfig *config = calloc(1, sizeof(struct FlogConfigData));
@@ -94,7 +94,7 @@ flog_config_new(int argc, char *argv[]) {
                 break;
             case '?':
                 // getopt_long() generates errors for missing arguments
-                exit(1);
+                exit(EXIT_FAILURE);
         }
     }
     argc -= optind;
@@ -102,7 +102,7 @@ flog_config_new(int argc, char *argv[]) {
 
     if (argc == 0) {
         flog_usage();
-        exit(1);
+        exit(EXIT_FAILURE);
     }
 
     flog_config_set_message_from_args(config, argc, argv);
@@ -129,7 +129,7 @@ flog_config_set_subsystem(FlogConfig *config, const char *subsystem) {
 
     if (strlcpy(config->subsystem, subsystem, SUBSYSTEM_LEN) >= SUBSYSTEM_LEN) {
         fprintf(stderr, "%s: specify a subsystem value up to a maximum of %d characters\n", PROGRAM_NAME, SUBSYSTEM_LEN - 1);
-        exit(1);
+        exit(EXIT_FAILURE);
     }
 }
 
@@ -145,7 +145,7 @@ flog_config_set_category(FlogConfig *config, const char *category) {
 
     if (strlcpy(config->category, category, CATEGORY_LEN) >= CATEGORY_LEN) {
         fprintf(stderr, "%s: specify a category value up to a maximum of %d characters\n", PROGRAM_NAME, CATEGORY_LEN - 1);
-        exit(1);
+        exit(EXIT_FAILURE);
     }
 }
 
@@ -179,7 +179,7 @@ flog_config_parse_level(const char *str) {
         level = Fault;
     } else {
         fprintf(stderr, "%s: unknown log level '%s'\n", PROGRAM_NAME, str);
-        exit(1);
+        exit(EXIT_FAILURE);
     }
 
     return level;
