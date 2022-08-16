@@ -7,7 +7,7 @@
 
 ### Installation
 
-`flog` is currently a _work-in-progress_, however a fully functional _pre-release_ of version `1.0.0` is available for [download](https://github.com/marcransome/flog/releases/tag/1.0.0-pre-release) as a universal macOS binary with support for both Intel `x86_64` and Apple `arm64` architectures.
+`flog` is currently a _work-in-progress_, however a fully functional _pre-release_ of version `1.0.0` is available for [download](https://github.com/marcransome/flog/releases/tag/1.0.0-pre-release) as a universal macOS binary with support for both Intel `x86_64` and Apple `arm64e` architectures.
 
 Please note that pre-release versions are _not_ code signed or notarized and will require the removal of the quarantine attribute before they can be run:
 
