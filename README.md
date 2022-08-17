@@ -10,7 +10,7 @@
 `flog` is currently a _work-in-progress_, however a fully functional _pre-release_ of version `1.0.0` is available for [download](https://github.com/marcransome/flog/releases/tag/1.0.0-pre-release) as a universal macOS binary with support for both Intel `x86_64` and Apple `arm64e` architectures.
 
 > **Note**:
-> Pre-release binaries are not code signed, or notarized, and will require the `com.apple.quarantine` extended attribute to be removed using the `xattr` command before they can be run.
+> Pre-release builds are not code signed, or notarized, and will require the `com.apple.quarantine` extended attribute to be removed using the `xattr` command before they can be run.
 
 To extract and run the pre-release version:
 
