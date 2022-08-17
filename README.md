@@ -52,6 +52,7 @@ Refer to the `log(1)` man page provided on macOS-based systems for extensive doc
 
 ### Dependencies
 
+* macOS Big Sur (11.x) and above
 * A C17 compiler
 * CMake (version 3.22 or later)
 
