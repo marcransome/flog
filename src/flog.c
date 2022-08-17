@@ -50,7 +50,14 @@ flog_cli_new(FlogConfig *config) {
     }
 
     flog_cli_set_config(flog, config);
-    flog->log = os_log_create(flog_config_get_subsystem(config), flog_config_get_category(config));
+
+    const char *subsystem = flog_config_get_subsystem(config);
+    if (strlen(subsystem) != 0) {
+        flog->log = os_log_create(flog_config_get_subsystem(config), flog_config_get_category(config));
+    } else {
+        flog->log = OS_LOG_DEFAULT;
+    }
+
     return flog;
 }
 

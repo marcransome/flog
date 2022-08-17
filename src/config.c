@@ -103,6 +103,11 @@ flog_config_new(int argc, char *argv[]) {
     argc -= optind;
     argv += optind;
 
+    if (strlen(flog_config_get_category(config)) > 0 && strlen(flog_config_get_subsystem(config)) == 0) {
+        fprintf(stderr, "%s: category option requires a subsystem name (use -s|--subsystem)\n", PROGRAM_NAME);
+        exit(EXIT_FAILURE);
+    }
+
     if (argc == 0) {
         flog_usage();
         exit(EXIT_FAILURE);
