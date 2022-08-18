@@ -127,6 +127,8 @@ flog_config_free(FlogConfig *config) {
 
 const char *
 flog_config_get_subsystem(const FlogConfig *config) {
+    assert(config != NULL);
+
     return config->subsystem;
 }
 
@@ -143,6 +145,8 @@ flog_config_set_subsystem(FlogConfig *config, const char *subsystem) {
 
 const char *
 flog_config_get_category(const FlogConfig *config) {
+    assert(config != NULL);
+
     return config->category;
 }
 
@@ -246,5 +250,7 @@ flog_config_get_message_type(const FlogConfig *config) {
 
 void
 flog_config_set_message_type(FlogConfig *config, FlogConfigMessageType message_type) {
+    assert(config != NULL);
+
     config->message_type = message_type;
 }
