@@ -1,7 +1,12 @@
+<img alt="flog" src="images/trunk.png" width="180" align="right">
+
 # flog
 
 `flog` is a command-line tool for sending log messages to Apple's unified logging system and is primaily intended for use in scripts.
 
+[![License](https://img.shields.io/badge/license-MIT-blue)](https://opensource.org/licenses/mit-license.php) [![macOS](https://img.shields.io/badge/macOS-11+-blue)](https://www.apple.com/macos/)
+
+<hr>
 
 ## Getting started
 
@@ -71,6 +76,10 @@ cd build
 cmake ..
 cmake --build .
 ```
+
+## Acknowledgements
+
+* Trunk icon made by [Freepik](https://www.flaticon.com/authors/freepik) from [www.flaticon.com](https://www.flaticon.com/)
 
 ## License
 
