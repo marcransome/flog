@@ -54,7 +54,7 @@ Here's an example log stream, filtered by subsystem name, showing messages gener
 
 ## Building
 
-### Dependencies
+### Requirements
 
 * macOS (`11.x` or later)
 * A C17 compiler
