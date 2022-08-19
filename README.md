@@ -1,7 +1,12 @@
+<img alt="flog" src="images/trunk.png" width="180" align="right">
+
 # flog
 
 `flog` is a command-line tool for sending log messages to Apple's unified logging system and is primaily intended for use in scripts.
 
+[![License](https://img.shields.io/badge/license-MIT-blue)](https://opensource.org/licenses/mit-license.php) [![macOS](https://img.shields.io/badge/macOS-11+-blue)](https://www.apple.com/macos/)
+
+<hr>
 
 ## Getting started
 
@@ -15,9 +20,9 @@
 To extract and run the pre-release version:
 
 ```bash
-$ tar -xvzf flog-1.0.0-pre-release.tar.gz
-$ xattr -d com.apple.quarantine flog
-$ ./flog
+tar -xvzf flog-1.0.0-pre-release.tar.gz
+xattr -d com.apple.quarantine flog
+./flog
 ...
 ```
 
@@ -62,15 +67,19 @@ Here's an example log stream, filtered by subsystem name, showing messages gener
 
 ### Building from source
 
-From the top-level project directory:
+To perform an out-of-source build, run the following commands from the top-level project directory:
 
-```shell
+```bash
 cd src
 mkdir build
 cd build
 cmake ..
 cmake --build .
 ```
+
+## Acknowledgements
+
+* Trunk icon made by [Freepik](https://www.flaticon.com/authors/freepik) from [www.flaticon.com](https://www.flaticon.com/)
 
 ## License
 
