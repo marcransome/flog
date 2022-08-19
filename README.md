@@ -20,9 +20,9 @@
 To extract and run the pre-release version:
 
 ```bash
-$ tar -xvzf flog-1.0.0-pre-release.tar.gz
-$ xattr -d com.apple.quarantine flog
-$ ./flog
+tar -xvzf flog-1.0.0-pre-release.tar.gz
+xattr -d com.apple.quarantine flog
+./flog
 ...
 ```
 
@@ -67,9 +67,9 @@ Here's an example log stream, filtered by subsystem name, showing messages gener
 
 ### Building from source
 
-From the top-level project directory:
+To perform an out-of-source build, run the following commands from the top-level project directory:
 
-```shell
+```bash
 cd src
 mkdir build
 cd build
