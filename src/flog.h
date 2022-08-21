@@ -30,7 +30,11 @@
  *  Logger object and associated functions for command-line logging system.
  */
 
-/*! \brief An opaque type representing a FlogCli logger object. */
+/*! \struct FlogCli
+ *
+ * \brief An opaque type representing a FlogCli logger object.
+ *
+ */
 typedef struct FlogCliData FlogCli;
 
 /*! \brief Create a FlogCli object to be used for logging messages to the unified logging system.

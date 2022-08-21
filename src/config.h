@@ -44,7 +44,11 @@ typedef enum FlogConfigMessageTypeData {
     Private,
 } FlogConfigMessageType;
 
-/*! \brief An opaque type representing a FlogConfig logger configuration object. */
+/*! \struct FlogConfig
+ *
+ * \brief An opaque type representing a FlogConfig logger configuration object.
+ *
+ */
 typedef struct FlogConfigData FlogConfig;
 
 /*! \brief Create a FlogConfig object representing configuration to be used
