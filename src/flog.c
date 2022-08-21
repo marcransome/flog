@@ -24,6 +24,7 @@
 #include <os/log.h>
 #include <sys/errno.h>
 #include <assert.h>
+#include <stdlib.h>
 #include "defs.h"
 #include "config.h"
 
@@ -49,7 +50,14 @@ flog_cli_new(FlogConfig *config) {
     }
 
     flog_cli_set_config(flog, config);
-    flog->log = os_log_create(flog_config_get_subsystem(config), flog_config_get_category(config));
+
+    const char *subsystem = flog_config_get_subsystem(config);
+    if (strlen(subsystem) != 0) {
+        flog->log = os_log_create(flog_config_get_subsystem(config), flog_config_get_category(config));
+    } else {
+        flog->log = OS_LOG_DEFAULT;
+    }
+
     return flog;
 }
 
@@ -100,6 +108,9 @@ flog_commit_public_message(FlogCli *flog) {
     const char *message = flog_config_get_message(config);
 
     switch (level) {
+        case Default:
+            os_log(flog->log, OS_LOG_FORMAT_PUBLIC, message);
+            break;
         case Info:
             os_log_info(flog->log, OS_LOG_FORMAT_PUBLIC, message);
             break;
@@ -114,7 +125,7 @@ flog_commit_public_message(FlogCli *flog) {
             break;
         default:
             fprintf(stderr, "%s: unknown log level variant\n", PROGRAM_NAME);
-            exit(1);
+            exit(EXIT_FAILURE);
     }
 }
 
@@ -127,6 +138,9 @@ flog_commit_private_message(FlogCli *flog) {
     const char *message = flog_config_get_message(config);
 
     switch (level) {
+        case Default:
+            os_log(flog->log, OS_LOG_FORMAT_PRIVATE, message);
+            break;
         case Info:
             os_log_info(flog->log, OS_LOG_FORMAT_PRIVATE, message);
             break;
@@ -141,6 +155,6 @@ flog_commit_private_message(FlogCli *flog) {
             break;
         default:
             fprintf(stderr, "%s: unknown log level variant\n", PROGRAM_NAME);
-            exit(1);
+            exit(EXIT_FAILURE);
     }
 }

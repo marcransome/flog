@@ -29,17 +29,17 @@
 #include <sys/errno.h>
 #include <string.h>
 #include <assert.h>
+#include <stdbool.h>
 
 #define SUBSYSTEM_LEN 257
 #define CATEGORY_LEN 257
-#define MESSAGE_LEN 1024
+#define MESSAGE_LEN 8193
 
 FlogConfigLevel flog_config_parse_level(const char *str);
 
-static struct option longopts[] = {
+static struct option long_options[] = {
     { "version",    no_argument,        NULL,  'v' },
     { "level",      required_argument,  NULL,  'l' },
-    { "message",    required_argument,  NULL,  'm' },
     { "subsystem",  required_argument,  NULL,  's' },
     { "category",   required_argument,  NULL,  'c' },
     { "help",       no_argument,        NULL,  'h' },
@@ -56,9 +56,12 @@ struct FlogConfigData {
 
 FlogConfig *
 flog_config_new(int argc, char *argv[]) {
+    assert(argc > 0);
+    assert(argv != NULL);
+
     if (argc == 1) {
         flog_usage();
-        exit(1);
+        exit(EXIT_FAILURE);
     }
 
     FlogConfig *config = calloc(1, sizeof(struct FlogConfigData));
@@ -68,21 +71,18 @@ flog_config_new(int argc, char *argv[]) {
     }
 
     // Default config values
-    flog_config_set_level(config, Info);
+    flog_config_set_level(config, Default);
     flog_config_set_message_type(config, Public);
 
     int ch;
-    while ((ch = getopt_long(argc, argv, "vhl:m:s:c:", longopts, NULL)) != -1) {
+    while ((ch = getopt_long(argc, argv, "vhl:s:c:p", long_options, NULL)) != -1) {
         switch (ch) {
             case 'h':
                 flog_usage();
-                exit(0);
+                exit(EXIT_SUCCESS);
             case 'v':
                 flog_version();
-                exit(0);
-            case 'm':
-                flog_config_set_message(config, optarg);
-                break;
+                exit(EXIT_SUCCESS);
             case 'l':
                 flog_config_set_level(config, flog_config_parse_level(optarg));
                 break;
@@ -97,16 +97,23 @@ flog_config_new(int argc, char *argv[]) {
                 break;
             case '?':
                 // getopt_long() generates errors for missing arguments
-                exit(1);
+                exit(EXIT_FAILURE);
         }
     }
     argc -= optind;
     argv += optind;
 
-    if (argc > 0 || !flog_config_has_message(config)) {
-        flog_usage();
-        exit(1);
+    if (strlen(flog_config_get_category(config)) > 0 && strlen(flog_config_get_subsystem(config)) == 0) {
+        fprintf(stderr, "%s: category option requires a subsystem name (use -s|--subsystem)\n", PROGRAM_NAME);
+        exit(EXIT_FAILURE);
     }
+
+    if (argc == 0) {
+        flog_usage();
+        exit(EXIT_FAILURE);
+    }
+
+    flog_config_set_message_from_args(config, argc, argv);
 
     return config;
 }
@@ -120,6 +127,8 @@ flog_config_free(FlogConfig *config) {
 
 const char *
 flog_config_get_subsystem(const FlogConfig *config) {
+    assert(config != NULL);
+
     return config->subsystem;
 }
 
@@ -130,12 +139,14 @@ flog_config_set_subsystem(FlogConfig *config, const char *subsystem) {
 
     if (strlcpy(config->subsystem, subsystem, SUBSYSTEM_LEN) >= SUBSYSTEM_LEN) {
         fprintf(stderr, "%s: specify a subsystem value up to a maximum of %d characters\n", PROGRAM_NAME, SUBSYSTEM_LEN - 1);
-        exit(1);
+        exit(EXIT_FAILURE);
     }
 }
 
 const char *
 flog_config_get_category(const FlogConfig *config) {
+    assert(config != NULL);
+
     return config->category;
 }
 
@@ -146,7 +157,7 @@ flog_config_set_category(FlogConfig *config, const char *category) {
 
     if (strlcpy(config->category, category, CATEGORY_LEN) >= CATEGORY_LEN) {
         fprintf(stderr, "%s: specify a category value up to a maximum of %d characters\n", PROGRAM_NAME, CATEGORY_LEN - 1);
-        exit(1);
+        exit(EXIT_FAILURE);
     }
 }
 
@@ -168,7 +179,9 @@ FlogConfigLevel
 flog_config_parse_level(const char *str) {
     FlogConfigLevel level;
 
-    if (strcmp(str, "info") == 0) {
+    if (strcmp(str, "default") == 0) {
+        level = Default;
+    } else if (strcmp(str, "info") == 0) {
         level = Info;
     } else if (strcmp(str, "debug") == 0) {
         level = Debug;
@@ -178,7 +191,7 @@ flog_config_parse_level(const char *str) {
         level = Fault;
     } else {
         fprintf(stderr, "%s: unknown log level '%s'\n", PROGRAM_NAME, str);
-        exit(1);
+        exit(EXIT_FAILURE);
     }
 
     return level;
@@ -197,8 +210,34 @@ flog_config_set_message(FlogConfig *config, const char *message) {
     assert(message != NULL);
 
     if (strlcpy(config->message, message, MESSAGE_LEN) >= MESSAGE_LEN) {
-        // TODO review os/log.h and print per-level warnings based on maximum supported length for each level
-        fprintf(stderr, "%s: long messages may be truncated by the unified logging system\n", PROGRAM_NAME);
+        fprintf(stderr, "%s: message was truncated to %d characters\n", PROGRAM_NAME, MESSAGE_LEN - 1);
+    }
+}
+
+void
+flog_config_set_message_from_args(FlogConfig *config, size_t count, char *args[]) {
+    assert(count > 0);
+    assert(args != NULL);
+
+    bool message_truncated = false;
+    char message_buff[MESSAGE_LEN] = {0};
+    for (int i = 0; i < count; i++) {
+        if (strlcat(message_buff, args[i], MESSAGE_LEN) >= MESSAGE_LEN) {
+            message_truncated = true;
+        }
+        if (i != count - 1) {
+            if (strlcat(message_buff, " ", MESSAGE_LEN) >= MESSAGE_LEN) {
+                message_truncated = true;
+            }
+        }
+    }
+
+    if (strlcpy(config->message, message_buff, MESSAGE_LEN) >= MESSAGE_LEN) {
+        message_truncated = true;
+    }
+
+    if (message_truncated) {
+        fprintf(stderr, "%s: message was truncated to %d characters\n", PROGRAM_NAME, MESSAGE_LEN - 1);
     }
 }
 
@@ -211,12 +250,7 @@ flog_config_get_message_type(const FlogConfig *config) {
 
 void
 flog_config_set_message_type(FlogConfig *config, FlogConfigMessageType message_type) {
-    config->message_type = message_type;
-}
-
-bool
-flog_config_has_message(const FlogConfig *config) {
     assert(config != NULL);
 
-    return strlen(flog_config_get_message(config)) > 0 ? true : false;
+    config->message_type = message_type;
 }
