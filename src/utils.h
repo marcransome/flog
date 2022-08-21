@@ -28,16 +28,10 @@
  *  General helper functions for common operations.
  */
 
-/*! \brief Print usage information.
- *
- *  \return void
- */
+/*! \brief Print usage information. */
 void flog_usage(void);
 
-/*! \brief Print the version string.
- *
- *  \return void
- */
+/*! \brief Print the version string. */
 void flog_version(void);
 
 #endif //FLOG_UTILS_H

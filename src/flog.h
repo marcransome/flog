@@ -23,14 +23,18 @@
 #ifndef FLOG_H
 #define FLOG_H
 
+#include "config.h"
+
 /*! \file flog.h
  *
  *  Logger object and associated functions for command-line logging system.
  */
 
-#include "config.h"
-
-/*! \brief An opaque type representing a FlogCli logger object. */
+/*! \struct FlogCli
+ *
+ * \brief An opaque type representing a FlogCli logger object.
+ *
+ */
 typedef struct FlogCliData FlogCli;
 
 /*! \brief Create a FlogCli object to be used for logging messages to the unified logging system.
@@ -48,8 +52,6 @@ FlogCli * flog_cli_new(FlogConfig *config);
  *  \param flog A pointer to the FlogCli object that should be freed
  *
  *  \pre \c flog is \e not \c NULL
- *
- *  \return void
  */
 void flog_cli_free(FlogCli *flog);
 
@@ -70,8 +72,6 @@ FlogConfig * flog_cli_get_config(const FlogCli *flog);
  *
  *  \pre \c flog is \e not \c NULL
  *  \pre \c config is \e not \c NULL
- *
- *  \return void
  */
 void flog_cli_set_config(FlogCli *flog, FlogConfig *config);
 
@@ -80,8 +80,6 @@ void flog_cli_set_config(FlogCli *flog, FlogConfig *config);
  *  \param flog A pointer to the FlogCli object
  *
  *  \pre \c flog is \e not \c NULL
- *
- *  \return void
  */
 void flog_commit_message(FlogCli *flog);
 

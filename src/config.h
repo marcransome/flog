@@ -45,7 +45,11 @@ typedef enum FlogConfigMessageTypeData {
     Private,
 } FlogConfigMessageType;
 
-/*! \brief An opaque type representing a FlogConfig logger configuration object. */
+/*! \struct FlogConfig
+ *
+ * \brief An opaque type representing a FlogConfig logger configuration object.
+ *
+ */
 typedef struct FlogConfigData FlogConfig;
 
 /*! \brief Create a FlogConfig object representing configuration to be used
@@ -67,8 +71,6 @@ FlogConfig * flog_config_new(int argc, char *argv[]);
  *  \param config A pointer to the FlogConfig object that should be freed
  *
  *  \pre \c config is \e not \c NULL
- *
- *  \return void
  */
 void flog_config_free(FlogConfig *config);
 
@@ -89,8 +91,6 @@ const char * flog_config_get_subsystem(const FlogConfig *config);
  *
  *  \pre \c config is \e not \c NULL
  *  \pre \c subsystem is \e not \c NULL
- *
- *  \return void
  */
 void flog_config_set_subsystem(FlogConfig *config, const char *subsystem);
 
@@ -111,8 +111,6 @@ const char * flog_config_get_category(const FlogConfig *config);
  *
  *  \pre \c config is \e not \c NULL
  *  \pre \c category is \e not \c NULL
- *
- *  \return void
  */
 void flog_config_set_category(FlogConfig *config, const char *category);
 
@@ -132,8 +130,6 @@ FlogConfigLevel flog_config_get_level(const FlogConfig *config);
  *  \param level  A FlogConfigLevel value representing the log level
  *
  *  \pre \c config is \e not \c NULL
- *
- *  \return void
  */
 void flog_config_set_level(FlogConfig *config, FlogConfigLevel level);
 
@@ -154,8 +150,6 @@ const char * flog_config_get_message(const FlogConfig *config);
  *
  *  \pre \c config is \e not \c NULL
  *  \pre \c category is \e not \c NULL
- *
- *  \return void
  */
 void flog_config_set_message(FlogConfig *config, const char *message);
 
@@ -192,8 +186,6 @@ FlogConfigMessageType flog_config_get_message_type(const FlogConfig *config);
  *                type
  *
  *  \pre \c config is \e not \c NULL
- *
- *  \return void
  */
 void flog_config_set_message_type(FlogConfig *config, FlogConfigMessageType type);
 
