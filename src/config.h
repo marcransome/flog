@@ -47,8 +47,7 @@ typedef enum FlogConfigMessageTypeData {
 
 /*! \struct FlogConfig
  *
- * \brief An opaque type representing a FlogConfig logger configuration object.
- *
+ *  \brief An opaque type representing a FlogConfig logger configuration object.
  */
 typedef struct FlogConfigData FlogConfig;
 

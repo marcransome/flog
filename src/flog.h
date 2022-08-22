@@ -32,8 +32,7 @@
 
 /*! \struct FlogCli
  *
- * \brief An opaque type representing a FlogCli logger object.
- *
+ *  \brief An opaque type representing a FlogCli logger object.
  */
 typedef struct FlogCliData FlogCli;
 
