@@ -59,14 +59,11 @@ Here's an example log stream, filtered by subsystem name, showing messages gener
 
 ### Building from source
 
-To perform an out-of-source build, run the following commands from the top-level project directory:
+To perform an out-of-source build from the project directory:
 
 ```bash
-cd src
-mkdir build
-cd build
-cmake ..
-cmake --build .
+cmake -S . -B build
+cmake --build build
 ```
 
 ## Acknowledgements
