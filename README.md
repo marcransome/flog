@@ -20,7 +20,7 @@ brew install marcransome/tap/flog
 
 ### Logging messages
 
-To log a message using `default` log level:
+To log a message using the `default` log level:
 
 ```bash
 flog '<message>'
