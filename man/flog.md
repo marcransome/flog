@@ -40,7 +40,7 @@ Options
 
 **-p,** **\--private**
 
-:   Mark the log message as private. Log message strings are public by default and can be viewed with the log(1) command or Console app. If the **-p,** **\--private** option is used the message string will be redacted and display as '<private>'. Device Management Profiles can be used to grant access to private log messages.
+:   Mark the log message as private. Log message strings are public by default and can be viewed with the log(1) command or Console app. If the **-p,** **\--private** option is used the message string will be redacted and display as '\<private\>'. Device Management Profiles can be used to grant access to private log messages.
 
 EXAMPLES
 ========
