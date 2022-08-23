@@ -13,9 +13,7 @@ SYNOPSIS
 DESCRIPTION
 ===========
 
-*flog* is used to write log messages to the unified logging system. Log messages may optionally include _subsystem_ and _category_ arguments.
-
-Wrap the _message_ string in quotes to preserve spacing or separate arguments will be concatenated, with a single space character separating each.
+*flog* is used to write log messages to the unified logging system. Log messages may include a _subsystem_ and _category_ name for the purposes of filtering, or to customise the logging behaviour of a subsystem; see log(1) for more information. Specify a log level with the **-l,** **\--level** option to override the 'default' level if necessary. Wrap the _message_ string in quotes to preserve spacing.
 
 Options
 -------
@@ -34,7 +32,7 @@ Options
 
 **-c,** **\--category**
 
-:   Specify an optional category name. This option requires the **-s,** **--subsystem** option.
+:   Specify an optional category name. This option requires the **-s,** **\--subsystem** option.
 
 **-l,** **\--level** _name_
 
@@ -42,7 +40,7 @@ Options
 
 **-p,** **\--private**
 
-:   Mark the log message as private. Log message strings are public by default and can be viewed with the log(1) command or Console app. If the **-p,** **--private** option is used the message string will be redacted and display as '<private>'. Device Management Profiles can be used to grant access to private log messages. 
+:   Mark the log message as private. Log message strings are public by default and can be viewed with the log(1) command or Console app. If the **-p,** **\--private** option is used the message string will be redacted and display as '<private>'. Device Management Profiles can be used to grant access to private log messages.
 
 EXAMPLES
 ========

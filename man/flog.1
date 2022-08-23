@@ -26,12 +26,12 @@
 .PP
 \f[I]flog\f[R] is used to write log messages to the unified logging
 system.
-Log messages may optionally include \f[I]subsystem\f[R] and
-\f[I]category\f[R] arguments.
-.PP
-Wrap the \f[I]message\f[R] string in quotes to preserve spacing or
-separate arguments will be concatenated, with a single space character
-separating each.
+Log messages may include a \f[I]subsystem\f[R] and \f[I]category\f[R]
+name for the purposes of filtering, or to customise the logging
+behaviour of a subsystem; see log(1) for more information.
+Specify a log level with the \f[B]-l,\f[R] \f[B]--level\f[R] option to
+override the `default' level if necessary.
+Wrap the \f[I]message\f[R] string in quotes to preserve spacing.
 .SS Options
 .TP
 \f[B]-h,\f[R] \f[B]--help\f[R]
@@ -46,7 +46,7 @@ This should be the identifier of the subsystem in reverse DNS form.
 .TP
 \f[B]-c,\f[R] \f[B]--category\f[R]
 Specify an optional category name.
-This option requires the \f[B]-s,\f[R] \f[B]\[en]subsystem\f[R] option.
+This option requires the \f[B]-s,\f[R] \f[B]--subsystem\f[R] option.
 .TP
 \f[B]-l,\f[R] \f[B]--level\f[R] \f[I]name\f[R]
 Set the log level.
@@ -57,7 +57,7 @@ Tbe default log level is `default'.
 Mark the log message as private.
 Log message strings are public by default and can be viewed with the
 log(1) command or Console app.
-If the \f[B]-p,\f[R] \f[B]\[en]private\f[R] option is used the message
+If the \f[B]-p,\f[R] \f[B]--private\f[R] option is used the message
 string will be redacted and display as `'.
 Device Management Profiles can be used to grant access to private log
 messages.
