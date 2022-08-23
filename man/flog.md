@@ -15,7 +15,7 @@ DESCRIPTION
 
 *flog* is used to write log messages to the unified logging system. Log messages may optionally include _subsystem_ and _category_ arguments.
 
-Wrap the _message_ string in quotes to preserve spacing, otherwise multiple arguments will be separated by a single space character.
+Wrap the _message_ string in quotes to preserve spacing or separate arguments will be concatenated, with a single space character separating each.
 
 Options
 -------
@@ -30,15 +30,15 @@ Options
 
 **-s,** **\--subsystem**
 
-:   Specify an optional subsystem argument. This should be the identifier of the subsystem in reverse DNS form.
+:   Specify an optional subsystem name. This should be the identifier of the subsystem in reverse DNS form.
 
 **-c,** **\--category**
 
-:   Specify an optional category within the subsystem, for differentiating by topic and settings.
+:   Specify an optional category name. This option requires the **-s,** **--subsystem** option.
 
 **-l,** **\--level** _name_
 
-:   Set the log level. Supported values: default, info, debug, error, or fault. Tbe default log level for messages is 'default'.
+:   Set the log level. Supported values: default, info, debug, error, or fault. Tbe default log level is 'default'.
 
 **-p,** **\--private**
 
