@@ -36,7 +36,7 @@ Options
 
 **-l,** **\--level** _name_
 
-:   Set the log level. Supported values: default, info, debug, error, or fault. Tbe default log level is 'default'.
+:   Set the log level. Supported values: default, info, debug, error, or fault. The default log level is 'default'.
 
 **-p,** **\--private**
 
