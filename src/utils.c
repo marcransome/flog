@@ -53,5 +53,5 @@ flog_usage(void) {
 
 void
 flog_version(void) {
-    printf("%s %s", PROGRAM_NAME, PROGRAM_VERSION);
+    printf("%s %s\n", PROGRAM_NAME, PROGRAM_VERSION);
 }
