@@ -43,7 +43,8 @@ static struct option long_options[] = {
     { "subsystem",  required_argument,  NULL,  's' },
     { "category",   required_argument,  NULL,  'c' },
     { "help",       no_argument,        NULL,  'h' },
-    { "private",    no_argument,        NULL,  'p' }
+    { "private",    no_argument,        NULL,  'p' },
+    { NULL,         0,                  NULL,  0   }
 };
 
 struct FlogConfigData {
