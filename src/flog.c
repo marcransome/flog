@@ -22,7 +22,7 @@
 
 #include "flog.h"
 #include <os/log.h>
-#include <sys/errno.h>
+#include <errno.h>
 #include <assert.h>
 #include <stdlib.h>
 #include "defs.h"

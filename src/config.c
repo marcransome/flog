@@ -24,7 +24,7 @@
 #include "defs.h"
 #include <stdlib.h>
 #include <stdio.h>
-#include <sys/errno.h>
+#include <errno.h>
 #include <string.h>
 #include <assert.h>
 #include <stdbool.h>
