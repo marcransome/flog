@@ -24,6 +24,12 @@
 #define FLOG_DEFS_H
 
 #define PROGRAM_NAME "flog"
-#define PROGRAM_VERSION "1.1.0"
+#define PROGRAM_VERSION "1.2.0"
+
+#define ERR_CATEGORY_OPTION_REQUIRES_SUBSYSTEM  1
+#define ERR_NO_MESSAGE_STRING_PROVIDED          2
+#define ERR_NO_ARGUMENTS_PROVIDED               3
+#define ERR_PROGRAM_OPTIONS                     4
+#define ERR_CONFIG_ALLOCATION                   5
 
 #endif //FLOG_DEFS_H

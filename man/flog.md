@@ -1,4 +1,4 @@
-% flog(1) Version 1.1.0 | Flog User's Guide
+% flog(1) Version 1.2.0 | Flog User's Guide
 
 NAME
 ====
@@ -20,7 +20,7 @@ Options
 
 **-h,** **\--help**
 
-:   Print brief usage information
+:   Print brief help information
 
 **-v,** **\--version**
 

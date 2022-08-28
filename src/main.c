@@ -21,11 +21,33 @@
 // SOFTWARE.
 
 #include <stdlib.h>
+#include <stdio.h>
+#include <errno.h>
 #include "flog.h"
+#include "defs.h"
+#include "utils.h"
 
 int
 main(int argc, char *argv[]) {
     FlogConfig *config = flog_config_new(argc, argv);
+    if (config == NULL) {
+         if (errno == ERR_NO_ARGUMENTS_PROVIDED) {
+            flog_usage();
+        }
+        return errno;
+    }
+
+    if (flog_config_get_version_flag(config)) {
+        flog_version();
+        return EXIT_SUCCESS;
+    } else if (flog_config_get_help_flag(config)) {
+        flog_usage();
+        return EXIT_SUCCESS;
+    } else if (flog_config_get_level(config) == Unknown) {
+        fprintf(stderr, "%s: unknown log level\n", PROGRAM_NAME);
+        return EXIT_FAILURE;
+    }
+
     FlogCli *flog = flog_cli_new(config);
     flog_commit_message(flog);
     flog_cli_free(flog);

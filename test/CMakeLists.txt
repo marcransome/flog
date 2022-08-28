@@ -1,7 +1,7 @@
 include(CTest)
 
-find_package(PkgConfig)
-pkg_check_modules(CMOCKA REQUIRED cmocka)
+pkg_check_modules(CMOCKA REQUIRED cmocka>=1.1.5)
+
 include(add_cmocka_test)
 
 add_cmocka_test(config)
