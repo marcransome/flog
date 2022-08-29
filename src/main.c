@@ -31,7 +31,7 @@ int
 main(int argc, char *argv[]) {
     FlogConfig *config = flog_config_new(argc, argv);
     if (config == NULL) {
-         if (errno == ERR_NO_ARGUMENTS_PROVIDED) {
+        if (errno == ERR_NO_ARGUMENTS_PROVIDED) {
             flog_usage();
         }
         return errno;
@@ -49,7 +49,12 @@ main(int argc, char *argv[]) {
     }
 
     FlogCli *flog = flog_cli_new(config);
+    if (flog == NULL) {
+        return errno;
+    }
+
     flog_commit_message(flog);
+
     flog_cli_free(flog);
     flog_config_free(config);
 

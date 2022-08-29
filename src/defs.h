@@ -31,5 +31,6 @@
 #define ERR_NO_ARGUMENTS_PROVIDED               3
 #define ERR_PROGRAM_OPTIONS                     4
 #define ERR_CONFIG_ALLOCATION                   5
+#define ERR_FLOG_ALLOCATION                     6
 
 #endif //FLOG_DEFS_H

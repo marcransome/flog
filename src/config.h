@@ -63,7 +63,9 @@ typedef struct FlogConfigData FlogConfig;
  *  \pre \c argc is greater than \c 0
  *  \pre \c argv is \e not \c NULL
  *
- *  \return A pointer to a FlogConfig object on success or a NULL pointer on failure
+ *  \return If successful, a pointer to a FlogConfig object; if there is an error
+ *          a \c NULL pointer is returned and \c errno will be set to one of several
+ *          potential error values (see defs.h)
  */
 FlogConfig * flog_config_new(int argc, char *argv[]);
 

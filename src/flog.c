@@ -28,6 +28,15 @@
 #include "defs.h"
 #include "config.h"
 
+#ifdef UNIT_TESTING
+extern void mock_assert(const int result, const char* const expression,
+                        const char * const file, const int line);
+
+#undef assert
+#define assert(expression) \
+    mock_assert((int)(expression), #expression, __FILE__, __LINE__);
+#endif
+
 #define OS_LOG_FORMAT_PUBLIC "%{public}s"
 #define OS_LOG_FORMAT_PRIVATE "%s"
 
@@ -45,8 +54,9 @@ flog_cli_new(FlogConfig *config) {
 
     FlogCli *flog = calloc(1, sizeof(struct FlogCliData));
     if (flog == NULL) {
-        perror(PROGRAM_NAME);
-        exit(errno);
+        fprintf(stderr, "%s: logger allocation failure\n", PROGRAM_NAME);
+        errno = ERR_FLOG_ALLOCATION;
+        return NULL;
     }
 
     flog_cli_set_config(flog, config);
@@ -124,8 +134,8 @@ flog_commit_public_message(FlogCli *flog) {
             os_log_fault(flog->log, OS_LOG_FORMAT_PUBLIC, message);
             break;
         default:
-            fprintf(stderr, "%s: unknown log level variant\n", PROGRAM_NAME);
-            exit(EXIT_FAILURE);
+            fprintf(stderr, "%s: unknown log level; using 'default'\n", PROGRAM_NAME);
+            os_log(flog->log, OS_LOG_FORMAT_PUBLIC, message);
     }
 }
 
@@ -154,7 +164,7 @@ flog_commit_private_message(FlogCli *flog) {
             os_log_fault(flog->log, OS_LOG_FORMAT_PRIVATE, message);
             break;
         default:
-            fprintf(stderr, "%s: unknown log level variant\n", PROGRAM_NAME);
-            exit(EXIT_FAILURE);
+            fprintf(stderr, "%s: unknown log level; using 'default'\n", PROGRAM_NAME);
+            os_log(flog->log, OS_LOG_FORMAT_PRIVATE, message);
     }
 }

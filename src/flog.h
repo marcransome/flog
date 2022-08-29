@@ -42,7 +42,8 @@ typedef struct FlogCliData FlogCli;
  *
  *  \pre \c config is \e not \c NULL
  *
- *  \return A pointer to a FrogCli object
+ *  \return If successful, a pointer to a FlogCli object; if there is an error
+ *          a \c NULL pointer is returned and \c errno will be set to \c ERR_FLOG_ALLOCATION
  */
 FlogCli * flog_cli_new(FlogConfig *config);
 
