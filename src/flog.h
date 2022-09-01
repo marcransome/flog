@@ -42,7 +42,7 @@ typedef struct FlogCliData FlogCli;
  *
  *  \pre \c config is \e not \c NULL
  *
- *  \return A pointer to a FrogCli object
+ *  \return A pointer to a FlogCli object
  */
 FlogCli * flog_cli_new(FlogConfig *config);
 
