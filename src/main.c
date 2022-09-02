@@ -31,7 +31,8 @@ main(int argc, char *argv[]) {
     flog_commit_message(flog);
 
     int i;
-    printf("%d", i);
+    int c = i * 4;
+    printf("%d", c);
 
     return EXIT_SUCCESS;
 }
