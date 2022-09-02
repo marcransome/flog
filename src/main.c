@@ -28,8 +28,6 @@ main(int argc, char *argv[]) {
     FlogConfig *config = flog_config_new(argc, argv);
     FlogCli *flog = flog_cli_new(config);
     flog_commit_message(flog);
-    flog_cli_free(flog);
-    flog_config_free(config);
 
     return EXIT_SUCCESS;
 }
