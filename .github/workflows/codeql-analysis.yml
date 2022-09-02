@@ -27,8 +27,9 @@ jobs:
         languages: cpp
         queries: security-and-quality
 
-    - name: Build project
+    - name: Install project dependencies and build binary
       run: |
+        brew install popt
         cmake -S . -B build
         cmake --build build
 
