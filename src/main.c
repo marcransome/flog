@@ -29,5 +29,8 @@ main(int argc, char *argv[]) {
     FlogCli *flog = flog_cli_new(config);
     flog_commit_message(flog);
 
+    int i;
+    printf("%d", i);
+
     return EXIT_SUCCESS;
 }
