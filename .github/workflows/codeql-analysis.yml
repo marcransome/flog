@@ -1,13 +1,13 @@
 name: "CodeQL"
-
 on:
   push:
-    branches: [ "main" ]
+    branches:
+      - main
   pull_request:
-    branches: [ "main" ]
+    branches:
+      - main
   schedule:
     - cron: '00 18 * * 1'
-
 jobs:
   analyze:
     name: Analyze
@@ -16,22 +16,18 @@ jobs:
       actions: read
       contents: read
       security-events: write
-
     steps:
     - name: Checkout repository
       uses: actions/checkout@v3
-
     - name: Initialize CodeQL
       uses: github/codeql-action/init@v2
       with:
         languages: cpp
         queries: security-and-quality
-
-    - name: Install project dependencies and build binary
+    - name: Install dependencies and build project
       run: |
         brew install popt
         cmake -S . -B build
         cmake --build build
-
     - name: Perform CodeQL analysis
       uses: github/codeql-action/analyze@v2
