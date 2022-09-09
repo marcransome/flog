@@ -38,6 +38,18 @@ Override the default log level using the `-l|--level` option and one of the valu
 flog -l fault -s uk.co.fidgetbox -c general 'unrecoverable failure'
 ```
 
+`flog` can also accept the output of another command as the log message using a pipe:
+
+```bash
+./some-script | flog
+```
+
+Or the log message can be read from a file using shell redirection:
+
+```bash
+flog < /var/log/some-script.log
+```
+
 > **Warning**:
 > Log message strings are _public_ by default and can be read using the `log(1)` command or [Console](https://support.apple.com/en-gb/guide/console/welcome/mac) app. To mark a message as private add the `-p|--private` option to the command. Doing so will redact the message string, which will be shown as `'<private>'` when accessed using the methods previously mentioned. [Device Management Profiles](https://developer.apple.com/documentation/devicemanagement) can be used to grant access to private log messages.
 
