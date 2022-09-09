@@ -60,11 +60,6 @@ flog_config_new(int argc, char *argv[]) {
     assert(argc > 0);
     assert(argv != NULL);
 
-    if (argc == 1) {
-        flog_usage();
-        exit(EXIT_FAILURE);
-    }
-
     FlogConfig *config = calloc(1, sizeof(struct FlogConfigData));
     if (config == NULL) {
         perror(PROGRAM_NAME);
@@ -109,12 +104,16 @@ flog_config_new(int argc, char *argv[]) {
         exit(EXIT_FAILURE);
     }
 
-    if (argc == 0) {
-        flog_usage();
-        exit(EXIT_FAILURE);
-    }
+    if (isatty(fileno(stdin))) {
+        if (argc == 0) {
+            flog_usage();
+            exit(EXIT_FAILURE);
+        }
 
-    flog_config_set_message_from_args(config, argc, argv);
+        flog_config_set_message_from_args(config, argc, argv);
+    } else {
+        flog_config_set_message_from_stream(config, stdin);
+    }
 
     return config;
 }
@@ -238,6 +237,16 @@ flog_config_set_message_from_args(FlogConfig *config, size_t count, char *args[]
     }
 
     if (message_truncated) {
+        fprintf(stderr, "%s: message was truncated to %d characters\n", PROGRAM_NAME, MESSAGE_LEN - 1);
+    }
+}
+
+void
+flog_config_set_message_from_stream(FlogConfig *config, FILE *restrict stream) {
+    assert(config != NULL);
+    assert(stream != NULL);
+
+    if (fread(config->message, sizeof(char), MESSAGE_LEN, stream) >= MESSAGE_LEN) {
         fprintf(stderr, "%s: message was truncated to %d characters\n", PROGRAM_NAME, MESSAGE_LEN - 1);
     }
 }
