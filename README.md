@@ -26,13 +26,13 @@ To log a message using the `default` log level:
 flog '<message>'
 ```
 
-Optionally specify a _subsystem_ and _category_ using the `-s|--subsystem` and `-c|--category` options:
+Optionally specify a _subsystem_ and _category_ using the `-s, --subsystem` and `-c, --category` options:
 
 ```bash
 flog -s uk.co.fidgetbox -c general 'informational message'
 ```
 
-Override the default log level using the `-l|--level` option and one of the values `info`, `debug`, `error` or `fault`:
+Override the default log level using the `-l, --level` option and one of the values `info`, `debug`, `error` or `fault`:
 
 ```bash
 flog -l fault -s uk.co.fidgetbox -c general 'unrecoverable failure'
