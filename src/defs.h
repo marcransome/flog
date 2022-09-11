@@ -24,6 +24,6 @@
 #define FLOG_DEFS_H
 
 #define PROGRAM_NAME "flog"
-#define PROGRAM_VERSION "1.1.1"
+#define PROGRAM_VERSION "1.2.0"
 
 #endif //FLOG_DEFS_H
