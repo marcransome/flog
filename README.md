@@ -38,10 +38,10 @@ Override the default log level using the `-l, --level` option and one of the val
 flog -l fault -s uk.co.fidgetbox -c general 'unrecoverable failure'
 ```
 
-`flog` can also read the log message from the standard input stream, using a pipe:
+`flog` can also read the log message from the standard input stream using a pipe:
 
 ```bash
-./some-script | flog
+./some-script | flog -l info
 ```
 
 Or the log message can be read from a file using shell redirection:
