@@ -71,6 +71,11 @@ flog_config_new(int argc, char *argv[]) {
     assert(argc > 0);
     assert(argv != NULL);
 
+    if (argc == 1) {
+        errno = ERR_NO_ARGUMENTS_PROVIDED;
+        return NULL;
+    }
+
     FlogConfig *config = calloc(1, sizeof(struct FlogConfigData));
     if (config == NULL) {
         fprintf(stderr, "%s: config allocation failure\n", PROGRAM_NAME);
