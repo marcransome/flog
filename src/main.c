@@ -33,6 +33,8 @@ main(int argc, char *argv[]) {
     if (config == NULL) {
         if (errno == ERR_NO_ARGUMENTS_PROVIDED) {
             flog_usage();
+        } else if (errno == ERR_NO_MESSAGE_STRING_PROVIDED) {
+            fprintf(stderr, "%s: message string required\n", PROGRAM_NAME);
         }
         return errno;
     }
@@ -49,7 +51,8 @@ main(int argc, char *argv[]) {
     }
 
     FlogCli *flog = flog_cli_new(config);
-    if (flog == NULL) {
+    if (flog == NULL && errno == ERR_FLOG_ALLOCATION) {
+        fprintf(stderr, "%s: logger allocation failure\n", PROGRAM_NAME);
         return errno;
     }
 

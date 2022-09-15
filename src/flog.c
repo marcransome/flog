@@ -54,7 +54,6 @@ flog_cli_new(FlogConfig *config) {
 
     FlogCli *flog = calloc(1, sizeof(struct FlogCliData));
     if (flog == NULL) {
-        fprintf(stderr, "%s: logger allocation failure\n", PROGRAM_NAME);
         errno = ERR_FLOG_ALLOCATION;
         return NULL;
     }

@@ -136,14 +136,13 @@ flog_config_new(int argc, char *argv[]) {
     if (isatty(fileno(stdin))) {
         const char **message_args = poptGetArgs(context);
         if (message_args == NULL) {
-            fprintf(stderr, "%s: message string required\n", PROGRAM_NAME);
             errno = ERR_NO_MESSAGE_STRING_PROVIDED;
             flog_config_free(config);
             poptFreeContext(context);
             return NULL;
         }
 
-        flog_config_set_message_from_args(config, argc, argv);
+        flog_config_set_message_from_args(config, message_args);
     } else {
         flog_config_set_message_from_stream(config, stdin);
     }
