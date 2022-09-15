@@ -30,6 +30,7 @@
 
 #include <stddef.h>
 #include <stdbool.h>
+#include <stdio.h>
 
 /*! \brief An enumerated type representing the log level. */
 typedef enum FlogConfigLevelData {
@@ -170,6 +171,18 @@ void flog_config_set_message(FlogConfig *config, const char *message);
  *  \return void
  */
 void flog_config_set_message_from_args(FlogConfig *config, const char **args);
+
+/*! \brief Set the log message for a FlogConfig object by reading from a stream.
+ *
+ *  \param config A pointer to the FlogConfig object
+ *  \param args   A pointer to a stream
+ *
+ *  \pre \c config is \e not \c NULL
+ *  \pre \c stream is \e not \c NULL
+ *
+ *  \return void
+ */
+void flog_config_set_message_from_stream(FlogConfig *config, FILE *restrict stream);
 
 /*! \brief Get the log message type from a FlogConfig object.
  *

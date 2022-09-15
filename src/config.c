@@ -29,6 +29,7 @@
 #include <assert.h>
 #include <stdbool.h>
 #include <popt.h>
+#include <unistd.h>
 
 #ifdef UNIT_TESTING
 extern void mock_assert(const int result, const char* const expression,
@@ -69,11 +70,6 @@ FlogConfig *
 flog_config_new(int argc, char *argv[]) {
     assert(argc > 0);
     assert(argv != NULL);
-
-    if (argc == 1) {
-        errno = ERR_NO_ARGUMENTS_PROVIDED;
-        return NULL;
-    }
 
     FlogConfig *config = calloc(1, sizeof(struct FlogConfigData));
     if (config == NULL) {
@@ -137,16 +133,21 @@ flog_config_new(int argc, char *argv[]) {
         return NULL;
     }
 
-    const char **message_args = poptGetArgs(context);
-    if (message_args == NULL) {
-        fprintf(stderr, "%s: message string required\n", PROGRAM_NAME);
-        errno = ERR_NO_MESSAGE_STRING_PROVIDED;
-        flog_config_free(config);
-        poptFreeContext(context);
-        return NULL;
+    if (isatty(fileno(stdin))) {
+        const char **message_args = poptGetArgs(context);
+        if (message_args == NULL) {
+            fprintf(stderr, "%s: message string required\n", PROGRAM_NAME);
+            errno = ERR_NO_MESSAGE_STRING_PROVIDED;
+            flog_config_free(config);
+            poptFreeContext(context);
+            return NULL;
+        }
+
+        flog_config_set_message_from_args(config, argc, argv);
+    } else {
+        flog_config_set_message_from_stream(config, stdin);
     }
 
-    flog_config_set_message_from_args(config, poptGetArgs(context));
     poptFreeContext(context);
 
     return config;
@@ -269,6 +270,16 @@ flog_config_set_message_from_args(FlogConfig *config, const char **args) {
     }
 
     if (message_truncated) {
+        fprintf(stderr, "%s: message was truncated to %d characters\n", PROGRAM_NAME, MESSAGE_LEN - 1);
+    }
+}
+
+void
+flog_config_set_message_from_stream(FlogConfig *config, FILE *restrict stream) {
+    assert(config != NULL);
+    assert(stream != NULL);
+
+    if (fread(config->message, sizeof(char), MESSAGE_LEN, stream) >= MESSAGE_LEN) {
         fprintf(stderr, "%s: message was truncated to %d characters\n", PROGRAM_NAME, MESSAGE_LEN - 1);
     }
 }
