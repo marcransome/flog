@@ -1,4 +1,4 @@
-% flog(1) Version 1.2.0 | Flog User's Guide
+% flog(1) Version 1.3.0 | Flog User's Guide
 
 NAME
 ====
