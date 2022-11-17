@@ -12,7 +12,7 @@
 
 > _Why not use `logger(1)`?_
 
-`logger` doesn't support the full set of log levels provided by Apple's unified logging system, nor does it support specifying a _subsystem_ string. `flog` on the other hand uses Apple's unified logging system C language APIs and supports both.
+`logger` doesn't support the full set of log levels provided by Apple's unified logging system, nor does it support specifying _subsystem_ and _category_ strings. `flog` on the other hand uses Apple's unified logging system C language APIs and supports both.
 
 ## Getting started
 
