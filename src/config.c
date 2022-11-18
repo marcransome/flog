@@ -176,7 +176,7 @@ flog_config_set_subsystem(FlogConfig *config, const char *subsystem) {
     assert(subsystem != NULL);
 
     if (strlcpy(config->subsystem, subsystem, SUBSYSTEM_LEN) >= SUBSYSTEM_LEN) {
-        fprintf(stderr, "%s: subsystem name truncated to %d characters\n", PROGRAM_NAME, SUBSYSTEM_LEN - 1);
+        fprintf(stderr, "%s: subsystem name truncated to %d bytes\n", PROGRAM_NAME, SUBSYSTEM_LEN - 1);
     }
 }
 
@@ -193,7 +193,7 @@ flog_config_set_category(FlogConfig *config, const char *category) {
     assert(category != NULL);
 
     if (strlcpy(config->category, category, CATEGORY_LEN) >= CATEGORY_LEN) {
-        fprintf(stderr, "%s: category name truncated to %d characters\n", PROGRAM_NAME, CATEGORY_LEN - 1);
+        fprintf(stderr, "%s: category name truncated to %d bytes\n", PROGRAM_NAME, CATEGORY_LEN - 1);
     }
 }
 
@@ -245,7 +245,7 @@ flog_config_set_message(FlogConfig *config, const char *message) {
     assert(message != NULL);
 
     if (strlcpy(config->message, message, MESSAGE_LEN) >= MESSAGE_LEN) {
-        fprintf(stderr, "%s: message was truncated to %d characters\n", PROGRAM_NAME, MESSAGE_LEN - 1);
+        fprintf(stderr, "%s: message string was truncated to %d bytes\n", PROGRAM_NAME, MESSAGE_LEN - 1);
     }
 }
 
@@ -273,7 +273,7 @@ flog_config_set_message_from_args(FlogConfig *config, const char **args) {
     }
 
     if (message_truncated) {
-        fprintf(stderr, "%s: message was truncated to %d characters\n", PROGRAM_NAME, MESSAGE_LEN - 1);
+        fprintf(stderr, "%s: message was truncated to %d bytes\n", PROGRAM_NAME, MESSAGE_LEN - 1);
     }
 }
 
@@ -283,7 +283,7 @@ flog_config_set_message_from_stream(FlogConfig *config, FILE *restrict stream) {
     assert(stream != NULL);
 
     if (fread(config->message, sizeof(char), MESSAGE_LEN, stream) >= MESSAGE_LEN) {
-        fprintf(stderr, "%s: message was truncated to %d characters\n", PROGRAM_NAME, MESSAGE_LEN - 1);
+        fprintf(stderr, "%s: message was truncated to %d bytes\n", PROGRAM_NAME, MESSAGE_LEN - 1);
     }
 }
 
