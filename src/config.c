@@ -260,7 +260,7 @@ flog_config_set_message_from_args(FlogConfig *config, const char **args) {
         if (strlcat(message_buff, *args, MESSAGE_LEN) >= MESSAGE_LEN) {
             message_truncated = true;
         }
-        if ((args + 1) != NULL) {
+        if (*(args + 1) != NULL) {
             if (strlcat(message_buff, " ", MESSAGE_LEN) >= MESSAGE_LEN) {
                 message_truncated = true;
             }
