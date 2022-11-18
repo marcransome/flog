@@ -255,21 +255,18 @@ flog_config_set_message_from_args(FlogConfig *config, const char **args) {
     assert(args != NULL);
 
     bool message_truncated = false;
-    char message_buff[MESSAGE_LEN] = {0};
     while (*args != NULL) {
-        if (strlcat(message_buff, *args, MESSAGE_LEN) >= MESSAGE_LEN) {
+        if (strlcat(config->message, *args, MESSAGE_LEN) >= MESSAGE_LEN) {
             message_truncated = true;
+            break;
         }
         if (*(args + 1) != NULL) {
-            if (strlcat(message_buff, " ", MESSAGE_LEN) >= MESSAGE_LEN) {
+            if (strlcat(config->message, " ", MESSAGE_LEN) >= MESSAGE_LEN) {
                 message_truncated = true;
+                break;
             }
         }
         ++args;
-    }
-
-    if (strlcpy(config->message, message_buff, MESSAGE_LEN) >= MESSAGE_LEN) {
-        message_truncated = true;
     }
 
     if (message_truncated) {
