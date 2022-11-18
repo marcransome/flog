@@ -96,9 +96,11 @@ flog_config_new(int argc, char *argv[]) {
         switch (option) {
             case 'h':
                 flog_config_set_help_flag(config, true);
+                poptFreeContext(context);
                 return config;
             case 'v':
                 flog_config_set_version_flag(config, true);
+                poptFreeContext(context);
                 return config;
             case 'l':
                 flog_config_set_level(config, flog_config_parse_level(option_argument));
