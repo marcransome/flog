@@ -31,7 +31,9 @@ int
 main(int argc, char *argv[]) {
     FlogConfig *config = flog_config_new(argc, argv);
     if (config == NULL) {
-        if (errno == ERR_NO_ARGUMENTS_PROVIDED) {
+        if (errno == ERR_CONFIG_ALLOCATION) {
+            fprintf(stderr, "%s: config allocation failure\n", PROGRAM_NAME);
+        } else if (errno == ERR_NO_ARGUMENTS_PROVIDED) {
             flog_usage();
         } else if (errno == ERR_NO_MESSAGE_STRING_PROVIDED) {
             fprintf(stderr, "%s: message string required\n", PROGRAM_NAME);
