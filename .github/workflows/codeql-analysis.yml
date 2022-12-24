@@ -24,8 +24,9 @@ jobs:
       with:
         languages: cpp
         queries: security-and-quality
-    - name: Build project
+    - name: Install dependencies and build project
       run: |
+        brew install popt
         cmake -S . -B build
         cmake --build build
     - name: Perform CodeQL analysis
