@@ -1,4 +1,4 @@
-% flog(1) Version 1.2.0 | Flog User's Guide
+% flog(1) Version 1.3.0 | Flog User's Guide
 
 NAME
 ====
@@ -37,6 +37,10 @@ Options
 **-l,** **\--level** _name_
 
 :   Set the log level. Supported values: default, info, debug, error, or fault. The default log level is 'default'.
+
+**-a,** **\--append** _file_
+
+:   Append the log message to a file after sending it to the unified logging system, creating the file if necessary.
 
 **-p,** **\--private**
 
