@@ -100,6 +100,25 @@ flog_commit_message(FlogCli *flog) {
 }
 
 void
+flog_append_message_output(FlogCli *flog) {
+    assert(flog != NULL);
+
+    FlogConfig *config = flog_cli_get_config(flog);
+    const char *output_file = flog_config_get_output_file(config);
+
+    if (strlen(output_file) > 0) {
+        FILE *fd = fopen(output_file, "a");
+        if (fd == NULL) {
+            fprintf(stderr, "%s: unable to append log message to file (%s)\n", PROGRAM_NAME, strerror(errno));
+            exit(errno);
+        }
+
+        fprintf(fd, "%s", flog_config_get_message(config));
+        fclose(fd);
+    }
+}
+
+void
 flog_commit_public_message(FlogCli *flog) {
     assert(flog != NULL);
 

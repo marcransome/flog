@@ -82,4 +82,12 @@ void flog_cli_set_config(FlogCli *flog, FlogConfig *config);
  */
 void flog_commit_message(FlogCli *flog);
 
+/*! \brief Append the log message to the output file if one has been specified.
+ *
+ *  \param flog A pointer to the FlogCli object
+ *
+ *  \pre \c flog is \e not \c NULL
+ */
+void flog_append_message_output(FlogCli *flog);
+
 #endif //FLOG_H
