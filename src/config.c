@@ -27,6 +27,7 @@
 #include <stdlib.h>
 #include <getopt.h>
 #include <sys/errno.h>
+#include <sys/syslimits.h>
 #include <string.h>
 #include <assert.h>
 #include <stdbool.h>
@@ -44,6 +45,7 @@ static struct option long_options[] = {
     { "category",   required_argument,  NULL,  'c' },
     { "help",       no_argument,        NULL,  'h' },
     { "private",    no_argument,        NULL,  'p' },
+    { "append",     required_argument,  NULL,  'a' },
     { NULL,         0,                  NULL,  0   }
 };
 
@@ -52,6 +54,7 @@ struct FlogConfigData {
     FlogConfigMessageType message_type;
     char subsystem[SUBSYSTEM_LEN];
     char category[CATEGORY_LEN];
+    char output_file[PATH_MAX];
     char message[MESSAGE_LEN];
 };
 
@@ -71,7 +74,7 @@ flog_config_new(int argc, char *argv[]) {
     flog_config_set_message_type(config, Public);
 
     int ch;
-    while ((ch = getopt_long(argc, argv, "vhl:s:c:p", long_options, NULL)) != -1) {
+    while ((ch = getopt_long(argc, argv, "vhl:s:c:pa:", long_options, NULL)) != -1) {
         switch (ch) {
             case 'h':
                 flog_usage();
@@ -79,6 +82,9 @@ flog_config_new(int argc, char *argv[]) {
             case 'v':
                 flog_version();
                 exit(EXIT_SUCCESS);
+            case 'a':
+                flog_config_set_output_file(config, optarg);
+                break;
             case 'l':
                 flog_config_set_level(config, flog_config_parse_level(optarg));
                 break;
@@ -157,6 +163,24 @@ flog_config_set_category(FlogConfig *config, const char *category) {
 
     if (strlcpy(config->category, category, CATEGORY_LEN) >= CATEGORY_LEN) {
         fprintf(stderr, "%s: specify a category value up to a maximum of %d characters\n", PROGRAM_NAME, CATEGORY_LEN - 1);
+        exit(EXIT_FAILURE);
+    }
+}
+
+const char *
+flog_config_get_output_file(const FlogConfig *config) {
+    assert(config != NULL);
+
+    return config->output_file;
+}
+
+void
+flog_config_set_output_file(FlogConfig *config, const char *output_file) {
+    assert(config != NULL);
+    assert(output_file != NULL);
+
+    if (strlcpy(config->output_file, output_file, PATH_MAX) >= PATH_MAX) {
+        fprintf(stderr, "%s: specify an output file path up to a maximum of %d characters\n", PROGRAM_NAME, PATH_MAX - 1);
         exit(EXIT_FAILURE);
     }
 }
