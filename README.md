@@ -2,11 +2,17 @@
 
 # flog
 
-[![Issues](https://img.shields.io/github/issues/marcransome/flog)](https://github.com/marcransome/flog/issues) [![License](https://img.shields.io/badge/license-MIT-blue)](https://opensource.org/licenses/mit-license.php) [![macOS](https://img.shields.io/badge/macOS-11+-blue)](https://www.apple.com/macos/)
+[![CodeQL](https://github.com/marcransome/flog/actions/workflows/codeql-analysis.yml/badge.svg?branch=main)](https://github.com/marcransome/flog/actions/workflows/codeql-analysis.yml) [![Issues](https://img.shields.io/github/issues/marcransome/flog)](https://github.com/marcransome/flog/issues) [![License](https://img.shields.io/badge/license-MIT-blue)](https://opensource.org/licenses/mit-license.php) [![macOS](https://img.shields.io/badge/macOS-11+-blue)](https://www.apple.com/macos/)
 
 `flog` is a command-line tool for sending log messages to Apple's unified logging system and is primaily intended for use in scripts.
 
 <hr>
+
+## Rationale
+
+> _Why not use `logger(1)`?_
+
+`logger` doesn't support the full set of log levels provided by Apple's unified logging system, nor does it support specifying _subsystem_ and _category_ strings. `flog` on the other hand uses Apple's unified logging system C language APIs and supports both.
 
 ## Getting started
 
@@ -48,6 +54,12 @@ Or the log message can be read from a file using shell redirection:
 
 ```bash
 flog < /var/log/some-script.log
+```
+
+Use the `-a, --append` option to also append the log message to a file (creating the file if necessary):
+
+```bash
+flog -a /var/log/some-script.log -l fault -s uk.co.fidgetbox -c general 'unrecoverable failure'
 ```
 
 > **Warning**:
@@ -111,4 +123,4 @@ ctest -V
 
 ## Contact
 
-Email me at [marc.ransome@fidgetbox.co.uk](mailto:marc.ransome@fidgetbox.co.uk) or tweet [@marcransome](http://www.twitter.com/marcransome).
+Email me at [marc.ransome@fidgetbox.co.uk](mailto:marc.ransome@fidgetbox.co.uk) or [create an issue](https://github.com/marcransome/flog/issues).

@@ -40,6 +40,7 @@ flog_usage(void) {
         "    -s, --subsystem <name>   Specify a subsystem name\n"
         "    -c, --category <name>    Specify a category name (requires subsystem option)\n"
         "    -l, --level <level>      Specify the log level ('default' if not provided)\n"
+        "    -a, --append <path>      Append the log message to a file (creating it if necessary)\n"
         "    -p, --private            Mark the log message as private\n"
         "\n"
         "Log Levels:\n"

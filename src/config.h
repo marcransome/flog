@@ -118,6 +118,26 @@ const char * flog_config_get_category(const FlogConfig *config);
  */
 void flog_config_set_category(FlogConfig *config, const char *category);
 
+/*! \brief Get the output file path from a FlogConfig object.
+ *
+ *  \param config A pointer to the FlogConfig object
+ *
+ *  \pre \c config is \e not \c NULL
+ *
+ *  \return A pointer to the null-terminated output file path
+ */
+const char * flog_config_get_output_file(const FlogConfig *config);
+
+/*! \brief Set the output file path for a FlogConfig object.
+ *
+ *  \param config      A pointer to the FlogConfig object
+ *  \param output_file A pointer to the null-terminated output file path
+ *
+ *  \pre \c config is \e not \c NULL
+ *  \pre \c output_file is \e not \c NULL
+ */
+void flog_config_set_output_file(FlogConfig *config, const char *output_file);
+
 /*! \brief Get the log level value from a FlogConfig object.
  *
  *  \param config A pointer to the FlogConfig object

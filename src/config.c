@@ -25,6 +25,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <errno.h>
+#include <sys/syslimits.h>
 #include <string.h>
 #include <assert.h>
 #include <stdbool.h>
@@ -53,6 +54,7 @@ static struct poptOption options[] = {
     { "category",   'c',  POPT_ARG_STRING,  NULL,  'c',  NULL,  NULL },
     { "help",       'h',  POPT_ARG_NONE,    NULL,  'h',  NULL,  NULL },
     { "private",    'p',  POPT_ARG_NONE,    NULL,  'p',  NULL,  NULL },
+    { "append",     'a',  POPT_ARG_STRING,  NULL,  'a',  NULL,  NULL },
     POPT_TABLEEND
 };
 
@@ -61,6 +63,7 @@ struct FlogConfigData {
     FlogConfigMessageType message_type;
     char subsystem[SUBSYSTEM_LEN];
     char category[CATEGORY_LEN];
+    char output_file[PATH_MAX];
     char message[MESSAGE_LEN];
     bool version;
     bool help;
@@ -102,6 +105,9 @@ flog_config_new(int argc, char *argv[]) {
                 flog_config_set_version_flag(config, true);
                 poptFreeContext(context);
                 return config;
+            case 'a':
+                flog_config_set_output_file(config, optarg);
+                break;
             case 'l':
                 flog_config_set_level(config, flog_config_parse_level(option_argument));
                 break;
@@ -196,6 +202,24 @@ flog_config_set_category(FlogConfig *config, const char *category) {
 
     if (strlcpy(config->category, category, CATEGORY_LEN) >= CATEGORY_LEN) {
         fprintf(stderr, "%s: category name truncated to %d bytes\n", PROGRAM_NAME, CATEGORY_LEN - 1);
+    }
+}
+
+const char *
+flog_config_get_output_file(const FlogConfig *config) {
+    assert(config != NULL);
+
+    return config->output_file;
+}
+
+void
+flog_config_set_output_file(FlogConfig *config, const char *output_file) {
+    assert(config != NULL);
+    assert(output_file != NULL);
+
+    if (strlcpy(config->output_file, output_file, PATH_MAX) >= PATH_MAX) {
+        fprintf(stderr, "%s: specify an output file path up to a maximum of %d characters\n", PROGRAM_NAME, PATH_MAX - 1);
+        exit(EXIT_FAILURE);
     }
 }
 

@@ -38,6 +38,10 @@ Options
 
 :   Set the log level. Supported values: default, info, debug, error, or fault. The default log level is 'default'.
 
+**-a,** **\--append** _file_
+
+:   Append the log message to a file after sending it to the unified logging system, creating the file if necessary.
+
 **-p,** **\--private**
 
 :   Mark the log message as private. Log message strings are public by default and can be viewed with the log(1) command or Console app. If the **-p,** **\--private** option is used the message string will be redacted and display as '\<private\>'. Device Management Profiles can be used to grant access to private log messages.

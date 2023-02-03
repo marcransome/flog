@@ -24,7 +24,7 @@
 #include <stddef.h>
 #include <setjmp.h>
 #include <cmocka.h>
-#include <errno.h>
+#include <sys/errno.h>
 #include "config.h"
 #include "defs.h"
 

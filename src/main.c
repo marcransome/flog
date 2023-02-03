@@ -22,7 +22,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
-#include <errno.h>
+#include <sys/errno.h>
 #include "flog.h"
 #include "defs.h"
 #include "utils.h"
@@ -59,6 +59,7 @@ main(int argc, char *argv[]) {
     }
 
     flog_commit_message(flog);
+    flog_append_message_output(flog);
 
     flog_cli_free(flog);
     flog_config_free(config);

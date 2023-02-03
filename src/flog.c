@@ -22,7 +22,8 @@
 
 #include "flog.h"
 #include <os/log.h>
-#include <errno.h>
+#include <sys/errno.h>
+#include <sys/stat.h>
 #include <assert.h>
 #include <stdlib.h>
 #include "defs.h"
@@ -105,6 +106,30 @@ flog_commit_message(FlogCli *flog) {
         flog_commit_public_message(flog);
     } else if (flog_config_get_message_type(config) == Private) {
         flog_commit_private_message(flog);
+    }
+}
+
+void
+flog_append_message_output(FlogCli *flog) {
+    assert(flog != NULL);
+
+    FlogConfig *config = flog_cli_get_config(flog);
+    const char *output_file = flog_config_get_output_file(config);
+
+    if (strlen(output_file) > 0) {
+
+        mode_t original_umask = umask(S_IWGRP | S_IWOTH);
+
+        FILE *fd = fopen(output_file, "a");
+        if (fd == NULL) {
+            fprintf(stderr, "%s: unable to append log message to file (%s)\n", PROGRAM_NAME, strerror(errno));
+            exit(errno);
+        }
+
+        umask(original_umask);
+
+        fprintf(fd, "%s", flog_config_get_message(config));
+        fclose(fd);
     }
 }
 
