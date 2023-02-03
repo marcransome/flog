@@ -106,7 +106,7 @@ flog_config_new(int argc, char *argv[]) {
                 poptFreeContext(context);
                 return config;
             case 'a':
-                flog_config_set_output_file(config, optarg);
+                flog_config_set_output_file(config, option_argument);
                 break;
             case 'l':
                 flog_config_set_level(config, flog_config_parse_level(option_argument));
