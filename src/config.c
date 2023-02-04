@@ -131,26 +131,26 @@ flog_config_new(int argc, char *argv[]) {
                 poptStrerror(option),
                 poptBadOption(context, POPT_BADOPTION_NOALIAS));
 
-        errno = ERR_PROGRAM_OPTIONS;
         flog_config_free(config);
         poptFreeContext(context);
+        errno = ERR_PROGRAM_OPTIONS;
         return NULL;
     }
 
     if (strlen(flog_config_get_category(config)) > 0 && strlen(flog_config_get_subsystem(config)) == 0) {
         fprintf(stderr, "%s: category option requires subsystem option\n", PROGRAM_NAME);
-        errno = ERR_CATEGORY_OPTION_REQUIRES_SUBSYSTEM;
         flog_config_free(config);
         poptFreeContext(context);
+        errno = ERR_CATEGORY_OPTION_REQUIRES_SUBSYSTEM;
         return NULL;
     }
 
     if (isatty(fileno(stdin))) {
         const char **message_args = poptGetArgs(context);
         if (message_args == NULL) {
-            errno = ERR_NO_MESSAGE_STRING_PROVIDED;
             flog_config_free(config);
             poptFreeContext(context);
+            errno = ERR_NO_MESSAGE_STRING_PROVIDED;
             return NULL;
         }
 
