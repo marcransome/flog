@@ -90,7 +90,8 @@ flog_config_new(int argc, char *argv[]) {
     flog_config_set_version_flag(config, false);
     flog_config_set_help_flag(config, false);
 
-    poptContext context = poptGetContext(NULL, argc, (const char**) argv, options, 0);
+    poptContext context = poptGetContext("uk.co.fidgetbox.flog", argc, (const char**) argv, options, 0);
+    poptReadDefaultConfig(context, 0);
 
     int option;
     while ((option = poptGetNextOpt(context)) >= 0) {
