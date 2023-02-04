@@ -28,7 +28,7 @@
  *  General helper functions for common operations.
  */
 
-/*! \brief Print usage information. */
+/*! \brief Print help information. */
 void flog_usage(void);
 
 /*! \brief Print the version string. */

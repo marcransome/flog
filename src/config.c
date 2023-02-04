@@ -22,31 +22,40 @@
 
 #include "config.h"
 #include "defs.h"
-#include "utils.h"
-#include <stdio.h>
 #include <stdlib.h>
-#include <getopt.h>
-#include <sys/errno.h>
+#include <stdio.h>
+#include <errno.h>
 #include <sys/syslimits.h>
 #include <string.h>
 #include <assert.h>
 #include <stdbool.h>
+#include <popt.h>
+#include <unistd.h>
+
+#ifdef UNIT_TESTING
+extern void mock_assert(const int result, const char* const expression,
+    const char * const file, const int line);
+
+#undef assert
+#define assert(expression) \
+    mock_assert((int)(expression), #expression, __FILE__, __LINE__);
+#endif
 
 #define SUBSYSTEM_LEN 257
-#define CATEGORY_LEN 257
-#define MESSAGE_LEN 8193
+#define CATEGORY_LEN  257
+#define MESSAGE_LEN   8193
 
 FlogConfigLevel flog_config_parse_level(const char *str);
 
-static struct option long_options[] = {
-    { "version",    no_argument,        NULL,  'v' },
-    { "level",      required_argument,  NULL,  'l' },
-    { "subsystem",  required_argument,  NULL,  's' },
-    { "category",   required_argument,  NULL,  'c' },
-    { "help",       no_argument,        NULL,  'h' },
-    { "private",    no_argument,        NULL,  'p' },
-    { "append",     required_argument,  NULL,  'a' },
-    { NULL,         0,                  NULL,  0   }
+static struct poptOption options[] = {
+    { "version",    'v',  POPT_ARG_NONE,    NULL,  'v',  NULL,  NULL },
+    { "level",      'l',  POPT_ARG_STRING,  NULL,  'l',  NULL,  NULL },
+    { "subsystem",  's',  POPT_ARG_STRING,  NULL,  's',  NULL,  NULL },
+    { "category",   'c',  POPT_ARG_STRING,  NULL,  'c',  NULL,  NULL },
+    { "help",       'h',  POPT_ARG_NONE,    NULL,  'h',  NULL,  NULL },
+    { "private",    'p',  POPT_ARG_NONE,    NULL,  'p',  NULL,  NULL },
+    { "append",     'a',  POPT_ARG_STRING,  NULL,  'a',  NULL,  NULL },
+    POPT_TABLEEND
 };
 
 struct FlogConfigData {
@@ -56,6 +65,8 @@ struct FlogConfigData {
     char category[CATEGORY_LEN];
     char output_file[PATH_MAX];
     char message[MESSAGE_LEN];
+    bool version;
+    bool help;
 };
 
 FlogConfig *
@@ -63,63 +74,92 @@ flog_config_new(int argc, char *argv[]) {
     assert(argc > 0);
     assert(argv != NULL);
 
-    FlogConfig *config = calloc(1, sizeof(struct FlogConfigData));
-    if (config == NULL) {
-        perror(PROGRAM_NAME);
-        exit(errno);
+    if (argc == 1) {
+        errno = ERR_NO_ARGUMENTS_PROVIDED;
+        return NULL;
     }
 
-    // Default config values
+    FlogConfig *config = calloc(1, sizeof(struct FlogConfigData));
+    if (config == NULL) {
+        errno = ERR_CONFIG_ALLOCATION;
+        return NULL;
+    }
+
     flog_config_set_level(config, Default);
     flog_config_set_message_type(config, Public);
+    flog_config_set_version_flag(config, false);
+    flog_config_set_help_flag(config, false);
 
-    int ch;
-    while ((ch = getopt_long(argc, argv, "vhl:s:c:pa:", long_options, NULL)) != -1) {
-        switch (ch) {
+    poptContext context = poptGetContext(NULL, argc, (const char**) argv, options, 0);
+
+    int option;
+    while ((option = poptGetNextOpt(context)) >= 0) {
+        char *option_argument = poptGetOptArg(context);
+
+        switch (option) {
             case 'h':
-                flog_usage();
-                exit(EXIT_SUCCESS);
+                flog_config_set_help_flag(config, true);
+                poptFreeContext(context);
+                return config;
             case 'v':
-                flog_version();
-                exit(EXIT_SUCCESS);
+                flog_config_set_version_flag(config, true);
+                poptFreeContext(context);
+                return config;
             case 'a':
-                flog_config_set_output_file(config, optarg);
+                flog_config_set_output_file(config, option_argument);
                 break;
             case 'l':
-                flog_config_set_level(config, flog_config_parse_level(optarg));
+                flog_config_set_level(config, flog_config_parse_level(option_argument));
                 break;
             case 's':
-                flog_config_set_subsystem(config, optarg);
+                flog_config_set_subsystem(config, option_argument);
                 break;
             case 'c':
-                flog_config_set_category(config, optarg);
+                flog_config_set_category(config, option_argument);
                 break;
             case 'p':
                 flog_config_set_message_type(config, Private);
                 break;
-            case '?':
-                // getopt_long() generates errors for missing arguments
-                exit(EXIT_FAILURE);
         }
+
+        free(option_argument);
     }
-    argc -= optind;
-    argv += optind;
+
+    if (option < -1) {
+        fprintf(stderr, "%s: %s %s\n",
+                PROGRAM_NAME,
+                poptStrerror(option),
+                poptBadOption(context, POPT_BADOPTION_NOALIAS));
+
+        errno = ERR_PROGRAM_OPTIONS;
+        flog_config_free(config);
+        poptFreeContext(context);
+        return NULL;
+    }
 
     if (strlen(flog_config_get_category(config)) > 0 && strlen(flog_config_get_subsystem(config)) == 0) {
-        fprintf(stderr, "%s: category option requires a subsystem name (use -s|--subsystem)\n", PROGRAM_NAME);
-        exit(EXIT_FAILURE);
+        fprintf(stderr, "%s: category option requires subsystem option\n", PROGRAM_NAME);
+        errno = ERR_CATEGORY_OPTION_REQUIRES_SUBSYSTEM;
+        flog_config_free(config);
+        poptFreeContext(context);
+        return NULL;
     }
 
     if (isatty(fileno(stdin))) {
-        if (argc == 0) {
-            flog_usage();
-            exit(EXIT_FAILURE);
+        const char **message_args = poptGetArgs(context);
+        if (message_args == NULL) {
+            errno = ERR_NO_MESSAGE_STRING_PROVIDED;
+            flog_config_free(config);
+            poptFreeContext(context);
+            return NULL;
         }
 
-        flog_config_set_message_from_args(config, argc, argv);
+        flog_config_set_message_from_args(config, message_args);
     } else {
         flog_config_set_message_from_stream(config, stdin);
     }
+
+    poptFreeContext(context);
 
     return config;
 }
@@ -144,8 +184,7 @@ flog_config_set_subsystem(FlogConfig *config, const char *subsystem) {
     assert(subsystem != NULL);
 
     if (strlcpy(config->subsystem, subsystem, SUBSYSTEM_LEN) >= SUBSYSTEM_LEN) {
-        fprintf(stderr, "%s: specify a subsystem value up to a maximum of %d characters\n", PROGRAM_NAME, SUBSYSTEM_LEN - 1);
-        exit(EXIT_FAILURE);
+        fprintf(stderr, "%s: subsystem name truncated to %d bytes\n", PROGRAM_NAME, SUBSYSTEM_LEN - 1);
     }
 }
 
@@ -162,8 +201,7 @@ flog_config_set_category(FlogConfig *config, const char *category) {
     assert(category != NULL);
 
     if (strlcpy(config->category, category, CATEGORY_LEN) >= CATEGORY_LEN) {
-        fprintf(stderr, "%s: specify a category value up to a maximum of %d characters\n", PROGRAM_NAME, CATEGORY_LEN - 1);
-        exit(EXIT_FAILURE);
+        fprintf(stderr, "%s: category name truncated to %d bytes\n", PROGRAM_NAME, CATEGORY_LEN - 1);
     }
 }
 
@@ -214,8 +252,7 @@ flog_config_parse_level(const char *str) {
     } else if (strcmp(str, "fault") == 0) {
         level = Fault;
     } else {
-        fprintf(stderr, "%s: unknown log level '%s'\n", PROGRAM_NAME, str);
-        exit(EXIT_FAILURE);
+        level = Unknown;
     }
 
     return level;
@@ -234,34 +271,32 @@ flog_config_set_message(FlogConfig *config, const char *message) {
     assert(message != NULL);
 
     if (strlcpy(config->message, message, MESSAGE_LEN) >= MESSAGE_LEN) {
-        fprintf(stderr, "%s: message was truncated to %d characters\n", PROGRAM_NAME, MESSAGE_LEN - 1);
+        fprintf(stderr, "%s: message string was truncated to %d bytes\n", PROGRAM_NAME, MESSAGE_LEN - 1);
     }
 }
 
 void
-flog_config_set_message_from_args(FlogConfig *config, size_t count, char *args[]) {
-    assert(count > 0);
+flog_config_set_message_from_args(FlogConfig *config, const char **args) {
+    assert(config != NULL);
     assert(args != NULL);
 
     bool message_truncated = false;
-    char message_buff[MESSAGE_LEN] = {0};
-    for (int i = 0; i < count; i++) {
-        if (strlcat(message_buff, args[i], MESSAGE_LEN) >= MESSAGE_LEN) {
+    while (*args != NULL) {
+        if (strlcat(config->message, *args, MESSAGE_LEN) >= MESSAGE_LEN) {
             message_truncated = true;
+            break;
         }
-        if (i != count - 1) {
-            if (strlcat(message_buff, " ", MESSAGE_LEN) >= MESSAGE_LEN) {
+        if (*(args + 1) != NULL) {
+            if (strlcat(config->message, " ", MESSAGE_LEN) >= MESSAGE_LEN) {
                 message_truncated = true;
+                break;
             }
         }
-    }
-
-    if (strlcpy(config->message, message_buff, MESSAGE_LEN) >= MESSAGE_LEN) {
-        message_truncated = true;
+        ++args;
     }
 
     if (message_truncated) {
-        fprintf(stderr, "%s: message was truncated to %d characters\n", PROGRAM_NAME, MESSAGE_LEN - 1);
+        fprintf(stderr, "%s: message was truncated to %d bytes\n", PROGRAM_NAME, MESSAGE_LEN - 1);
     }
 }
 
@@ -271,7 +306,7 @@ flog_config_set_message_from_stream(FlogConfig *config, FILE *restrict stream) {
     assert(stream != NULL);
 
     if (fread(config->message, sizeof(char), MESSAGE_LEN, stream) >= MESSAGE_LEN) {
-        fprintf(stderr, "%s: message was truncated to %d characters\n", PROGRAM_NAME, MESSAGE_LEN - 1);
+        fprintf(stderr, "%s: message was truncated to %d bytes\n", PROGRAM_NAME, MESSAGE_LEN - 1);
     }
 }
 
@@ -287,4 +322,32 @@ flog_config_set_message_type(FlogConfig *config, FlogConfigMessageType message_t
     assert(config != NULL);
 
     config->message_type = message_type;
+}
+
+bool
+flog_config_get_version_flag(const FlogConfig *config) {
+    assert(config != NULL);
+
+    return config->version;
+}
+
+void
+flog_config_set_version_flag(FlogConfig *config, bool version) {
+    assert(config != NULL);
+
+    config->version = version;
+}
+
+bool
+flog_config_get_help_flag(const FlogConfig *config) {
+    assert(config != NULL);
+
+    return config->help;
+}
+
+void
+flog_config_set_help_flag(FlogConfig *config, bool help) {
+    assert(config != NULL);
+
+    config->help = help;
 }

@@ -81,9 +81,12 @@ And here's a similar log stream viewed with Apple's `log(1)` command:
 
 ### Requirements
 
-* macOS (`11.x` or later)
+* macOS `11.x` (Big Sur) or later
 * A C17 compiler
-* CMake (`3.22` or later)
+* CMake version `>=3.22`
+* `pkg-config` version `>=0.29.2`
+* `libpopt` version `>=1.18`
+* `libcmocka` version `>=1.1.5` (if building unit test targets)
 
 ### Building from source
 
@@ -92,6 +95,22 @@ To perform an out-of-source build from the project directory:
 ```bash
 cmake -S . -B build
 cmake --build build
+```
+
+### Building unit test targets
+
+To perform an out-of-source build for unit test targets only:
+
+```bash
+cmake -S . -B build -DUNIT_TESTING=ON
+cmake --build build
+```
+
+To execute all unit test targets:
+
+```bash
+cd build/test
+ctest -V
 ```
 
 ## Acknowledgements

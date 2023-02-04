@@ -29,6 +29,7 @@
  */
 
 #include <stddef.h>
+#include <stdbool.h>
 #include <stdio.h>
 
 /*! \brief An enumerated type representing the log level. */
@@ -37,7 +38,8 @@ typedef enum FlogConfigLevelData {
     Info,
     Debug,
     Error,
-    Fault
+    Fault,
+    Unknown
 } FlogConfigLevel;
 
 /*! \brief An enumerated type representing the log message type. */
@@ -62,7 +64,9 @@ typedef struct FlogConfigData FlogConfig;
  *  \pre \c argc is greater than \c 0
  *  \pre \c argv is \e not \c NULL
  *
- *  \return A pointer to a FlogConfig object
+ *  \return If successful, a pointer to a FlogConfig object; if there is an error
+ *          a \c NULL pointer is returned and \c errno will be set to one of several
+ *          potential error values (see defs.h)
  */
 FlogConfig * flog_config_new(int argc, char *argv[]);
 
@@ -177,17 +181,16 @@ void flog_config_set_message(FlogConfig *config, const char *message);
  *         command-line arguments.
  *
  *  \param config A pointer to the FlogConfig object
- *  \param count  The number of command line arguments to concatenate into
- *                the message string
  *  \param args   A pointer to an array of null-terminated strings representing
- *                command-line arguments
+ *                command-line arguments; the final element of the array \e must
+ *                point to NULL indicating the end of the arguments array
  *
- *  \pre \c count is greater than \c 0
+ *  \pre \c config is \e not \c NULL
  *  \pre \c args is \e not \c NULL
  *
  *  \return void
  */
-void flog_config_set_message_from_args(FlogConfig *config, size_t count, char *args[]);
+void flog_config_set_message_from_args(FlogConfig *config, const char **args);
 
 /*! \brief Set the log message for a FlogConfig object by reading from a stream.
  *
@@ -220,5 +223,43 @@ FlogConfigMessageType flog_config_get_message_type(const FlogConfig *config);
  *  \pre \c config is \e not \c NULL
  */
 void flog_config_set_message_type(FlogConfig *config, FlogConfigMessageType type);
+
+/*! \brief Get the version flag from a FlogConfig object.
+ *
+ *  \param config A pointer to the FlogConfig object
+ *
+ *  \pre \c config is \e not \c NULL
+ *
+ *  \return \c true if the version flag is set otherwise \c false
+ */
+bool flog_config_get_version_flag(const FlogConfig *config);
+
+/*! \brief Set the version flag for a FlogConfig object.
+ *
+ *  \param config  A pointer to the FlogConfig object
+ *  \param version A boolean value representing whether the version flag is set
+ *
+ *  \pre \c config is \e not \c NULL
+ */
+void flog_config_set_version_flag(FlogConfig *config, bool version);
+
+/*! \brief Get the help flag from a FlogConfig object.
+ *
+ *  \param config A pointer to the FlogConfig object
+ *
+ *  \pre \c config is \e not \c NULL
+ *
+ *  \return \c true if the help flag is set otherwise \c false
+ */
+bool flog_config_get_help_flag(const FlogConfig *config);
+
+/*! \brief Set the help flag for a FlogConfig object.
+ *
+ *  \param config A pointer to the FlogConfig object
+ *  \param help   A boolean value representing whether the help flag is set
+ *
+ *  \pre \c config is \e not \c NULL
+ */
+void flog_config_set_help_flag(FlogConfig *config, bool help);
 
 #endif //FLOG_CONFIG_H
