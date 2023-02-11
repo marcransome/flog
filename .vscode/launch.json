@@ -1,0 +1,21 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Run (debug)",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/src/flog",
+            "args": [
+                "-s", "uk.co.fidgetbox.flog",
+                "-c", "test",
+                "-l", "info",
+                "Test message"
+            ],
+            "stopAtEntry": false,
+            "MIMode": "lldb",
+            "cwd": "${workspaceFolder}"
+        }
+    ]
+}
+
