@@ -284,6 +284,8 @@ flog_config_set_subsystem_with_null_subsystem_arg_fails(void **state) {
 
     FlogConfig *config = flog_config_new(mock_argc, mock_argv);
     expect_assert_failure(flog_config_set_subsystem(config, NULL));
+
+    flog_config_free(config);
 }
 
 static void
@@ -338,6 +340,8 @@ flog_config_set_category_with_null_category_arg_fails(void **state) {
 
     FlogConfig *config = flog_config_new(mock_argc, mock_argv);
     expect_assert_failure(flog_config_set_category(config, NULL));
+
+    flog_config_free(config);
 }
 
 static void
@@ -392,6 +396,8 @@ flog_config_set_output_file_with_null_output_file_arg_fails(void **state) {
 
     FlogConfig *config = flog_config_new(mock_argc, mock_argv);
     expect_assert_failure(flog_config_set_output_file(config, NULL));
+
+    flog_config_free(config);
 }
 
 static void
