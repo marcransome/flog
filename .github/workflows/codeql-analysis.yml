@@ -8,6 +8,7 @@ on:
       - main
   schedule:
     - cron: '00 18 * * 1'
+  workflow_dispatch:
 jobs:
   analyze:
     name: Analyze
