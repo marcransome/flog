@@ -27,7 +27,7 @@ jobs:
         queries: security-and-quality
     - name: Install dependencies and build project
       run: |
-        brew install popt
+        brew install pkg-config popt
         cmake -S . -B build
         cmake --build build
     - name: Perform CodeQL analysis
