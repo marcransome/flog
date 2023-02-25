@@ -85,7 +85,7 @@ And here's a similar log stream viewed with Apple's `log(1)` command:
 * A C17 compiler
 * CMake version `>=3.22`
 * `pkg-config` version `>=0.29.2`
-* `libpopt` version `>=1.18`
+* `libpopt` version `>=1.19`
 * `libcmocka` version `>=1.1.7` (if building unit test targets)
 
 ### Building from source
