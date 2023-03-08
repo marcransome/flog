@@ -49,6 +49,12 @@
 #define TEST_OPTION_LEVEL_SHORT "-l"
 #define TEST_OPTION_LEVEL_LONG "--level"
 
+#define TEST_OPTION_LEVEL_VALUE_DEFAULT "default"
+#define TEST_OPTION_LEVEL_VALUE_INFO "info"
+#define TEST_OPTION_LEVEL_VALUE_DEBUG "debug"
+#define TEST_OPTION_LEVEL_VALUE_ERROR "error"
+#define TEST_OPTION_LEVEL_VALUE_FAULT "fault"
+
 #define TEST_OPTION_APPEND_SHORT "-a"
 #define TEST_OPTION_APPEND_LONG "--append"
 
@@ -152,6 +158,22 @@ flog_config_new_with_long_category_opt_and_no_subsystem_opt_fails(void **state) 
 
     assert_null(config);
     assert_int_equal(errno, ERR_CATEGORY_OPTION_REQUIRES_SUBSYSTEM);
+}
+
+static void
+flog_config_new_with_stdin_tty_and_no_message_args_fails(void **state) {
+    char *mock_argv[] = {
+        TEST_PROGRAM_NAME,
+        TEST_OPTION_LEVEL_SHORT,
+        TEST_OPTION_LEVEL_VALUE_INFO,
+        NULL
+    };
+    int mock_argc = sizeof(mock_argv) / sizeof(mock_argv[0]) - 1;
+
+    FlogConfig *config = flog_config_new(mock_argc, mock_argv);
+
+    assert_null(config);
+    assert_int_equal(errno, ERR_NO_MESSAGE_STRING_PROVIDED);
 }
 
 static void
@@ -445,6 +467,7 @@ int main(void) {
         cmocka_unit_test(flog_config_new_with_long_invalid_opt_fails),
         cmocka_unit_test(flog_config_new_with_short_category_opt_and_no_subsystem_opt_fails),
         cmocka_unit_test(flog_config_new_with_long_category_opt_and_no_subsystem_opt_fails),
+        cmocka_unit_test(flog_config_new_with_stdin_tty_and_no_message_args_fails),
 
         // flog_config_new() success tests
         cmocka_unit_test(flog_config_new_with_message_succeeds),
