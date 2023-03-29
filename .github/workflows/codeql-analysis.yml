@@ -21,7 +21,7 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v3
     - name: Install dependencies
-      run: brew install pkg-config popt
+      run: brew install popt
     - name: Initialize CodeQL
       uses: github/codeql-action/init@v2
       with:
