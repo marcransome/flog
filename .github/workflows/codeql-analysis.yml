@@ -21,7 +21,7 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v3
     - name: Install dependencies
-      run: brew install popt
+      run: brew install pkg-config popt
     - name: Initialize CodeQL
       uses: github/codeql-action/init@v2
       with:
@@ -31,6 +31,6 @@ jobs:
       run: |
         cmake -S . -B build
         cmake --build build
-        cd src
+        cp -r src/* /build/src/
     - name: Perform CodeQL analysis
       uses: github/codeql-action/analyze@v2
