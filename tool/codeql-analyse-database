@@ -1,0 +1,16 @@
+#!/bin/bash
+
+parent_dir="$(cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd)"
+codeql_db_dir="codeql-database"
+codeql_sarif_file="codeql-analysis.sarif"
+
+cd "${parent_dir}/.."
+
+[[ -f "${codeql_sarif_file}" ]] && rm -f "${codeql_sarif_file}"
+
+if [[ ! -d "${codeql_db_dir}" ]]; then
+    echo "No such CodeQL database directory: $(pwd)/${codeql_db_dir}"
+    exit 1
+fi
+
+codeql database analyze "${codeql_db_dir}" --format="sarif-latest" --output="${codeql_sarif_file}" "codeql/cpp-queries:codeql-suites/cpp-security-and-quality.qls"
