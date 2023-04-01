@@ -1,3 +1,5 @@
 .DS_Store
 ._*
 build/
+codeql-database/
+codeql-analysis.sarif
