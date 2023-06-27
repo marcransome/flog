@@ -31,6 +31,5 @@ jobs:
       run: |
         cmake -S . -B build
         cmake --build build
-        cp -r src/* build/src/
     - name: Perform CodeQL analysis
       uses: github/codeql-action/analyze@v2
