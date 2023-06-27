@@ -27,6 +27,7 @@ jobs:
       with:
         languages: cpp
         queries: security-and-quality
+        source-root: src
     - name: Build sources
       run: |
         cmake -S . -B build
