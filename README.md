@@ -6,7 +6,7 @@
 
 `flog` is a command-line tool for sending log messages to Apple's unified logging system and is primaily intended for use in scripts.
 
-<hr>
+---
 
 ## Rationale
 
