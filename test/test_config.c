@@ -64,6 +64,10 @@
 #define TEST_OPTION_INVALID_SHORT "-i"
 #define TEST_OPTION_INVALID_LONG "--invalid"
 
+#define MOCK_ARGS(...) \
+    char *mock_argv[] = {__VA_ARGS__, NULL}; \
+    int mock_argc = (sizeof(mock_argv) / sizeof(mock_argv[0]) - 1);
+
 static void
 flog_config_new_with_zero_arg_count_fails(void **state) {
     int mock_argc = 0;      // should fail >0 assertion
@@ -82,11 +86,9 @@ flog_config_new_with_null_arg_values_fails(void **state) {
 
 static void
 flog_config_new_with_no_args_fails(void **state) {
-    char *mock_argv[] = {
-        TEST_PROGRAM_NAME,
-        NULL
-    };
-    int mock_argc = sizeof(mock_argv) / sizeof(mock_argv[0]) - 1;
+    MOCK_ARGS(
+        TEST_PROGRAM_NAME
+    )
 
     FlogConfig *config = flog_config_new(mock_argc, mock_argv);
 
@@ -96,13 +98,11 @@ flog_config_new_with_no_args_fails(void **state) {
 
 static void
 flog_config_new_with_short_invalid_opt_fails(void **state) {
-    char *mock_argv[] = {
+    MOCK_ARGS(
         TEST_PROGRAM_NAME,
         TEST_OPTION_INVALID_SHORT,
-        TEST_MESSAGE,
-        NULL
-    };
-    int mock_argc = sizeof(mock_argv) / sizeof(mock_argv[0]) - 1;
+        TEST_MESSAGE
+    )
 
     FlogConfig *config = flog_config_new(mock_argc, mock_argv);
 
@@ -112,13 +112,11 @@ flog_config_new_with_short_invalid_opt_fails(void **state) {
 
 static void
 flog_config_new_with_long_invalid_opt_fails(void **state) {
-    char *mock_argv[] = {
+    MOCK_ARGS(
         TEST_PROGRAM_NAME,
         TEST_OPTION_INVALID_LONG,
-        TEST_MESSAGE,
-        NULL
-    };
-    int mock_argc = sizeof(mock_argv) / sizeof(mock_argv[0]) - 1;
+        TEST_MESSAGE
+    )
 
     FlogConfig *config = flog_config_new(mock_argc, mock_argv);
 
@@ -128,14 +126,12 @@ flog_config_new_with_long_invalid_opt_fails(void **state) {
 
 static void
 flog_config_new_with_short_category_opt_and_no_subsystem_opt_fails(void **state) {
-    char *mock_argv[] = {
+    MOCK_ARGS(
         TEST_PROGRAM_NAME,
         TEST_OPTION_CATEGORY_SHORT,
         TEST_CATEGORY,
-        TEST_MESSAGE,
-        NULL
-    };
-    int mock_argc = sizeof(mock_argv) / sizeof(mock_argv[0]) - 1;
+        TEST_MESSAGE
+    )
 
     FlogConfig *config = flog_config_new(mock_argc, mock_argv);
 
@@ -145,14 +141,12 @@ flog_config_new_with_short_category_opt_and_no_subsystem_opt_fails(void **state)
 
 static void
 flog_config_new_with_long_category_opt_and_no_subsystem_opt_fails(void **state) {
-    char *mock_argv[] = {
+    MOCK_ARGS(
         TEST_PROGRAM_NAME,
         TEST_OPTION_CATEGORY_LONG,
         TEST_CATEGORY,
-        TEST_MESSAGE,
-        NULL
-    };
-    int mock_argc = sizeof(mock_argv) / sizeof(mock_argv[0]) - 1;
+        TEST_MESSAGE
+    )
 
     FlogConfig *config = flog_config_new(mock_argc, mock_argv);
 
@@ -162,13 +156,11 @@ flog_config_new_with_long_category_opt_and_no_subsystem_opt_fails(void **state) 
 
 static void
 flog_config_new_with_stdin_tty_and_no_message_args_fails(void **state) {
-    char *mock_argv[] = {
+    MOCK_ARGS(
         TEST_PROGRAM_NAME,
         TEST_OPTION_LEVEL_SHORT,
-        TEST_OPTION_LEVEL_VALUE_INFO,
-        NULL
-    };
-    int mock_argc = sizeof(mock_argv) / sizeof(mock_argv[0]) - 1;
+        TEST_OPTION_LEVEL_VALUE_INFO
+    )
 
     FlogConfig *config = flog_config_new(mock_argc, mock_argv);
 
@@ -178,12 +170,10 @@ flog_config_new_with_stdin_tty_and_no_message_args_fails(void **state) {
 
 static void
 flog_config_new_with_message_succeeds(void **state) {
-    char *mock_argv[] = {
+    MOCK_ARGS(
         TEST_PROGRAM_NAME,
-        TEST_MESSAGE,
-        NULL
-    };
-    int mock_argc = sizeof(mock_argv) / sizeof(mock_argv[0]) - 1;
+        TEST_MESSAGE
+    )
 
     FlogConfig *config = flog_config_new(mock_argc, mock_argv);
     assert_non_null(config);
@@ -193,14 +183,12 @@ flog_config_new_with_message_succeeds(void **state) {
 
 static void
 flog_config_new_with_short_subsystem_opt_and_message_succeeds(void **state) {
-    char *mock_argv[] = {
+    MOCK_ARGS(
         TEST_PROGRAM_NAME,
         TEST_OPTION_SUBSYSTEM_SHORT,
         TEST_SUBSYSTEM,
-        TEST_MESSAGE,
-        NULL
-    };
-    int mock_argc = sizeof(mock_argv) / sizeof(mock_argv[0]) - 1;
+        TEST_MESSAGE
+    )
 
     FlogConfig *config = flog_config_new(mock_argc, mock_argv);
     assert_non_null(config);
@@ -210,14 +198,12 @@ flog_config_new_with_short_subsystem_opt_and_message_succeeds(void **state) {
 
 static void
 flog_config_new_with_long_subsystem_opt_and_message_succeeds(void **state) {
-    char *mock_argv[] = {
+    MOCK_ARGS(
         TEST_PROGRAM_NAME,
         TEST_OPTION_SUBSYSTEM_LONG,
         TEST_SUBSYSTEM,
-        TEST_MESSAGE,
-        NULL
-    };
-    int mock_argc = sizeof(mock_argv) / sizeof(mock_argv[0]) - 1;
+        TEST_MESSAGE
+    )
 
     FlogConfig *config = flog_config_new(mock_argc, mock_argv);
     assert_non_null(config);
@@ -227,12 +213,10 @@ flog_config_new_with_long_subsystem_opt_and_message_succeeds(void **state) {
 
 static void
 flog_config_new_with_short_version_opt_succeeds(void **state) {
-    char *mock_argv[] = {
+    MOCK_ARGS(
         TEST_PROGRAM_NAME,
-        TEST_OPTION_VERSION_SHORT,
-        NULL
-    };
-    int mock_argc = sizeof(mock_argv) / sizeof(mock_argv[0]) - 1;
+        TEST_OPTION_VERSION_SHORT
+    )
 
     FlogConfig *config = flog_config_new(mock_argc, mock_argv);
     assert_true(flog_config_get_version_flag(config));
@@ -242,12 +226,10 @@ flog_config_new_with_short_version_opt_succeeds(void **state) {
 
 static void
 flog_config_new_with_long_version_opt_succeeds(void **state) {
-    char *mock_argv[] = {
+    MOCK_ARGS(
         TEST_PROGRAM_NAME,
-        TEST_OPTION_VERSION_LONG,
-        NULL
-    };
-    int mock_argc = sizeof(mock_argv) / sizeof(mock_argv[0]) - 1;
+        TEST_OPTION_VERSION_LONG
+    )
 
     FlogConfig *config = flog_config_new(mock_argc, mock_argv);
     assert_true(flog_config_get_version_flag(config));
@@ -257,12 +239,10 @@ flog_config_new_with_long_version_opt_succeeds(void **state) {
 
 static void
 flog_config_new_with_short_help_opt_succeeds(void **state) {
-    char *mock_argv[] = {
+    MOCK_ARGS(
         TEST_PROGRAM_NAME,
-        TEST_OPTION_HELP_SHORT,
-        NULL
-    };
-    int mock_argc = sizeof(mock_argv) / sizeof(mock_argv[0]) - 1;
+        TEST_OPTION_HELP_SHORT
+    )
 
     FlogConfig *config = flog_config_new(mock_argc, mock_argv);
     assert_true(flog_config_get_help_flag(config));
@@ -272,12 +252,10 @@ flog_config_new_with_short_help_opt_succeeds(void **state) {
 
 static void
 flog_config_new_with_long_help_opt_succeeds(void **state) {
-    char *mock_argv[] = {
+    MOCK_ARGS(
         TEST_PROGRAM_NAME,
-        TEST_OPTION_HELP_LONG,
-        NULL
-    };
-    int mock_argc = sizeof(mock_argv) / sizeof(mock_argv[0]) - 1;
+        TEST_OPTION_HELP_LONG
+    )
 
     FlogConfig *config = flog_config_new(mock_argc, mock_argv);
     assert_true(flog_config_get_help_flag(config));
@@ -297,12 +275,10 @@ flog_config_set_subsystem_with_null_config_arg_fails(void **state) {
 
 static void
 flog_config_set_subsystem_with_null_subsystem_arg_fails(void **state) {
-    char *mock_argv[] = {
+    MOCK_ARGS(
         TEST_PROGRAM_NAME,
-        TEST_MESSAGE,
-        NULL
-    };
-    int mock_argc = sizeof(mock_argv) / sizeof(mock_argv[0]) - 1;
+        TEST_MESSAGE
+    )
 
     FlogConfig *config = flog_config_new(mock_argc, mock_argv);
     expect_assert_failure(flog_config_set_subsystem(config, NULL));
@@ -312,12 +288,10 @@ flog_config_set_subsystem_with_null_subsystem_arg_fails(void **state) {
 
 static void
 flog_config_get_subsystem_succeeds(void **state) {
-    char *mock_argv[] = {
+    MOCK_ARGS(
         TEST_PROGRAM_NAME,
-        TEST_MESSAGE,
-        NULL
-    };
-    int mock_argc = sizeof(mock_argv) / sizeof(mock_argv[0]) - 1;
+        TEST_MESSAGE
+    )
 
     FlogConfig *config = flog_config_new(mock_argc, mock_argv);
     assert_string_equal(flog_config_get_subsystem(config), "");
@@ -327,12 +301,10 @@ flog_config_get_subsystem_succeeds(void **state) {
 
 static void
 flog_config_set_and_get_subsystem_succeeds(void **state) {
-    char *mock_argv[] = {
+    MOCK_ARGS(
         TEST_PROGRAM_NAME,
-        TEST_MESSAGE,
-        NULL
-    };
-    int mock_argc = sizeof(mock_argv) / sizeof(mock_argv[0]) - 1;
+        TEST_MESSAGE
+    )
 
     FlogConfig *config = flog_config_new(mock_argc, mock_argv);
     flog_config_set_subsystem(config, TEST_SUBSYSTEM);
@@ -353,12 +325,10 @@ flog_config_set_category_with_null_config_arg_fails(void **state) {
 
 static void
 flog_config_set_category_with_null_category_arg_fails(void **state) {
-    char *mock_argv[] = {
+    MOCK_ARGS(
         TEST_PROGRAM_NAME,
-        TEST_MESSAGE,
-        NULL
-    };
-    int mock_argc = sizeof(mock_argv) / sizeof(mock_argv[0]) - 1;
+        TEST_MESSAGE
+    )
 
     FlogConfig *config = flog_config_new(mock_argc, mock_argv);
     expect_assert_failure(flog_config_set_category(config, NULL));
@@ -368,12 +338,10 @@ flog_config_set_category_with_null_category_arg_fails(void **state) {
 
 static void
 flog_config_get_category_succeeds(void **state) {
-    char *mock_argv[] = {
+    MOCK_ARGS(
         TEST_PROGRAM_NAME,
-        TEST_MESSAGE,
-        NULL
-    };
-    int mock_argc = sizeof(mock_argv) / sizeof(mock_argv[0]) - 1;
+        TEST_MESSAGE
+    )
 
     FlogConfig *config = flog_config_new(mock_argc, mock_argv);
     assert_string_equal(flog_config_get_category(config), "");
@@ -383,12 +351,10 @@ flog_config_get_category_succeeds(void **state) {
 
 static void
 flog_config_set_and_get_category_succeeds(void **state) {
-    char *mock_argv[] = {
+    MOCK_ARGS(
         TEST_PROGRAM_NAME,
-        TEST_MESSAGE,
-        NULL
-    };
-    int mock_argc = sizeof(mock_argv) / sizeof(mock_argv[0]) - 1;
+        TEST_MESSAGE
+    )
 
     FlogConfig *config = flog_config_new(mock_argc, mock_argv);
     flog_config_set_category(config, TEST_CATEGORY);
@@ -409,12 +375,10 @@ flog_config_set_output_file_with_null_config_arg_fails(void **state) {
 
 static void
 flog_config_set_output_file_with_null_output_file_arg_fails(void **state) {
-    char *mock_argv[] = {
+    MOCK_ARGS(
         TEST_PROGRAM_NAME,
-        TEST_MESSAGE,
-        NULL
-    };
-    int mock_argc = sizeof(mock_argv) / sizeof(mock_argv[0]) - 1;
+        TEST_MESSAGE
+    )
 
     FlogConfig *config = flog_config_new(mock_argc, mock_argv);
     expect_assert_failure(flog_config_set_output_file(config, NULL));
@@ -424,12 +388,10 @@ flog_config_set_output_file_with_null_output_file_arg_fails(void **state) {
 
 static void
 flog_config_get_output_file_succeeds(void **state) {
-    char *mock_argv[] = {
+    MOCK_ARGS(
         TEST_PROGRAM_NAME,
-        TEST_MESSAGE,
-        NULL
-    };
-    int mock_argc = sizeof(mock_argv) / sizeof(mock_argv[0]) - 1;
+        TEST_MESSAGE
+    )
 
     FlogConfig *config = flog_config_new(mock_argc, mock_argv);
     assert_string_equal(flog_config_get_output_file(config), "");
@@ -439,12 +401,10 @@ flog_config_get_output_file_succeeds(void **state) {
 
 static void
 flog_config_set_and_get_output_file_succeeds(void **state) {
-    char *mock_argv[] = {
+    MOCK_ARGS(
         TEST_PROGRAM_NAME,
-        TEST_MESSAGE,
-        NULL
-    };
-    int mock_argc = sizeof(mock_argv) / sizeof(mock_argv[0]) - 1;
+        TEST_MESSAGE
+    )
 
     FlogConfig *config = flog_config_new(mock_argc, mock_argv);
     flog_config_set_output_file(config, TEST_OUTPUT_FILE);
