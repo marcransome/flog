@@ -28,6 +28,9 @@ jobs:
         languages: cpp
         queries: security-and-quality
         source-root: src
+    - name: Install build tools
+      run: |
+        brew install meson ninja
     - name: Build sources
       run: |
         cd src
