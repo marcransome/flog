@@ -9,4 +9,4 @@ cd "${parent_dir}/.."
 [[ -d "${build_dir}" ]] && rm -rf "${build_dir}"
 [[ -d "${codeql_db_dir}" ]] && rm -rf "${codeql_db_dir}"
 
-codeql database create "${codeql_db_dir}" --source-root="./src" --language="cpp" --command="cmake -S .. -B ../${build_dir}" --command="cmake --build ../build"
+codeql database create "${codeql_db_dir}" --source-root="./src" --language="cpp" --command="meson setup build" --command="ninja -C build"
