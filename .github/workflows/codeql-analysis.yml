@@ -30,7 +30,8 @@ jobs:
         source-root: src
     - name: Build sources
       run: |
-        cmake -S . -B build
-        cmake --build build
+        cd src
+        meson setup build
+        ninja -C build
     - name: Perform CodeQL analysis
       uses: github/codeql-action/analyze@v2
