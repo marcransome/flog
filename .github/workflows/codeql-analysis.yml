@@ -23,7 +23,7 @@ jobs:
     - name: Install dependencies
       run: brew install popt
     - name: Initialize CodeQL
-      uses: github/codeql-action/init@v2
+      uses: github/codeql-action/init@v3
       with:
         languages: cpp
         queries: security-and-quality
@@ -37,4 +37,4 @@ jobs:
         meson setup build
         ninja -C build
     - name: Perform CodeQL analysis
-      uses: github/codeql-action/analyze@v2
+      uses: github/codeql-action/analyze@v3
