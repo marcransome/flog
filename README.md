@@ -62,7 +62,7 @@ Use the `-a, --append` option to also append the log message to a file (creating
 flog -a /var/log/some-script.log -l fault -s uk.co.fidgetbox -c general 'unrecoverable failure'
 ```
 
-> **Warning**:
+> [!CAUTION]
 > Log message strings are _public_ by default and can be read using the `log(1)` command or [Console](https://support.apple.com/en-gb/guide/console/welcome/mac) app. To mark a message as private add the `-p|--private` option to the command. Doing so will redact the message string, which will be shown as `'<private>'` when accessed using the methods previously mentioned. [Device Management Profiles](https://developer.apple.com/documentation/devicemanagement) can be used to grant access to private log messages.
 
 ### Reading log messages
