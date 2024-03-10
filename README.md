@@ -2,7 +2,7 @@
 
 # flog
 
-[![OpenSSF Scorecard](https://img.shields.io/ossf-scorecard/github.com/marcransome/flog?style=flat&label=OpenSSF%20Scorecard)](https://securityscorecards.dev/viewer/?uri=github.com/marcransome/flog) [![CodeQL](https://github.com/marcransome/flog/actions/workflows/codeql-analysis.yml/badge.svg?branch=main)](https://github.com/marcransome/flog/actions/workflows/codeql-analysis.yml) [![Issues](https://img.shields.io/github/issues/marcransome/flog)](https://github.com/marcransome/flog/issues) [![License](https://img.shields.io/badge/license-MIT-blue)](https://opensource.org/licenses/mit-license.php) [![macOS](https://img.shields.io/badge/macOS-11+-blue)](https://www.apple.com/macos/)
+[![OpenSSF Scorecard](https://img.shields.io/ossf-scorecard/github.com/marcransome/flog?label=OpenSSF%20Scorecard)](https://securityscorecards.dev/viewer/?uri=github.com/marcransome/flog) [![CodeQL](https://github.com/marcransome/flog/actions/workflows/codeql-analysis.yml/badge.svg?branch=main)](https://github.com/marcransome/flog/actions/workflows/codeql-analysis.yml) [![Issues](https://img.shields.io/github/issues/marcransome/flog)](https://github.com/marcransome/flog/issues) [![License](https://img.shields.io/badge/license-MIT-blue)](https://opensource.org/licenses/mit-license.php) [![macOS](https://img.shields.io/badge/macOS-11+-blue)](https://www.apple.com/macos/)
 
 `flog` is a command-line tool for sending log messages to Apple's unified logging system and is primaily intended for use in scripts.
 
