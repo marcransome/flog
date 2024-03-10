@@ -19,11 +19,11 @@ jobs:
       security-events: write
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v4
+      uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
     - name: Install dependencies
       run: brew install popt
     - name: Initialize CodeQL
-      uses: github/codeql-action/init@v3
+      uses: github/codeql-action/init@8a470fddafa5cbb6266ee11b37ef4d8aae19c571 # v3.24.6
       with:
         languages: cpp
         queries: security-and-quality
@@ -33,4 +33,4 @@ jobs:
         cmake -S . -B build
         cmake --build build
     - name: Perform CodeQL analysis
-      uses: github/codeql-action/analyze@v3
+      uses: github/codeql-action/analyze@8a470fddafa5cbb6266ee11b37ef4d8aae19c571 # v3.24.6
