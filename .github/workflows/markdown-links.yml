@@ -12,6 +12,9 @@ on:
   schedule:
     - cron: '0 18 * * 1'
   workflow_dispatch:
+
+permissions: read-all
+
 jobs:
   markdown-links:
     runs-on: ubuntu-latest
