@@ -31,15 +31,16 @@
 #include <stddef.h>
 #include <stdbool.h>
 #include <stdio.h>
+#include "common.h"
 
 /*! \brief An enumerated type representing the log level. */
 typedef enum FlogConfigLevelData {
-    Default,
-    Info,
-    Debug,
-    Error,
-    Fault,
-    Unknown
+    LVL_DEFAULT,
+    LVL_INFO,
+    LVL_DEBUG,
+    LVL_ERROR,
+    LVL_FAULT,
+    LVL_UNKNOWN
 } FlogConfigLevel;
 
 /*! \brief An enumerated type representing the log message type. */
@@ -57,18 +58,21 @@ typedef struct FlogConfigData FlogConfig;
 /*! \brief Create a FlogConfig object representing configuration to be used
  *         with a FlogCli logger object.
  *
- *  \param argc An integer representing the number of command-line arguments
- *  \param argv A pointer to an array of null-terminated strings representing
- *              command-line arguments
+ *  \param[in]  argc  An integer representing the number of command-line arguments
+ *  \param[in]  argv  A pointer to an array of null-terminated strings representing
+ *                    command-line arguments
+ *  \param[out] error A pointer to a FlogError object that will be used to represent
+ *                    an error condition on failure
  *
  *  \pre \c argc is greater than \c 0
  *  \pre \c argv is \e not \c NULL
+ *  \pre \c error is \e not \c NULL
  *
  *  \return If successful, a pointer to a FlogConfig object; if there is an error
- *          a \c NULL pointer is returned and \c errno will be set to one of several
- *          potential error values (see defs.h)
+ *          a \c NULL pointer is returned and \c error will be set to a FlogError
+ *          variant representing an error condition
  */
-FlogConfig * flog_config_new(int argc, char *argv[]);
+FlogConfig * flog_config_new(int argc, char *argv[], FlogError *error);
 
 /*! \brief Free a FlogConfig object.
  *
