@@ -43,7 +43,7 @@ void flog_usage() {}
 void flog_version() {}
 
 static void test_new_config_with_zero_arg_count_calls_assert(void **state) {
-    FlogError error;
+    FlogError error;        // should pass non-null assertion (&error)
     int mock_argc = 0;      // should fail >0 assertion
     char *mock_argv[] = {}; // should pass non-null assertion
 
@@ -51,7 +51,7 @@ static void test_new_config_with_zero_arg_count_calls_assert(void **state) {
 }
 
 static void test_new_config_with_null_arg_values_calls_assert(void **state) {
-    FlogError error;
+    FlogError error;         // should pass non-null assertion (&error)
     int mock_argc = 1;       // should pass >0 assertion
     char **mock_argv = NULL; // should fail non-null assertion
 
