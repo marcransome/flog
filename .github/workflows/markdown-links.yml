@@ -1,4 +1,4 @@
-name: "Markdown links"
+name: Markdown links check
 on:
   push:
     branches:
@@ -12,14 +12,17 @@ on:
   schedule:
     - cron: '0 18 * * 1'
   workflow_dispatch:
+
+permissions: read-all
+
 jobs:
   markdown-links:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633 # v4.1.2
     - name: Check links in modified Markdown files
       if: github.event_name == 'pull_request'
-      uses: gaurav-nelson/github-action-markdown-link-check@v1
+      uses: gaurav-nelson/github-action-markdown-link-check@d53a906aa6b22b8979d33bc86170567e619495ec # 1.0.15
       with:
         base-branch: main
         check-modified-files-only: yes
@@ -27,7 +30,7 @@ jobs:
         config-file: .github/markdown/markdown-links.json
     - name: Check links in all Markdown files
       if: github.event_name != 'pull_request'
-      uses: gaurav-nelson/github-action-markdown-link-check@v1
+      uses: gaurav-nelson/github-action-markdown-link-check@d53a906aa6b22b8979d33bc86170567e619495ec # 1.0.15
       with:
         use-verbose-mode: yes
         config-file: .github/markdown/markdown-links.json
