@@ -25,18 +25,18 @@
 
 static const char *
 flog_error_map[] = {
-  [FLOG_ERROR_NONE]   = "none",
-  [FLOG_ERROR_ALLOC]  = "allocation failed",
-  [FLOG_ERROR_APPEND] = "unable to append log message to file",
-  [FLOG_ERROR_LVL]    = "unknown log level",
-  [FLOG_ERROR_MSG]    = "message string required",
-  [FLOG_ERROR_SUBSYS] = "category option requires subsystem option to be set",
-  [FLOG_ERROR_OPTS]   = "invalid options",
+    [FLOG_ERROR_NONE]   = "none",
+    [FLOG_ERROR_ALLOC]  = "allocation failed",
+    [FLOG_ERROR_APPEND] = "unable to append log message to file",
+    [FLOG_ERROR_LVL]    = "unknown log level",
+    [FLOG_ERROR_MSG]    = "message string required",
+    [FLOG_ERROR_SUBSYS] = "category option requires subsystem option to be set",
+    [FLOG_ERROR_OPTS]   = "invalid options",
 };
 
 const char *
 flog_error_string(FlogError error) {
-  return flog_error_map[error];
+    return flog_error_map[error];
 }
 
 void
