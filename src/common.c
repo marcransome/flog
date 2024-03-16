@@ -45,11 +45,6 @@ flog_print_error(FlogError error) {
 }
 
 void
-flog_print_error_string(const char *error) {
-    fprintf(stderr, "%s: %s", PROGRAM_NAME, error);
-}
-
-void
 flog_usage(void) {
     printf(
         "%s %s\n"

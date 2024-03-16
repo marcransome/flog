@@ -64,12 +64,4 @@ const char * flog_get_error_string(FlogError error);
  */
 void flog_print_error(FlogError error);
 
-/*! \brief Print a formatted error message string.
- *
- * \param[out] error A null-terminated string describing the error condition.
- *
- * \return void
- */
-void flog_print_error_string(const char *error);
-
 #endif //FLOG_COMMON_H
