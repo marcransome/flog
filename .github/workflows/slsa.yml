@@ -35,8 +35,7 @@ jobs:
             fi
         done
 
-        hashes=$(shasum -a 256 "${artifacts[@]}")
-        b64_hashes=$(base64 <<< "${hashes}")
+        b64_hashes=$(shasum -a 256 "${artifacts[@]}" | base64)
         echo "hashes=${b64_hashes}" >> "$GITHUB_OUTPUT"
 
     - name: Upload build artifact
