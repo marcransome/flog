@@ -27,22 +27,39 @@ jobs:
             exit 1
         fi
         echo "name=${arch}" >> "$GITHUB_OUTPUT"
-    - name: Generate build artifact
+    - id: artifact
+      name: Generate build artifact
       run: |
         cmake -S . -B build
         cmake --build build
-        xz -cv build/src/flog > flog-darwin-${{ steps.arch.outputs.name }}.xz
+
+        output_dir="build/src"
+        artifact="${output_dir}/flog"
+
+        if [[ ! -f "${output_dir}/${artifact}" ]]; then
+            echo "Failed to generate build artifact: ${output_dir}/${artifact}"
+            exit 1
+        fi
+
+        echo "dir=${output_dir}" >> "$GITHUB_OUTPUT"
+        echo "name=${artifact}" >> "$GITHUB_OUTPUT"
+    - id: archive
+      name: Compress build artifact
+      run: |
+        archive="flog-darwin-${{ steps.arch.outputs.name }}.tar.xz"
+        tar -cvJf "${archive}" -C "${{ steps.artifact.outputs.dir }}" "${{ steps.artifact.outputs.name }}"
+        echo "name=${archive}" >> "$GITHUB_OUTPUT"
     - id: hash
       name: Generate build artifact hash
       run: |
         set -o pipefail
-        b64_hash=$(shasum -a 256 "flog-darwin-${{ steps.arch.outputs.name }}.xz" | base64)
+        b64_hash=$(shasum -a 256 "${{ steps.archive.outputs.name }}" | base64)
         echo "hash-darwin-${{ steps.arch.outputs.name }}=${b64_hash}" >> "$GITHUB_OUTPUT"
     - name: Upload build artifact
       uses: actions/upload-artifact@5d5d22a31266ced268874388b861e4b58bb5c2f3 # v4.3.1
       with:
-        name: flog-darwin-${{ steps.arch.outputs.name }}.xz
-        path: flog-darwin-${{ steps.arch.outputs.name }}.xz
+        name: ${{ steps.archive.outputs.name }}
+        path: ${{ steps.archive.outputs.name }}
         if-no-files-found: error
         retention-days: 7
   combine_hashes:
