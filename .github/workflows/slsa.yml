@@ -9,19 +9,20 @@ jobs:
     name: Build
     runs-on: macos-latest
     outputs:
-      hashes: "${{ steps.artifacts.outputs.hashes }}"
+      hashes: "${{ steps.hashes.outputs.hashes }}"
     steps:
     - name: Checkout repository
       uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633 # v4.1.2
     - name: Install dependencies
       run: brew install popt
-    - id: artifacts
-      name: Build artifact and generate hashes
+    - name: Generate build artifact
       run: |
         cmake -S . -B build
         cmake --build build
-        cd build/src
-        echo "hashes=$(sha256sum flog | base64 -w0)" >> "$GITHUB_OUTPUT"
+    - id: hashes
+      name: Generate hashes
+      run: |
+        echo "hashes=$(sha256sum build/src/flog | base64 -w0)" >> "$GITHUB_OUTPUT"
     - name: Upload build artifact
       uses: actions/upload-artifact@5d5d22a31266ced268874388b861e4b58bb5c2f3 # v4.3.1
       with:
