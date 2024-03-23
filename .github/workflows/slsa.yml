@@ -1,5 +1,7 @@
 name: SLSA Provenance
 on:
+  release:
+    types: [created]
   workflow_dispatch:
 
 permissions: read-all
@@ -13,6 +15,8 @@ jobs:
     outputs:
         hash-darwin-x86_64: ${{ steps.hash.outputs.hash-darwin-x86_64 }}
         hash-darwin-arm64: ${{ steps.hash.outputs.hash-darwin-arm64 }}
+        archive-darwin-x86_64: ${{ steps.archive.outputs.archive-darwin-x86_64 }}
+        archive-darwin-arm64: ${{ steps.archive.outputs.archive-darwin-arm64 }}
     steps:
     - name: Checkout repository
       uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633 # v4.1.2
@@ -46,20 +50,29 @@ jobs:
     - id: archive
       name: Compress build artifact
       run: |
-        archive="flog-darwin-${{ steps.arch.outputs.name }}.tar.xz"
+        archive="flog-${GITHUB_REF_NAME}-darwin-${{ steps.arch.outputs.name }}.tar.xz"
         tar -cvJf "${archive}" -C "${{ steps.artifact.outputs.dir }}" "${{ steps.artifact.outputs.name }}"
         echo "name=${archive}" >> "$GITHUB_OUTPUT"
+        echo "archive-darwin-${{ steps.arch.outputs.name }}=${archive}" >> "$GITHUB_OUTPUT"
     - id: hash
       name: Generate build artifact hash
       run: |
         set -o pipefail
-        b64_hash=$(shasum -a 256 "${{ steps.archive.outputs.name }}" | base64)
+        shasum -a 256 "${{ steps.archive.outputs.name }}" > "${{ steps.archive.outputs.name }}.sha256"
+        b64_hash=$(cat "${{ steps.archive.outputs.name }}.sha256" | base64)
         echo "hash-darwin-${{ steps.arch.outputs.name }}=${b64_hash}" >> "$GITHUB_OUTPUT"
     - name: Upload build artifact
       uses: actions/upload-artifact@5d5d22a31266ced268874388b861e4b58bb5c2f3 # v4.3.1
       with:
         name: ${{ steps.archive.outputs.name }}
         path: ${{ steps.archive.outputs.name }}
+        if-no-files-found: error
+        retention-days: 7
+    - name: Upload SHA-256 checksum file
+      uses: actions/upload-artifact@5d5d22a31266ced268874388b861e4b58bb5c2f3 # v4.3.1
+      with:
+        name: ${{ steps.archive.outputs.name }}.sha256
+        path: ${{ steps.archive.outputs.name }}.sha256
         if-no-files-found: error
         retention-days: 7
   combine_hashes:
@@ -72,7 +85,7 @@ jobs:
     steps:
       - id: hashes
         run: |
-          echo "$HASHES" | jq -r '.[] | @base64d' | sed "/^$/d" > hashes.txt
+          echo "$HASHES" | jq -r 'with_entries(select(.key | match("hash-.*-.*")))[] | @base64d' | sed "/^$/d" > hashes.txt
           echo "hashes=$(cat hashes.txt | base64 -w0)" >> "$GITHUB_OUTPUT"
   provenance:
     needs: [combine_hashes]
@@ -83,3 +96,23 @@ jobs:
     uses: slsa-framework/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@v1.10.0 # Must specify version tag; see https://github.com/slsa-framework/slsa-verifier/issues/12
     with:
       base64-subjects: ${{ needs.combine_hashes.outputs.hashes }}
+      provenance-name: flog.multiple.intoto.json
+  release:
+    needs: [build, provenance]
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v')
+    steps:
+      - name: Download x86_64 build artifact
+        uses: actions/download-artifact@c850b930e6ba138125429b7e5c93fc707a7f8427 # v4.1.4
+        with:
+          name: ${{ needs.build.outputs.archive-darwin-x86_64 }}
+      - name: Download arm64 build artifact
+        uses: actions/download-artifact@c850b930e6ba138125429b7e5c93fc707a7f8427 # v4.1.4
+        with:
+          name: ${{ needs.build.outputs.archive-darwin-arm64 }}
+      - name: Upload release assets
+        uses: softprops/action-gh-release@9d7c94cfd0a1f3ed45544c887983e9fa900f0564 # v2.0.4
+        with:
+          files: |
+            ${{ needs.build.outputs.archive-darwin-x86_64 }}
+            ${{ needs.build.outputs.archive-darwin-arm64 }}
