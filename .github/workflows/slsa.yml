@@ -1,0 +1,36 @@
+name: SLSA Provenance
+on:
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions: read-all
+
+jobs:
+  build:
+    name: Build
+    runs-on: macos-latest
+    outputs:
+      hashes: "${{ steps.artifacts.outputs.flog }}"
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633 # v4.1.2
+    - name: Install dependencies
+      run: brew install popt
+    - id: artifacts
+      name: Build artifacts
+      run: |
+        cmake -S . -B build -G Ninja
+        cmake --build build
+        cd build/src
+        echo "flog=$(sha256sum flog | base64 -w0)" >> "$GITHUB_OUTPUT"
+
+  provenance:
+    permissions:
+      actions: read
+      id-token: write
+      contents: write
+    uses: slsa-framework/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@c747fe7769adf3656dc7d588b161cb614d7abfee # v1.10.0
+    with:
+      base64-subjects: "${{ needs.build.outputs.hashes }}"
