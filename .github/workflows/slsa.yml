@@ -11,7 +11,7 @@ jobs:
         os: [macos-13, macos-14]
     runs-on: ${{ matrix.os }}
     outputs:
-        hash-darwin-amd64: ${{ steps.hash.outputs.hash-darwin-amd64 }}
+        hash-darwin-x86_64: ${{ steps.hash.outputs.hash-darwin-x86_64 }}
         hash-darwin-arm64: ${{ steps.hash.outputs.hash-darwin-arm64 }}
     steps:
     - name: Checkout repository
