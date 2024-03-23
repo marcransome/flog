@@ -22,7 +22,7 @@ jobs:
       name: Get machine hardware name
       run: |
         arch=$(uname -m)
-        if [[ "${arch}" != "x86_64" || "${arch}" != "arm64" ]]; then
+        if [[ "${arch}" != "x86_64" && "${arch}" != "arm64" ]]; then
             echo "Unexpected machine hardware name: ${arch}"
             exit 1
         fi
