@@ -24,6 +24,7 @@
 #define FLOG_H
 
 #include "config.h"
+#include "common.h"
 
 /*! \file flog.h
  *
@@ -38,14 +39,18 @@ typedef struct FlogCliData FlogCli;
 
 /*! \brief Create a FlogCli object to be used for logging messages to the unified logging system.
  *
- *  \param config A pointer to a FlogConfig object
+ *  \param[in]  config A pointer to a FlogConfig object
+ *  \param[out] error  A pointer to a FlogError object that will be used to represent
+ *                     an error condition on failure
  *
  *  \pre \c config is \e not \c NULL
+ *  \pre \c error is \e not \c NULL
  *
  *  \return If successful, a pointer to a FlogCli object; if there is an error
- *          a \c NULL pointer is returned and \c errno will be set to \c ERR_FLOG_ALLOCATION
+ *          a \c NULL pointer is returned and \c error will be set to a FlogError
+ *          variant representing an error condition
  */
-FlogCli * flog_cli_new(FlogConfig *config);
+FlogCli * flog_cli_new(FlogConfig *config, FlogError *error);
 
 /*! \brief Free a FlogCli object.
  *
@@ -88,7 +93,10 @@ void flog_commit_message(FlogCli *flog);
  *  \param flog A pointer to the FlogCli object
  *
  *  \pre \c flog is \e not \c NULL
+ *
+ *  \return If successful, the FlogError variant FLOG_ERROR_NONE, otherwise some
+ *          other variant representing an error condition
  */
-void flog_append_message_output(FlogCli *flog);
+FlogError flog_append_message_output(FlogCli *flog);
 
 #endif //FLOG_H

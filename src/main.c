@@ -22,44 +22,54 @@
 
 #include <stdlib.h>
 #include <stdio.h>
-#include <sys/errno.h>
 #include "flog.h"
-#include "defs.h"
-#include "utils.h"
+#include "common.h"
 
 int
 main(int argc, char *argv[]) {
-    FlogConfig *config = flog_config_new(argc, argv);
+
+    if (argc == 1 ) {
+        flog_usage();
+        return 1;
+    }
+
+    FlogError error = FLOG_ERROR_NONE;
+    FlogConfig *config = flog_config_new(argc, argv, &error);
     if (config == NULL) {
-        if (errno == ERR_CONFIG_ALLOCATION) {
-            fprintf(stderr, "%s: config allocation failure\n", PROGRAM_NAME);
-        } else if (errno == ERR_NO_ARGUMENTS_PROVIDED) {
-            flog_usage();
-        } else if (errno == ERR_NO_MESSAGE_STRING_PROVIDED) {
-            fprintf(stderr, "%s: message string required\n", PROGRAM_NAME);
+        if (error != FLOG_ERROR_OPTS) {
+            flog_print_error(error);
         }
-        return errno;
+        return error;
     }
 
     if (flog_config_get_version_flag(config)) {
+        flog_config_free(config);
         flog_version();
         return EXIT_SUCCESS;
     } else if (flog_config_get_help_flag(config)) {
+        flog_config_free(config);
         flog_usage();
         return EXIT_SUCCESS;
-    } else if (flog_config_get_level(config) == Unknown) {
-        fprintf(stderr, "%s: unknown log level\n", PROGRAM_NAME);
-        return EXIT_FAILURE;
     }
 
-    FlogCli *flog = flog_cli_new(config);
-    if (flog == NULL && errno == ERR_FLOG_ALLOCATION) {
-        fprintf(stderr, "%s: logger allocation failure\n", PROGRAM_NAME);
-        return errno;
+    error = FLOG_ERROR_NONE;
+    FlogCli *flog = flog_cli_new(config, &error);
+    if (flog == NULL) {
+        flog_config_free(config);
+        flog_print_error(error);
+        return error;
+    }
+
+    error = FLOG_ERROR_NONE;
+    error = flog_append_message_output(flog);
+    if (error != FLOG_ERROR_NONE) {
+        flog_cli_free(flog);
+        flog_config_free(config);
+        flog_print_error(error);
+        return error;
     }
 
     flog_commit_message(flog);
-    flog_append_message_output(flog);
 
     flog_cli_free(flog);
     flog_config_free(config);

@@ -20,18 +20,48 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef FLOG_UTILS_H
-#define FLOG_UTILS_H
+#ifndef FLOG_COMMON_H
+#define FLOG_COMMON_H
 
-/*! \file utils.h
+/*! \file common.h
  *
- *  General helper functions for common operations.
+ *  Constants, helper functions, and error handling types for common operations.
  */
 
-/*! \brief Print help information. */
+#define PROGRAM_NAME "flog"
+#define PROGRAM_VERSION "1.4.0"
+
+/*! \brief An enumerated type representing error conditions. */
+typedef enum FlogErrorData {
+    FLOG_ERROR_NONE,
+    FLOG_ERROR_ALLOC,
+    FLOG_ERROR_APPEND,
+    FLOG_ERROR_LVL,
+    FLOG_ERROR_MSG,
+    FLOG_ERROR_OPTS,
+    FLOG_ERROR_SUBSYS,
+} FlogError;
+
+/*! \brief Print usage information to stdout stream. */
 void flog_usage(void);
 
-/*! \brief Print the version string. */
+/*! \brief Print version string to stdout stream. */
 void flog_version(void);
 
-#endif //FLOG_UTILS_H
+/*! \brief Return a string representation of an error condition.
+ *
+ * \param[in] error A FlogError enumeration variant
+ *
+ * \return A pointer to a null-terminated string describing the error condition
+ */
+const char * flog_get_error_string(FlogError error);
+
+/*! \brief Print a formatted error message representation of the error condition.
+ *
+ * \param[in] error A FlogError enumeration variant representing the error condition
+ *
+ * \return void
+ */
+void flog_print_error(FlogError error);
+
+#endif //FLOG_COMMON_H
