@@ -6,51 +6,63 @@ permissions: read-all
 
 jobs:
   build:
-    name: Build
-    runs-on: macos-latest
+    strategy:
+      matrix:
+        os: [macos-13, macos-14]
+    runs-on: ${{ matrix.os }}
     outputs:
-      hashes: "${{ steps.hashes.outputs.hashes }}"
+        hash-darwin-x86_64: ${{ steps.hash.outputs.hash-darwin-x86_64 }}
+        hash-darwin-arm64: ${{ steps.hash.outputs.hash-darwin-arm64 }}
     steps:
     - name: Checkout repository
       uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633 # v4.1.2
     - name: Install dependencies
       run: brew install popt
+    - id: arch
+      name: Get machine hardware name
+      run: |
+        arch=$(uname -m)
+        if [[ "${arch}" != "x86_64" || "${arch}" != "arm64" ]]; then
+            echo "Unexpected machine hardware name: ${arch}"
+            exit 1
+        fi
+        echo "name=${arch}" >> "$GITHUB_OUTPUT"
     - name: Generate build artifact
       run: |
         cmake -S . -B build
         cmake --build build
-    - id: hashes
-      name: Generate hashes
+        xz -cv build/src/flog > flog-darwin-${{ steps.arch.outputs.name }}.xz
+    - id: hash
+      name: Generate build artifact hash
       run: |
         set -o pipefail
-
-        artifacts=(
-            "build/src/flog"
-        )
-
-        for artifact in "${artifacts[@]}"; do
-            if [[ ! -f "${artifact}" ]]; then
-                echo "Failed to find artifact: ${artifact}"
-                exit 1
-            fi
-        done
-
-        b64_hashes=$(shasum -a 256 "${artifacts[@]}" | base64)
-        echo "hashes=${b64_hashes}" >> "$GITHUB_OUTPUT"
-
+        b64_hash=$(shasum -a 256 "flog-darwin-${{ steps.arch.outputs.name }}.xz" | base64)
+        echo "hash-darwin-${{ steps.arch.outputs.name }}=${b64_hash}" >> "$GITHUB_OUTPUT"
     - name: Upload build artifact
       uses: actions/upload-artifact@5d5d22a31266ced268874388b861e4b58bb5c2f3 # v4.3.1
       with:
-        name: flog
-        path: build/src/flog
+        name: flog-darwin-${{ steps.arch.outputs.name }}.xz
+        path: flog-darwin-${{ steps.arch.outputs.name }}.xz
         if-no-files-found: error
         retention-days: 7
-  provenance:
+  combine_hashes:
     needs: [build]
+    runs-on: ubuntu-latest
+    outputs:
+      hashes: ${{ steps.hashes.outputs.hashes }}
+    env:
+      HASHES: ${{ toJSON(needs.build.outputs) }}
+    steps:
+      - id: hashes
+        run: |
+          echo "$HASHES" | jq -r '.[] | @base64d' | sed "/^$/d" > hashes.txt
+          echo "hashes=$(cat hashes.txt | base64 -w0)" >> "$GITHUB_OUTPUT"
+  provenance:
+    needs: [combine_hashes]
     permissions:
       actions: read
       id-token: write
       contents: write
     uses: slsa-framework/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@v1.10.0 # Must specify version tag; see https://github.com/slsa-framework/slsa-verifier/issues/12
     with:
-      base64-subjects: "${{ needs.build.outputs.hashes }}"
+      base64-subjects: ${{ needs.combine_hashes.outputs.hashes }}
