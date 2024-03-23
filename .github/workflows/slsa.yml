@@ -38,7 +38,7 @@ jobs:
         cmake --build build
 
         output_dir="build/src"
-        artifact="${output_dir}/flog"
+        artifact="flog"
 
         if [[ ! -f "${output_dir}/${artifact}" ]]; then
             echo "Failed to generate build artifact: ${output_dir}/${artifact}"
