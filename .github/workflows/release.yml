@@ -22,12 +22,12 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633 # v4.1.2
-    - name: Install build dependencies
-      run: |
-        brew install popt
-        brew install cmocka
+    - name: Install runtime dependencies
+      run: brew install popt
+    - name: Install test dependencies
+      run: brew install cmocka
     - name: Install build tools
-      run: brew install just
+      run: brew install just pandoc
     - id: arch
       name: Get machine hardware name
       run: |
