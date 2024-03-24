@@ -3,7 +3,7 @@
 NAME
 ====
 
-**flog** — write log messages to the unified logging system
+**flog** - write log messages to the unified logging system
 
 SYNOPSIS
 ========
