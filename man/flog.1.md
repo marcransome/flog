@@ -1,9 +1,9 @@
-% flog(1) Version 1.4.0 | Flog User's Guide
+% flog(1) Version v1.5.0 | Flog User's Guide
 
 NAME
 ====
 
-**flog** — write log messages to the unified logging system
+**flog** - write log messages to the unified logging system
 
 SYNOPSIS
 ========
