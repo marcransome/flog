@@ -77,14 +77,15 @@ jobs:
     needs: [build]
     runs-on: ubuntu-latest
     outputs:
-      checksums: ${{ steps.checksums.outputs.checksums }}
+      checksums: ${{ steps.checksums.outputs.combined }}
     env:
       CHECKSUMS: ${{ toJSON(needs.build.outputs) }}
     steps:
       - id: checksums
         run: |
+          set -euo pipefail
           echo "${CHECKSUMS}" | jq -r 'with_entries(select(.key | match("sha256-checksum-.*-.*")))[] | @base64d' | sed "/^$/d" > checksums.txt
-          echo "checksums=$(cat checksums.txt | base64 -w0)" >> "${GITHUB_OUTPUT}"
+          echo "combined=$(cat checksums.txt | base64 -w0)" >> "${GITHUB_OUTPUT}"
   provenance:
     needs: [build, combine-checksums]
     permissions:
