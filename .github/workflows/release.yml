@@ -50,7 +50,7 @@ jobs:
             echo "Failed to generated expected build artifact: ${artifact}"
         fi
         echo "name=${artifact}" >> "${GITHUB_OUTPUT}"
-        echo "artifact-filename-darwin-${{ steps.arch.outputs.name }}=${archive}" >> "${GITHUB_OUTPUT}"
+        echo "artifact-filename-darwin-${{ steps.arch.outputs.name }}=${artifact}" >> "${GITHUB_OUTPUT}"
     - id: checksum
       name: Generate build artifact SHA-256 checksum file
       env:
