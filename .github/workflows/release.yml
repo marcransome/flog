@@ -99,7 +99,7 @@ jobs:
     uses: slsa-framework/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@v1.10.0 # Must specify version tag; see https://github.com/slsa-framework/slsa-verifier/issues/12
     with:
       base64-subjects: ${{ needs.combine-hashes.outputs.hashes }}
-      provenance-name: flog.multiple.intoto.jsonl
+      provenance-name: flog-${{ github.ref_name }}.intoto.jsonl
       upload-assets: ${{ startsWith(github.ref, 'refs/tags/v') }}
   release:
     needs: [build, combine-hashes, provenance]
