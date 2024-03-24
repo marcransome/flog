@@ -96,22 +96,10 @@ jobs:
       actions: read
       id-token: write
       contents: write
-    runs-on: ubuntu-latest
-    steps:
-      - if: startsWith(github.ref, 'refs/tags/v')
-        name: Generate and upload SLSA provenance to release
-        uses: slsa-framework/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@v1.10.0 # Must specify version tag; see https://github.com/slsa-framework/slsa-verifier/issues/12
-        with:
-          base64-subjects: ${{ needs.combine-hashes.outputs.hashes }}
-          provenance-name: flog.multiple.intoto.jsonl
-          upload-assets: true
-      - if: ${{ !startsWith(github.ref, 'refs/tags/v') }}
-        name: Generate SLSA provenance
-        uses: slsa-framework/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@v1.10.0 # Must specify version tag; see https://github.com/slsa-framework/slsa-verifier/issues/12
-        with:
-          base64-subjects: ${{ needs.combine-hashes.outputs.hashes }}
-          provenance-name: flog.multiple.intoto.jsonl
-          upload-assets: false
+    uses: slsa-framework/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@v1.10.0 # Must specify version tag; see https://github.com/slsa-framework/slsa-verifier/issues/12
+    with:
+      base64-subjects: ${{ needs.combine-hashes.outputs.hashes }}
+      provenance-name: flog.multiple.intoto.jsonl
   release:
     needs: [build, combine-hashes, provenance]
     permissions:
@@ -135,6 +123,10 @@ jobs:
         uses: actions/download-artifact@c850b930e6ba138125429b7e5c93fc707a7f8427 # v4.1.4
         with:
           name: ${{ needs.build.outputs.checksum-darwin-arm64 }}
+      - name: Download in-toto attestations file
+        uses: actions/download-artifact@c850b930e6ba138125429b7e5c93fc707a7f8427 # v4.1.4
+        with:
+          name: flog.multiple.intoto.jsonl
       - name: Upload release assets
         uses: softprops/action-gh-release@9d7c94cfd0a1f3ed45544c887983e9fa900f0564 # v2.0.4
         with:
@@ -143,3 +135,4 @@ jobs:
             ${{ needs.build.outputs.checksum-darwin-x86_64 }}
             ${{ needs.build.outputs.archive-darwin-arm64 }}
             ${{ needs.build.outputs.checksum-darwin-arm64 }}
+            flog.multiple.intoto.jsonl
