@@ -15,8 +15,8 @@ jobs:
     outputs:
         hash-darwin-x86_64: ${{ steps.hash.outputs.hash-darwin-x86_64 }}
         hash-darwin-arm64: ${{ steps.hash.outputs.hash-darwin-arm64 }}
-        checksum-darwin-x86_64: ${{ steps.hash.outputs.archive-darwin-x86_64 }}
-        checksum-darwin-arm64: ${{ steps.hash.outputs.archive-darwin-arm64 }}
+        checksum-darwin-x86_64: ${{ steps.hash.outputs.checksum-darwin-x86_64 }}
+        checksum-darwin-arm64: ${{ steps.hash.outputs.checksum-darwin-arm64 }}
         archive-darwin-x86_64: ${{ steps.archive.outputs.archive-darwin-x86_64 }}
         archive-darwin-arm64: ${{ steps.archive.outputs.archive-darwin-arm64 }}
     steps:
@@ -78,7 +78,7 @@ jobs:
         path: ${{ steps.archive.outputs.name }}.sha256
         if-no-files-found: error
         retention-days: 7
-  combine_hashes:
+  combine-hashes:
     needs: [build]
     runs-on: ubuntu-latest
     outputs:
@@ -91,7 +91,7 @@ jobs:
           echo "$HASHES" | jq -r 'with_entries(select(.key | match("hash-.*-.*")))[] | @base64d' | sed "/^$/d" > hashes.txt
           echo "hashes=$(cat hashes.txt | base64 -w0)" >> "$GITHUB_OUTPUT"
   provenance:
-    needs: [combine_hashes]
+    needs: [build, combine-hashes]
     permissions:
       actions: read
       id-token: write
@@ -101,7 +101,7 @@ jobs:
       base64-subjects: ${{ needs.combine_hashes.outputs.hashes }}
       provenance-name: flog.multiple.intoto.jsonl
   release:
-    needs: [build, provenance]
+    needs: [build, combine-hashes, provenance]
     permissions:
       contents: write
     runs-on: ubuntu-latest
