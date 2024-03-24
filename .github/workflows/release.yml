@@ -99,6 +99,8 @@ jobs:
       provenance-name: flog.multiple.intoto.jsonl
   release:
     needs: [build, provenance]
+    permissions:
+      contents: write
     runs-on: ubuntu-latest
     if: startsWith(github.ref, 'refs/tags/v')
     steps:
