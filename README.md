@@ -120,7 +120,7 @@ To build the man page:
 just man
 ```
 
-The `flog.1` man page is output to the `man` directory, and is converted the source file `man/flog.1.md` using [Pandoc](https://github.com/jgm/pandoc).
+The `flog.1` man page is output to the `man` directory, and is converted from the source file `man/flog.1.md` using [Pandoc](https://github.com/jgm/pandoc).
 
 ## Acknowledgements
 
