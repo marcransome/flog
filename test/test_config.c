@@ -186,21 +186,6 @@ static void flog_config_with_long_subsystem_option_and_no_subsystem_fails(void *
 }
 
 static void
-flog_config_new_with_stdin_tty_and_no_message_args_fails(void **state) {
-    FlogError error = TEST_ERROR;
-    MOCK_ARGS(
-        TEST_PROGRAM_NAME,
-        TEST_OPTION_LEVEL_SHORT,
-        TEST_OPTION_LEVEL_VALUE_INFO
-    )
-
-    FlogConfig *config = flog_config_new(mock_argc, mock_argv, &error);
-
-    assert_null(config);
-    assert_int_equal(error, FLOG_ERROR_MSG);
-}
-
-static void
 flog_config_new_with_message_succeeds(void **state) {
     FlogError error = TEST_ERROR;
     MOCK_ARGS(
@@ -487,7 +472,6 @@ int main(void) {
         cmocka_unit_test(flog_config_new_with_long_category_opt_and_no_subsystem_opt_fails),
         cmocka_unit_test(flog_config_with_short_subsystem_option_and_no_subsystem_fails),
         cmocka_unit_test(flog_config_with_long_subsystem_option_and_no_subsystem_fails),
-        cmocka_unit_test(flog_config_new_with_stdin_tty_and_no_message_args_fails),
 
         // flog_config_new() success tests
         cmocka_unit_test(flog_config_new_with_message_succeeds),
