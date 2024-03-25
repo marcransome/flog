@@ -123,7 +123,7 @@ jobs:
         with:
           name: ${{ needs.build.outputs.sha256-filename-darwin-arm64 }}
       - name: Install SLSA verifier
-        uses: slsa-framework/slsa-verifier/actions/installer@v2.4.1 # Must specify version tag; see https://github.com/slsa-framework/slsa-verifier/issues/12
+        uses: slsa-framework/slsa-verifier/actions/installer@v2.5.1 # Must specify version tag; see https://github.com/slsa-framework/slsa-verifier/issues/12
       - name: Verify SLSA provenance
         env:
           CHECKSUMS: ${{ needs.combine-checksums.outputs.checksums }}
