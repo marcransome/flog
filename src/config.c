@@ -70,7 +70,7 @@ struct FlogConfigData {
 
 FlogConfig *
 flog_config_new(int argc, char *argv[], FlogError *error) {
-    assert(argc > 0);
+    assert(argc > 1);
     assert(argv != NULL);
     assert(error != NULL);
 

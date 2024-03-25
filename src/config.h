@@ -64,7 +64,7 @@ typedef struct FlogConfigData FlogConfig;
  *  \param[out] error A pointer to a FlogError object that will be used to represent
  *                    an error condition on failure
  *
- *  \pre \c argc is greater than \c 0
+ *  \pre \c argc is greater than \c 1
  *  \pre \c argv is \e not \c NULL
  *  \pre \c error is \e not \c NULL
  *
