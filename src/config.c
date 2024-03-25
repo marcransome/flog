@@ -21,10 +21,9 @@
 // SOFTWARE.
 
 #include "config.h"
-#include "defs.h"
+#include "common.h"
 #include <stdlib.h>
 #include <stdio.h>
-#include <errno.h>
 #include <sys/syslimits.h>
 #include <string.h>
 #include <assert.h>
@@ -70,22 +69,20 @@ struct FlogConfigData {
 };
 
 FlogConfig *
-flog_config_new(int argc, char *argv[]) {
-    assert(argc > 0);
+flog_config_new(int argc, char *argv[], FlogError *error) {
+    assert(argc > 1);
     assert(argv != NULL);
+    assert(error != NULL);
 
-    if (argc == 1) {
-        errno = ERR_NO_ARGUMENTS_PROVIDED;
-        return NULL;
-    }
+    *error = FLOG_ERROR_NONE;
 
     FlogConfig *config = calloc(1, sizeof(struct FlogConfigData));
     if (config == NULL) {
-        errno = ERR_CONFIG_ALLOCATION;
+        *error = FLOG_ERROR_ALLOC;
         return NULL;
     }
 
-    flog_config_set_level(config, Default);
+    flog_config_set_level(config, LVL_DEFAULT);
     flog_config_set_message_type(config, Public);
     flog_config_set_version_flag(config, false);
     flog_config_set_help_flag(config, false);
@@ -111,9 +108,16 @@ flog_config_new(int argc, char *argv[]) {
                 break;
             case 'l':
                 flog_config_set_level(config, flog_config_parse_level(option_argument));
+                if (flog_config_get_level(config) == LVL_UNKNOWN) {
+                    flog_config_free(config);
+                    poptFreeContext(context);
+                    *error = FLOG_ERROR_LVL;
+                    return NULL;
+                }
                 break;
             case 's':
                 flog_config_set_subsystem(config, option_argument);
+
                 break;
             case 'c':
                 flog_config_set_category(config, option_argument);
@@ -134,15 +138,14 @@ flog_config_new(int argc, char *argv[]) {
 
         flog_config_free(config);
         poptFreeContext(context);
-        errno = ERR_PROGRAM_OPTIONS;
+        *error = FLOG_ERROR_OPTS;
         return NULL;
     }
 
     if (strlen(flog_config_get_category(config)) > 0 && strlen(flog_config_get_subsystem(config)) == 0) {
-        fprintf(stderr, "%s: category option requires subsystem option\n", PROGRAM_NAME);
         flog_config_free(config);
         poptFreeContext(context);
-        errno = ERR_CATEGORY_OPTION_REQUIRES_SUBSYSTEM;
+        *error = FLOG_ERROR_SUBSYS;
         return NULL;
     }
 
@@ -151,7 +154,7 @@ flog_config_new(int argc, char *argv[]) {
         if (message_args == NULL) {
             flog_config_free(config);
             poptFreeContext(context);
-            errno = ERR_NO_MESSAGE_STRING_PROVIDED;
+            *error = FLOG_ERROR_MSG;
             return NULL;
         }
 
@@ -243,17 +246,17 @@ flog_config_parse_level(const char *str) {
     FlogConfigLevel level;
 
     if (strcmp(str, "default") == 0) {
-        level = Default;
+        level = LVL_DEFAULT;
     } else if (strcmp(str, "info") == 0) {
-        level = Info;
+        level = LVL_INFO;
     } else if (strcmp(str, "debug") == 0) {
-        level = Debug;
+        level = LVL_DEBUG;
     } else if (strcmp(str, "error") == 0) {
-        level = Error;
+        level = LVL_ERROR;
     } else if (strcmp(str, "fault") == 0) {
-        level = Fault;
+        level = LVL_FAULT;
     } else {
-        level = Unknown;
+        level = LVL_UNKNOWN;
     }
 
     return level;

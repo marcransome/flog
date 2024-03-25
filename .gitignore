@@ -3,3 +3,4 @@
 build/
 codeql-database/
 codeql-analysis.sarif
+man/flog.1

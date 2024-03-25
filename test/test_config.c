@@ -24,9 +24,8 @@
 #include <stddef.h>
 #include <setjmp.h>
 #include <cmocka.h>
-#include <sys/errno.h>
 #include "config.h"
-#include "defs.h"
+#include "common.h"
 
 #define TEST_PROGRAM_NAME "flog"
 #define TEST_MESSAGE "test message"
@@ -64,68 +63,73 @@
 #define TEST_OPTION_INVALID_SHORT "-i"
 #define TEST_OPTION_INVALID_LONG "--invalid"
 
+#define TEST_ERROR 255
+
 #define MOCK_ARGS(...) \
     char *mock_argv[] = {__VA_ARGS__, NULL}; \
     int mock_argc = (sizeof(mock_argv) / sizeof(mock_argv[0]) - 1);
 
+void flog_usage() {}
+void flog_version() {}
+
 static void
 flog_config_new_with_zero_arg_count_fails(void **state) {
+    FlogError error;        // should pass non-null assertion (&error)
     int mock_argc = 0;      // should fail >0 assertion
     char *mock_argv[] = {}; // should pass non-null assertion
 
-    expect_assert_failure(flog_config_new(mock_argc, mock_argv));
+    expect_assert_failure(flog_config_new(mock_argc, mock_argv, &error));
 }
 
 static void
 flog_config_new_with_null_arg_values_fails(void **state) {
+    FlogError error;         // should pass non-null assertion (&error)
     int mock_argc = 1;       // should pass >0 assertion
     char **mock_argv = NULL; // should fail non-null assertion
 
-    expect_assert_failure(flog_config_new(mock_argc, mock_argv));
+    expect_assert_failure(flog_config_new(mock_argc, mock_argv, &error));
 }
 
-static void
-flog_config_new_with_no_args_fails(void **state) {
-    MOCK_ARGS(
-        TEST_PROGRAM_NAME
-    )
+static void test_new_config_with_no_error_ptr_calls_assert(void **state) {
+    int mock_argc = 1;      // should pass >0 assertion
+    char *mock_argv[] = {}; // should pass non-null assertion
 
-    FlogConfig *config = flog_config_new(mock_argc, mock_argv);
-
-    assert_null(config);
-    assert_int_equal(errno, ERR_NO_ARGUMENTS_PROVIDED);
+    expect_assert_failure(flog_config_new(mock_argc, mock_argv, NULL));
 }
 
 static void
 flog_config_new_with_short_invalid_opt_fails(void **state) {
+    FlogError error = TEST_ERROR;
     MOCK_ARGS(
         TEST_PROGRAM_NAME,
         TEST_OPTION_INVALID_SHORT,
         TEST_MESSAGE
     )
 
-    FlogConfig *config = flog_config_new(mock_argc, mock_argv);
+    FlogConfig *config = flog_config_new(mock_argc, mock_argv, &error);
 
     assert_null(config);
-    assert_int_equal(errno, ERR_PROGRAM_OPTIONS);
+    assert_int_equal(error, FLOG_ERROR_OPTS);
 }
 
 static void
 flog_config_new_with_long_invalid_opt_fails(void **state) {
+    FlogError error = TEST_ERROR;
     MOCK_ARGS(
         TEST_PROGRAM_NAME,
         TEST_OPTION_INVALID_LONG,
         TEST_MESSAGE
     )
 
-    FlogConfig *config = flog_config_new(mock_argc, mock_argv);
+    FlogConfig *config = flog_config_new(mock_argc, mock_argv, &error);
 
     assert_null(config);
-    assert_int_equal(errno, ERR_PROGRAM_OPTIONS);
+    assert_int_equal(error, FLOG_ERROR_OPTS);
 }
 
 static void
 flog_config_new_with_short_category_opt_and_no_subsystem_opt_fails(void **state) {
+    FlogError error = TEST_ERROR;
     MOCK_ARGS(
         TEST_PROGRAM_NAME,
         TEST_OPTION_CATEGORY_SHORT,
@@ -133,14 +137,15 @@ flog_config_new_with_short_category_opt_and_no_subsystem_opt_fails(void **state)
         TEST_MESSAGE
     )
 
-    FlogConfig *config = flog_config_new(mock_argc, mock_argv);
+    FlogConfig *config = flog_config_new(mock_argc, mock_argv, &error);
 
     assert_null(config);
-    assert_int_equal(errno, ERR_CATEGORY_OPTION_REQUIRES_SUBSYSTEM);
+    assert_int_equal(error, FLOG_ERROR_SUBSYS);
 }
 
 static void
 flog_config_new_with_long_category_opt_and_no_subsystem_opt_fails(void **state) {
+    FlogError error = TEST_ERROR;
     MOCK_ARGS(
         TEST_PROGRAM_NAME,
         TEST_OPTION_CATEGORY_LONG,
@@ -148,41 +153,71 @@ flog_config_new_with_long_category_opt_and_no_subsystem_opt_fails(void **state) 
         TEST_MESSAGE
     )
 
-    FlogConfig *config = flog_config_new(mock_argc, mock_argv);
+    FlogConfig *config = flog_config_new(mock_argc, mock_argv, &error);
 
     assert_null(config);
-    assert_int_equal(errno, ERR_CATEGORY_OPTION_REQUIRES_SUBSYSTEM);
+    assert_int_equal(error, FLOG_ERROR_SUBSYS);
+}
+
+static void flog_config_with_short_subsystem_option_and_no_subsystem_fails(void **state) {
+    FlogError error = TEST_ERROR;
+    int mock_argc = 2;
+    char *mock_argv[] = {
+        TEST_PROGRAM_NAME,
+        TEST_OPTION_SUBSYSTEM_SHORT
+    };
+
+    FlogConfig *config = flog_config_new(mock_argc, mock_argv, &error);
+    assert_null(config);
+    assert_int_equal(error, FLOG_ERROR_OPTS);
+}
+
+static void flog_config_with_long_subsystem_option_and_no_subsystem_fails(void **state) {
+    FlogError error = TEST_ERROR;
+    int mock_argc = 2;
+    char *mock_argv[] = {
+        TEST_PROGRAM_NAME,
+        TEST_OPTION_SUBSYSTEM_LONG
+    };
+
+    FlogConfig *config = flog_config_new(mock_argc, mock_argv, &error);
+    assert_null(config);
+    assert_int_equal(error, FLOG_ERROR_OPTS);
 }
 
 static void
 flog_config_new_with_stdin_tty_and_no_message_args_fails(void **state) {
+    FlogError error = TEST_ERROR;
     MOCK_ARGS(
         TEST_PROGRAM_NAME,
         TEST_OPTION_LEVEL_SHORT,
         TEST_OPTION_LEVEL_VALUE_INFO
     )
 
-    FlogConfig *config = flog_config_new(mock_argc, mock_argv);
+    FlogConfig *config = flog_config_new(mock_argc, mock_argv, &error);
 
     assert_null(config);
-    assert_int_equal(errno, ERR_NO_MESSAGE_STRING_PROVIDED);
+    assert_int_equal(error, FLOG_ERROR_MSG);
 }
 
 static void
 flog_config_new_with_message_succeeds(void **state) {
+    FlogError error = TEST_ERROR;
     MOCK_ARGS(
         TEST_PROGRAM_NAME,
         TEST_MESSAGE
     )
 
-    FlogConfig *config = flog_config_new(mock_argc, mock_argv);
+    FlogConfig *config = flog_config_new(mock_argc, mock_argv, &error);
     assert_non_null(config);
+    assert_int_equal(error, FLOG_ERROR_NONE);
 
     flog_config_free(config);
 }
 
 static void
 flog_config_new_with_short_subsystem_opt_and_message_succeeds(void **state) {
+    FlogError error = TEST_ERROR;
     MOCK_ARGS(
         TEST_PROGRAM_NAME,
         TEST_OPTION_SUBSYSTEM_SHORT,
@@ -190,14 +225,16 @@ flog_config_new_with_short_subsystem_opt_and_message_succeeds(void **state) {
         TEST_MESSAGE
     )
 
-    FlogConfig *config = flog_config_new(mock_argc, mock_argv);
+    FlogConfig *config = flog_config_new(mock_argc, mock_argv, &error);
     assert_non_null(config);
+    assert_int_equal(error, FLOG_ERROR_NONE);
 
     flog_config_free(config);
 }
 
 static void
 flog_config_new_with_long_subsystem_opt_and_message_succeeds(void **state) {
+    FlogError error = TEST_ERROR;
     MOCK_ARGS(
         TEST_PROGRAM_NAME,
         TEST_OPTION_SUBSYSTEM_LONG,
@@ -205,60 +242,73 @@ flog_config_new_with_long_subsystem_opt_and_message_succeeds(void **state) {
         TEST_MESSAGE
     )
 
-    FlogConfig *config = flog_config_new(mock_argc, mock_argv);
+    FlogConfig *config = flog_config_new(mock_argc, mock_argv, &error);
     assert_non_null(config);
+    assert_int_equal(error, FLOG_ERROR_NONE);
 
     flog_config_free(config);
 }
 
 static void
 flog_config_new_with_short_version_opt_succeeds(void **state) {
+    FlogError error = TEST_ERROR;
     MOCK_ARGS(
         TEST_PROGRAM_NAME,
         TEST_OPTION_VERSION_SHORT
     )
 
-    FlogConfig *config = flog_config_new(mock_argc, mock_argv);
+    FlogConfig *config = flog_config_new(mock_argc, mock_argv, &error);
+    assert_non_null(config);
     assert_true(flog_config_get_version_flag(config));
+    assert_int_equal(error, FLOG_ERROR_NONE);
 
     flog_config_free(config);
 }
 
 static void
 flog_config_new_with_long_version_opt_succeeds(void **state) {
+    FlogError error = TEST_ERROR;
     MOCK_ARGS(
         TEST_PROGRAM_NAME,
         TEST_OPTION_VERSION_LONG
     )
 
-    FlogConfig *config = flog_config_new(mock_argc, mock_argv);
+    FlogConfig *config = flog_config_new(mock_argc, mock_argv, &error);
+    assert_non_null(config);
     assert_true(flog_config_get_version_flag(config));
+    assert_int_equal(error, FLOG_ERROR_NONE);
 
     flog_config_free(config);
 }
 
 static void
 flog_config_new_with_short_help_opt_succeeds(void **state) {
+    FlogError error = TEST_ERROR;
     MOCK_ARGS(
         TEST_PROGRAM_NAME,
         TEST_OPTION_HELP_SHORT
     )
 
-    FlogConfig *config = flog_config_new(mock_argc, mock_argv);
+    FlogConfig *config = flog_config_new(mock_argc, mock_argv, &error);
+    assert_non_null(config);
     assert_true(flog_config_get_help_flag(config));
+    assert_int_equal(error, FLOG_ERROR_NONE);
 
     flog_config_free(config);
 }
 
 static void
 flog_config_new_with_long_help_opt_succeeds(void **state) {
+    FlogError error = TEST_ERROR;
     MOCK_ARGS(
         TEST_PROGRAM_NAME,
         TEST_OPTION_HELP_LONG
     )
 
-    FlogConfig *config = flog_config_new(mock_argc, mock_argv);
+    FlogConfig *config = flog_config_new(mock_argc, mock_argv, &error);
+    assert_non_null(config);
     assert_true(flog_config_get_help_flag(config));
+    assert_int_equal(error, FLOG_ERROR_NONE);
 
     flog_config_free(config);
 }
@@ -275,25 +325,27 @@ flog_config_set_subsystem_with_null_config_arg_fails(void **state) {
 
 static void
 flog_config_set_subsystem_with_null_subsystem_arg_fails(void **state) {
+    FlogError error = TEST_ERROR;
     MOCK_ARGS(
         TEST_PROGRAM_NAME,
         TEST_MESSAGE
     )
 
-    FlogConfig *config = flog_config_new(mock_argc, mock_argv);
-    expect_assert_failure(flog_config_set_subsystem(config, NULL));
+    FlogConfig *config = flog_config_new(mock_argc, mock_argv, &error);
+    expect_assert_failure(flog_config_set_subsystem(config, NULL))
 
     flog_config_free(config);
-}
+ }
 
 static void
 flog_config_get_subsystem_succeeds(void **state) {
+    FlogError error = TEST_ERROR;
     MOCK_ARGS(
         TEST_PROGRAM_NAME,
         TEST_MESSAGE
     )
 
-    FlogConfig *config = flog_config_new(mock_argc, mock_argv);
+    FlogConfig *config = flog_config_new(mock_argc, mock_argv, &error);
     assert_string_equal(flog_config_get_subsystem(config), "");
 
     flog_config_free(config);
@@ -301,12 +353,13 @@ flog_config_get_subsystem_succeeds(void **state) {
 
 static void
 flog_config_set_and_get_subsystem_succeeds(void **state) {
+    FlogError error = TEST_ERROR;
     MOCK_ARGS(
         TEST_PROGRAM_NAME,
         TEST_MESSAGE
     )
 
-    FlogConfig *config = flog_config_new(mock_argc, mock_argv);
+    FlogConfig *config = flog_config_new(mock_argc, mock_argv, &error);
     flog_config_set_subsystem(config, TEST_SUBSYSTEM);
     assert_string_equal(flog_config_get_subsystem(config), TEST_SUBSYSTEM);
 
@@ -325,12 +378,13 @@ flog_config_set_category_with_null_config_arg_fails(void **state) {
 
 static void
 flog_config_set_category_with_null_category_arg_fails(void **state) {
+    FlogError error = TEST_ERROR;
     MOCK_ARGS(
         TEST_PROGRAM_NAME,
         TEST_MESSAGE
     )
 
-    FlogConfig *config = flog_config_new(mock_argc, mock_argv);
+    FlogConfig *config = flog_config_new(mock_argc, mock_argv, &error);
     expect_assert_failure(flog_config_set_category(config, NULL));
 
     flog_config_free(config);
@@ -338,12 +392,13 @@ flog_config_set_category_with_null_category_arg_fails(void **state) {
 
 static void
 flog_config_get_category_succeeds(void **state) {
+    FlogError error = TEST_ERROR;
     MOCK_ARGS(
         TEST_PROGRAM_NAME,
         TEST_MESSAGE
     )
 
-    FlogConfig *config = flog_config_new(mock_argc, mock_argv);
+    FlogConfig *config = flog_config_new(mock_argc, mock_argv, &error);
     assert_string_equal(flog_config_get_category(config), "");
 
     flog_config_free(config);
@@ -351,12 +406,13 @@ flog_config_get_category_succeeds(void **state) {
 
 static void
 flog_config_set_and_get_category_succeeds(void **state) {
+    FlogError error = TEST_ERROR;
     MOCK_ARGS(
         TEST_PROGRAM_NAME,
         TEST_MESSAGE
     )
 
-    FlogConfig *config = flog_config_new(mock_argc, mock_argv);
+    FlogConfig *config = flog_config_new(mock_argc, mock_argv, &error);
     flog_config_set_category(config, TEST_CATEGORY);
     assert_string_equal(flog_config_get_category(config), TEST_CATEGORY);
 
@@ -375,12 +431,13 @@ flog_config_set_output_file_with_null_config_arg_fails(void **state) {
 
 static void
 flog_config_set_output_file_with_null_output_file_arg_fails(void **state) {
+    FlogError error = TEST_ERROR;
     MOCK_ARGS(
         TEST_PROGRAM_NAME,
         TEST_MESSAGE
     )
 
-    FlogConfig *config = flog_config_new(mock_argc, mock_argv);
+    FlogConfig *config = flog_config_new(mock_argc, mock_argv, &error);
     expect_assert_failure(flog_config_set_output_file(config, NULL));
 
     flog_config_free(config);
@@ -388,12 +445,13 @@ flog_config_set_output_file_with_null_output_file_arg_fails(void **state) {
 
 static void
 flog_config_get_output_file_succeeds(void **state) {
+    FlogError error = TEST_ERROR;
     MOCK_ARGS(
         TEST_PROGRAM_NAME,
         TEST_MESSAGE
     )
 
-    FlogConfig *config = flog_config_new(mock_argc, mock_argv);
+    FlogConfig *config = flog_config_new(mock_argc, mock_argv, &error);
     assert_string_equal(flog_config_get_output_file(config), "");
 
     flog_config_free(config);
@@ -401,12 +459,13 @@ flog_config_get_output_file_succeeds(void **state) {
 
 static void
 flog_config_set_and_get_output_file_succeeds(void **state) {
+    FlogError error = TEST_ERROR;
     MOCK_ARGS(
         TEST_PROGRAM_NAME,
         TEST_MESSAGE
     )
 
-    FlogConfig *config = flog_config_new(mock_argc, mock_argv);
+    FlogConfig *config = flog_config_new(mock_argc, mock_argv, &error);
     flog_config_set_output_file(config, TEST_OUTPUT_FILE);
     assert_string_equal(flog_config_get_output_file(config), TEST_OUTPUT_FILE);
 
@@ -422,11 +481,12 @@ int main(void) {
         cmocka_unit_test(flog_config_new_with_null_arg_values_fails),
 
         // flog_config_new() failure tests
-        cmocka_unit_test(flog_config_new_with_no_args_fails),
         cmocka_unit_test(flog_config_new_with_short_invalid_opt_fails),
         cmocka_unit_test(flog_config_new_with_long_invalid_opt_fails),
         cmocka_unit_test(flog_config_new_with_short_category_opt_and_no_subsystem_opt_fails),
         cmocka_unit_test(flog_config_new_with_long_category_opt_and_no_subsystem_opt_fails),
+        cmocka_unit_test(flog_config_with_short_subsystem_option_and_no_subsystem_fails),
+        cmocka_unit_test(flog_config_with_long_subsystem_option_and_no_subsystem_fails),
         cmocka_unit_test(flog_config_new_with_stdin_tty_and_no_message_args_fails),
 
         // flog_config_new() success tests

@@ -22,11 +22,10 @@
 
 #include "flog.h"
 #include <os/log.h>
-#include <sys/errno.h>
 #include <sys/stat.h>
 #include <assert.h>
 #include <stdlib.h>
-#include "defs.h"
+#include "common.h"
 #include "config.h"
 
 #ifdef UNIT_TESTING
@@ -50,12 +49,15 @@ struct FlogCliData {
 };
 
 FlogCli *
-flog_cli_new(FlogConfig *config) {
+flog_cli_new(FlogConfig *config, FlogError *error) {
     assert(config != NULL);
+    assert(error != NULL);
+
+    *error = FLOG_ERROR_NONE;
 
     FlogCli *flog = calloc(1, sizeof(struct FlogCliData));
     if (flog == NULL) {
-        errno = ERR_FLOG_ALLOCATION;
+        *error = FLOG_ERROR_ALLOC;
         return NULL;
     }
 
@@ -109,7 +111,7 @@ flog_commit_message(FlogCli *flog) {
     }
 }
 
-void
+FlogError
 flog_append_message_output(FlogCli *flog) {
     assert(flog != NULL);
 
@@ -122,8 +124,8 @@ flog_append_message_output(FlogCli *flog) {
 
         FILE *fd = fopen(output_file, "a");
         if (fd == NULL) {
-            fprintf(stderr, "%s: unable to append log message to file (%s)\n", PROGRAM_NAME, strerror(errno));
-            exit(errno);
+            umask(original_umask);
+            return FLOG_ERROR_APPEND;
         }
 
         umask(original_umask);
@@ -131,6 +133,8 @@ flog_append_message_output(FlogCli *flog) {
         fprintf(fd, "%s", flog_config_get_message(config));
         fclose(fd);
     }
+
+    return FLOG_ERROR_NONE;
 }
 
 void
@@ -142,19 +146,19 @@ flog_commit_public_message(FlogCli *flog) {
     const char *message = flog_config_get_message(config);
 
     switch (level) {
-        case Default:
+        case LVL_DEFAULT:
             os_log(flog->log, OS_LOG_FORMAT_PUBLIC, message);
             break;
-        case Info:
+        case LVL_INFO:
             os_log_info(flog->log, OS_LOG_FORMAT_PUBLIC, message);
             break;
-        case Debug:
+        case LVL_DEBUG:
             os_log_debug(flog->log, OS_LOG_FORMAT_PUBLIC, message);
             break;
-        case Error:
+        case LVL_ERROR:
             os_log_error(flog->log, OS_LOG_FORMAT_PUBLIC, message);
             break;
-        case Fault:
+        case LVL_FAULT:
             os_log_fault(flog->log, OS_LOG_FORMAT_PUBLIC, message);
             break;
         default:
@@ -172,19 +176,19 @@ flog_commit_private_message(FlogCli *flog) {
     const char *message = flog_config_get_message(config);
 
     switch (level) {
-        case Default:
+        case LVL_DEFAULT:
             os_log(flog->log, OS_LOG_FORMAT_PRIVATE, message);
             break;
-        case Info:
+        case LVL_INFO:
             os_log_info(flog->log, OS_LOG_FORMAT_PRIVATE, message);
             break;
-        case Debug:
+        case LVL_DEBUG:
             os_log_debug(flog->log, OS_LOG_FORMAT_PRIVATE, message);
             break;
-        case Error:
+        case LVL_ERROR:
             os_log_error(flog->log, OS_LOG_FORMAT_PRIVATE, message);
             break;
-        case Fault:
+        case LVL_FAULT:
             os_log_fault(flog->log, OS_LOG_FORMAT_PRIVATE, message);
             break;
         default:

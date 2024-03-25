@@ -4,7 +4,7 @@
 
 [![OpenSSF Scorecard](https://img.shields.io/ossf-scorecard/github.com/marcransome/flog?label=OpenSSF%20Scorecard)](https://securityscorecards.dev/viewer/?uri=github.com/marcransome/flog) [![CodeQL](https://github.com/marcransome/flog/actions/workflows/codeql-analysis.yml/badge.svg?branch=main)](https://github.com/marcransome/flog/actions/workflows/codeql-analysis.yml) [![Issues](https://img.shields.io/github/issues/marcransome/flog)](https://github.com/marcransome/flog/issues) [![License](https://img.shields.io/badge/license-MIT-blue)](https://opensource.org/licenses/mit-license.php) [![macOS](https://img.shields.io/badge/macOS-11+-blue)](https://www.apple.com/macos/)
 
-`flog` is a command-line tool for sending log messages to Apple's unified logging system and is primaily intended for use in scripts.
+`flog` is a command-line tool for sending log messages to Apple's unified logging system and is primarily intended for use in scripts.
 
 ---
 
@@ -12,7 +12,7 @@
 
 > _Why not use `logger(1)`?_
 
-`logger` doesn't support the full set of log levels provided by Apple's unified logging system, nor does it support specifying _subsystem_ and _category_ strings. `flog` on the other hand uses Apple's unified logging system C language APIs and supports both.
+`logger` doesn't support the full set of log levels offered by Apple's unified logging system, and it lacks support for _subsystem_ and _category_ strings. `flog` uses the C language APIs for the unified logging system and supports both.
 
 ## Getting started
 
@@ -20,7 +20,7 @@
 
 Install with [Homebrew](https://brew.sh):
 
-```bash
+```shell
 brew install marcransome/tap/flog
 ```
 
@@ -28,37 +28,37 @@ brew install marcransome/tap/flog
 
 To log a message using the `default` log level:
 
-```bash
+```shell
 flog '<message>'
 ```
 
 Optionally specify a _subsystem_ and _category_ using the `-s, --subsystem` and `-c, --category` options:
 
-```bash
+```shell
 flog -s uk.co.fidgetbox -c general 'informational message'
 ```
 
 Override the default log level using the `-l, --level` option and one of the values `info`, `debug`, `error` or `fault`:
 
-```bash
+```shell
 flog -l fault -s uk.co.fidgetbox -c general 'unrecoverable failure'
 ```
 
 `flog` can also read the log message from the standard input stream using a pipe:
 
-```bash
+```shell
 ./some-script | flog -l info
 ```
 
 Or the log message can be read from a file using shell redirection:
 
-```bash
+```shell
 flog < /var/log/some-script.log
 ```
 
 Use the `-a, --append` option to also append the log message to a file (creating the file if necessary):
 
-```bash
+```shell
 flog -a /var/log/some-script.log -l fault -s uk.co.fidgetbox -c general 'unrecoverable failure'
 ```
 
@@ -77,41 +77,50 @@ And here's a similar log stream viewed with Apple's `log(1)` command:
 
 <img width="995" alt="log" src="images/log.png">
 
-## Building
+## Development
+
+`flog` is written in C and requires a suitable compiler and additional tools to build from source. The [just](https://github.com/casey/just) command runner is used to manage the development and release process, which functions in a similar manner to `make`. For an overview of the available recipes and their usage run `just --list`.
 
 ### Requirements
 
 * macOS `11.x` (Big Sur) or later
 * A C17 compiler
 * CMake version `>=3.22`
+* The [just](https://github.com/casey/just) command runner
 * `pkg-config` version `>=0.29.2`
 * `libpopt` version `>=1.19`
-* `libcmocka` version `>=1.1.7` (if building unit test targets)
+* `libcmocka` version `>=1.1.7`
+* [Pandoc](https://github.com/jgm/pandoc) (if building the `man` page)
 
 ### Building from source
 
-To perform an out-of-source build from the project directory:
+To perform a development build from the project directory:
 
-```bash
-cmake -S . -B build
-cmake --build build
+```shell
+just build
 ```
 
-### Building unit test targets
+The resulting `flog` binary will be output to a `build/debug/bin` directory and test targets to `build/debug/test`.
 
-To perform an out-of-source build for unit test targets only:
+### Running unit tests
 
-```bash
-cmake -S . -B build -DUNIT_TESTING=ON
-cmake --build build
+To build and execute all test targets:
+
+```shell
+just test
 ```
 
-To execute all unit test targets:
+Alternatively, invoke individual test targets directly from the `build/debug/test` directory. All test target files begin with the prefix `test_` followed by the name of the source file under test.
 
-```bash
-cd build/test
-ctest -V
+## Building the man page
+
+To build the man page:
+
+```shell
+just man
 ```
+
+The `flog.1` man page is output to the `man` directory, and is converted the source file `man/flog.1.md` using [Pandoc](https://github.com/jgm/pandoc).
 
 ## Acknowledgements
 
