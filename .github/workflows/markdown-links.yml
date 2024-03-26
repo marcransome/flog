@@ -17,6 +17,7 @@ permissions: read-all
 
 jobs:
   markdown-links:
+    name: Markdown links check
     runs-on: ubuntu-latest
     steps:
       - name: Harden runner

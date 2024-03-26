@@ -8,6 +8,7 @@ permissions: read-all
 
 jobs:
   dependency-review:
+    name: Dependency review
     runs-on: ubuntu-latest
     permissions:
       pull-requests: write
