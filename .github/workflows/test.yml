@@ -27,6 +27,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633 # v4.1.2
       - name: Install dependencies
-        run: brew install popt just
+        run: brew install popt just cmocka
       - name: Run unit tests
         run: just test-release
