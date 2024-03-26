@@ -64,7 +64,7 @@ sarif_file     := "codeql-analysis.sarif"
 
     mkdir -p "${build_dir}"
 
-    codeql database create codeql/db --source-root="./src" --language="cpp" --command="cmake -S .. -B ../${build_dir}" --command="cmake --build ../${build_dir}"
+    codeql database create "${db_dir}" --source-root="./src" --language="cpp" --command="cmake -S .. -B ../${build_dir}" --command="cmake --build ../${build_dir}"
     codeql database analyze "${db_dir}" --format="sarif-latest" --output="{{sarif_file}}" "codeql/cpp-queries:codeql-suites/cpp-security-and-quality.qls"
 
 # generate release package
