@@ -49,6 +49,24 @@ man_target     := man_dir / "flog.1"
 @show-man: man
     man "{{man_target}}"
 
+# perform static code analysis
+@analyse:
+    #!/bin/bash
+    set -euo pipefail
+
+    build_dir="codeql/build"
+    db_dir="codeql/db"
+    sarif_file="codeql-analysis.sarif"
+
+    [[ -d "${build_dir}" ]] && rm -rf "${build_dir}"
+    [[ -d "${db_dir}" ]] && rm -rf "${db_dir}"
+    [[ -f "${sarif_file}" ]] && rm -f "${sarif_file}"
+
+    mkdir -p "${build_dir}"
+
+    codeql database create codeql/db --source-root="./src" --language="cpp" --command="cmake -S .. -B ../${build_dir}" --command="cmake --build ../${build_dir}"
+    codeql database analyze "${db_dir}" --format="sarif-latest" --output="${sarif_file}" "codeql/cpp-queries:codeql-suites/cpp-security-and-quality.qls"
+
 # generate release package
 @package version: build-release test-release man
     #!/bin/bash
