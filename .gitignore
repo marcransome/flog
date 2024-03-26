@@ -1,6 +1,6 @@
 .DS_Store
 ._*
 build/
-codeql-database/
+codeql/
 codeql-analysis.sarif
 man/flog.1
