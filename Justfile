@@ -7,6 +7,7 @@ release_target := release_dir / "bin" / "flog"
 man_dir        := "man"
 man_source     := man_dir / "flog.1.md"
 man_target     := man_dir / "flog.1"
+sarif_file     := "codeql-analysis.sarif"
 
 # generate build artifacts and run unit tests
 @all: build test
@@ -39,7 +40,7 @@ man_target     := man_dir / "flog.1"
 
 # remove build directories and artifacts
 @clean:
-    rm -rf "{{build_dir}}" "{{man_target}}" *.xz
+    rm -rf "{{build_dir}}" "{{man_target}}" "{{sarif_file}}" *.xz
 
 # build the man page
 @man:
@@ -48,6 +49,23 @@ man_target     := man_dir / "flog.1"
 # build and show the man page
 @show-man: man
     man "{{man_target}}"
+
+# perform static code analysis
+@analyse:
+    #!/bin/bash
+    set -euo pipefail
+
+    build_dir="codeql/build"
+    db_dir="codeql/db"
+
+    [[ -d "${build_dir}" ]] && rm -rf "${build_dir}"
+    [[ -d "${db_dir}" ]] && rm -rf "${db_dir}"
+    [[ -f "{{sarif_file}}" ]] && rm -f "{{sarif_file}}"
+
+    mkdir -p "${build_dir}"
+
+    codeql database create "${db_dir}" --source-root="./src" --language="cpp" --command="cmake -S .. -B ../${build_dir}" --command="cmake --build ../${build_dir}"
+    codeql database analyze "${db_dir}" --format="sarif-latest" --output="{{sarif_file}}" "codeql/cpp-queries:codeql-suites/cpp-security-and-quality.qls"
 
 # generate release package
 @package version: build-release test-release man
