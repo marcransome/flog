@@ -75,7 +75,7 @@ void flog_version() {}
 static void
 flog_config_new_with_zero_arg_count_fails(void **state) {
     FlogError error;        // should pass non-null assertion (&error)
-    int mock_argc = 2;      // should fail >1 assertion
+    int mock_argc = 0;      // should fail >1 assertion
     char *mock_argv[] = {}; // should pass non-null assertion
 
     expect_assert_failure(flog_config_new(mock_argc, mock_argv, &error));
