@@ -46,6 +46,7 @@ jobs:
         name: Generate build artifact
         env:
           ARCHITECTURE: ${{ steps.arch.outputs.name }}
+        shell: 'script -q -e -c "bash --noprofile --norc -eo pipefail {0}"'
         run: |
           set -euo pipefail
           just package "${GITHUB_REF_NAME}"
