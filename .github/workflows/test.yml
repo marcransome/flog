@@ -29,5 +29,5 @@ jobs:
       - name: Install dependencies
         run: brew install popt just cmocka
       - name: Run unit tests
-        shell: 'script --return --quiet --log-out /dev/null --command "bash -e {0}"'
+        shell: 'script -q /dev/null "bash -e {0}"'
         run: just test-release
