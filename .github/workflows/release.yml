@@ -46,7 +46,7 @@ jobs:
         name: Generate build artifact
         env:
           ARCHITECTURE: ${{ steps.arch.outputs.name }}
-        shell: 'script -q /dev/null bash -e {0}'
+        shell: 'script -q /dev/null bash -e {0}' # Ensure stdin is attached to tty for unit tests
         run: |
           set -euo pipefail
           just package "${GITHUB_REF_NAME}"
