@@ -136,7 +136,26 @@ jobs:
         uses: actions/download-artifact@c850b930e6ba138125429b7e5c93fc707a7f8427 # v4.1.4
         with:
           name: ${{ needs.build.outputs.sha256-filename-darwin-arm64 }}
-      - name: Upload release assets
+      - name: Install SLSA verifier
+        uses: slsa-framework/slsa-verifier/actions/installer@v2.4.1 # Must specify version tag; see https://github.com/slsa-framework/slsa-verifier/issues/12
+      - name: Verify SLSA provenance
+        env:
+          CHECKSUMS: ${{ needs.combine-checksums.outputs.checksums }}
+          PROVENANCE: ${{ needs.provenance.outputs.provenance-name }}
+        run: |
+          set -euo pipefail
+          checksums=$(echo "${CHECKSUMS}" | base64 -d)
+          while read -r line; do
+              filename=$(echo "${line}" | cut -d ' ' -f2)
+              echo "Verifying ${filename}.."
+              slsa-verifier verify-artifact \
+                  --provenance-path "${PROVENANCE}" \
+                  --source-uri "github.com/${GITHUB_REPOSITORY}" \
+                  --source-tag "${GITHUB_REF_NAME}" \
+                  "${filename}"
+              echo
+          done <<< "${checksums}"
+      - name: Upload release artifacts
         uses: softprops/action-gh-release@9d7c94cfd0a1f3ed45544c887983e9fa900f0564 # v2.0.4
         with:
           files: |
