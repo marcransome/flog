@@ -108,7 +108,7 @@ jobs:
     with:
       base64-subjects: ${{ needs.combine-checksums.outputs.checksums }}
       provenance-name: flog-${{ github.ref_name }}.intoto.jsonl
-      upload-assets: ${{ startsWith(github.ref, 'refs/tags/v') }}
+      upload-assets: false
   release:
     needs: [build, combine-checksums, provenance]
     permissions:
@@ -136,6 +136,10 @@ jobs:
         uses: actions/download-artifact@c850b930e6ba138125429b7e5c93fc707a7f8427 # v4.1.4
         with:
           name: ${{ needs.build.outputs.sha256-filename-darwin-arm64 }}
+      - name: Download SLSA provenance
+        uses: actions/download-artifact@c850b930e6ba138125429b7e5c93fc707a7f8427 # v4.1.4
+        with:
+          name: flog-${{ github.ref_name }}.intoto.jsonl
       - name: Install SLSA verifier
         uses: slsa-framework/slsa-verifier/actions/installer@v2.5.1 # Must specify version tag; see https://github.com/slsa-framework/slsa-verifier/issues/12
       - name: Verify SLSA provenance
@@ -163,3 +167,4 @@ jobs:
             ${{ needs.build.outputs.sha256-filename-darwin-x86_64 }}
             ${{ needs.build.outputs.artifact-filename-darwin-arm64 }}
             ${{ needs.build.outputs.sha256-filename-darwin-arm64 }}
+            flog-${{ github.ref_name }}.intoto.jsonl
