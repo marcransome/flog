@@ -1,13 +1,16 @@
-arch           := `uname -m`
-build_dir      := "build"
-debug_dir      := build_dir / "debug"
-release_dir    := build_dir / "release"
-debug_target   := debug_dir / "bin" / "flog"
-release_target := release_dir / "bin" / "flog"
-man_dir        := "man"
-man_source     := man_dir / "flog.1.md"
-man_target     := man_dir / "flog.1"
-sarif_file     := "codeql-analysis.sarif"
+arch             := `uname -m`
+build_dir        := "build"
+debug_dir        := build_dir / "debug"
+debug_target     := debug_dir / "bin" / "flog"
+release_dir      := build_dir / "release"
+release_target   := release_dir / "bin" / "flog"
+man_dir          := "man"
+man_source       := man_dir / "flog.1.md"
+man_target       := man_dir / "flog.1"
+sarif_file       := "codeql-analysis.sarif"
+codeql_dir       := "codeql"
+codeql_build_dir := codeql_dir / "build"
+codeql_db_dir    := codeql_dir / "deql/db"
 
 # generate build artifacts and run unit tests
 @all: build test
@@ -40,7 +43,12 @@ sarif_file     := "codeql-analysis.sarif"
 
 # remove build directories and artifacts
 @clean:
-    rm -rf "{{build_dir}}" "{{man_target}}" "{{sarif_file}}" *.xz
+    rm -rf \
+        "{{codeql_dir}}" \
+        "{{build_dir}}" \
+        "{{man_target}}" \
+        "{{sarif_file}}" \
+        *.xz
 
 # build the man page
 @man:
@@ -55,17 +63,14 @@ sarif_file     := "codeql-analysis.sarif"
     #!/bin/bash
     set -euo pipefail
 
-    build_dir="codeql/build"
-    db_dir="codeql/db"
-
-    [[ -d "${build_dir}" ]] && rm -rf "${build_dir}"
-    [[ -d "${db_dir}" ]] && rm -rf "${db_dir}"
+    [[ -d "{{codeql_build_dir}}" ]] && rm -rf "{{codeql_build_dir}}"
+    [[ -d "{{codeql_db_dir}}" ]] && rm -rf "{{codeql_db_dir}}"
     [[ -f "{{sarif_file}}" ]] && rm -f "{{sarif_file}}"
 
-    mkdir -p "${build_dir}"
+    mkdir -p "{{codeql_build_dir}}"
 
-    codeql database create "${db_dir}" --source-root="./src" --language="cpp" --command="cmake -S .. -B ../${build_dir}" --command="cmake --build ../${build_dir}"
-    codeql database analyze "${db_dir}" --format="sarif-latest" --output="{{sarif_file}}" "codeql/cpp-queries:codeql-suites/cpp-security-and-quality.qls"
+    codeql database create "{{codeql_db_dir}}" --source-root="./src" --language="cpp" --command="cmake -S .. -B ../{{codeql_build_dir}}" --command="cmake --build ../{{codeql_build_dir}}"
+    codeql database analyze "{{codeql_db_dir}}" --format="sarif-latest" --output="{{sarif_file}}" "codeql/cpp-queries:codeql-suites/cpp-security-and-quality.qls"
 
 # generate release package
 @package version: build-release test-release man
