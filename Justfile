@@ -60,7 +60,7 @@ codeql_db_dir    := codeql_dir / "db"
 
 # perform static code analysis
 @analyse:
-    #!/bin/bash
+    #!/usr/bin/env bash
     set -euo pipefail
 
     [[ -d "{{codeql_build_dir}}" ]] && rm -rf "{{codeql_build_dir}}"
@@ -82,7 +82,7 @@ codeql_db_dir    := codeql_dir / "db"
 
 # generate release package
 @package version: build-release test-release man
-    #!/bin/bash
+    #!/usr/bin/env bash
     set -euo pipefail
     echo "Packaging with version number: {{version}} for architecture: {{arch}}"
 
