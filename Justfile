@@ -69,8 +69,16 @@ codeql_db_dir    := codeql_dir / "db"
 
     mkdir -p "{{codeql_build_dir}}"
 
-    codeql database create "{{codeql_db_dir}}" --source-root="./src" --language="cpp" --command="cmake -S .. -B ../{{codeql_build_dir}}" --command="cmake --build ../{{codeql_build_dir}}"
-    codeql database analyze "{{codeql_db_dir}}" --format="sarif-latest" --output="{{sarif_file}}" "codeql/cpp-queries:codeql-suites/cpp-security-and-quality.qls"
+    codeql database create "{{codeql_db_dir}}" \
+        --source-root="./src" \
+        --language="cpp" \
+        --command="cmake -S .. -B ../{{codeql_build_dir}}" \
+        --command="cmake --build ../{{codeql_build_dir}}"
+
+    codeql database analyze "{{codeql_db_dir}}" \
+        --format="sarif-latest" \
+        --output="{{sarif_file}}" \
+        "codeql/cpp-queries:codeql-suites/cpp-security-and-quality.qls"
 
 # generate release package
 @package version: build-release test-release man
