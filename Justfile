@@ -10,7 +10,7 @@ man_target       := man_dir / "flog.1"
 sarif_file       := "codeql-analysis.sarif"
 codeql_dir       := "codeql"
 codeql_build_dir := codeql_dir / "build"
-codeql_db_dir    := codeql_dir / "deql/db"
+codeql_db_dir    := codeql_dir / "db"
 
 # generate build artifacts and run unit tests
 @all: build test
