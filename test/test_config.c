@@ -867,7 +867,7 @@ int main(void) {
 
         // flog_config_set_message_type() and flog_config_get_message_type() success tests
         cmocka_unit_test(flog_config_get_message_type_succeeds),
-        cmocka_unit_test(flog_config_set_and_get_message_type_succeeds),
+        cmocka_unit_test(flog_config_set_and_get_message_type_succeeds)
     };
 
     return cmocka_run_group_tests_name("FlogConfig tests", tests, NULL, NULL);

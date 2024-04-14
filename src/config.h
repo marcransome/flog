@@ -50,7 +50,7 @@ typedef enum FlogConfigLevelData {
 /*! \brief An enumerated type representing the log message type. */
 typedef enum FlogConfigMessageTypeData {
     MSG_PUBLIC,
-    MSG_PRIVATE,
+    MSG_PRIVATE
 } FlogConfigMessageType;
 
 /*! \struct FlogConfig
