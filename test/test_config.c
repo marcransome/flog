@@ -72,9 +72,6 @@
     char *mock_argv[] = {__VA_ARGS__, NULL}; \
     int mock_argc = (sizeof(mock_argv) / sizeof(mock_argv[0]) - 1);
 
-void flog_usage() {}
-void flog_version() {}
-
 static void
 flog_config_new_with_zero_arg_count_fails(void **state) {
     FlogError error;        // should pass non-null assertion (&error)
