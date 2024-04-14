@@ -733,8 +733,11 @@ flog_config_set_and_get_output_file_succeeds(void **state) {
 
 static void
 flog_config_set_message_from_args_with_null_config_arg_fails(void **state) {
-    const char *mock_args = "test";
-    expect_assert_failure(flog_config_set_message_from_args(NULL, &mock_args));
+    MOCK_ARGS(
+        TEST_PROGRAM_NAME,
+        TEST_MESSAGE
+    )
+    expect_assert_failure(flog_config_set_message_from_args(NULL, mock_argv));
 }
 
 static void
