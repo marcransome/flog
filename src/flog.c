@@ -104,9 +104,9 @@ flog_commit_message(FlogCli *flog) {
     assert(flog != NULL);
 
     FlogConfig *config = flog_cli_get_config(flog);
-    if (flog_config_get_message_type(config) == Public) {
+    if (flog_config_get_message_type(config) == MSG_PUBLIC) {
         flog_commit_public_message(flog);
-    } else if (flog_config_get_message_type(config) == Private) {
+    } else if (flog_config_get_message_type(config) == MSG_PRIVATE) {
         flog_commit_private_message(flog);
     }
 }

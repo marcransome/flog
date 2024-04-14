@@ -40,6 +40,7 @@ typedef enum FlogErrorData {
     FLOG_ERROR_MSG,
     FLOG_ERROR_OPTS,
     FLOG_ERROR_SUBSYS,
+    FLOG_ERROR_FILE,
 } FlogError;
 
 /*! \brief Print usage information to stdout stream. */

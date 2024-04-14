@@ -33,6 +33,10 @@
 #include <stdio.h>
 #include "common.h"
 
+extern const int subsystem_len;
+extern const int category_len;
+extern const int message_len;
+
 /*! \brief An enumerated type representing the log level. */
 typedef enum FlogConfigLevelData {
     LVL_DEFAULT,
@@ -45,8 +49,8 @@ typedef enum FlogConfigLevelData {
 
 /*! \brief An enumerated type representing the log message type. */
 typedef enum FlogConfigMessageTypeData {
-    Public,
-    Private,
+    MSG_PUBLIC,
+    MSG_PRIVATE,
 } FlogConfigMessageType;
 
 /*! \struct FlogConfig
@@ -139,8 +143,11 @@ const char * flog_config_get_output_file(const FlogConfig *config);
  *
  *  \pre \c config is \e not \c NULL
  *  \pre \c output_file is \e not \c NULL
+ *
+ *  \return If successful, the FlogError variant FLOG_ERROR_NONE, or FLOG_ERROR_FILE
+ *          if the output_file path exceeds the maximum path limit
  */
-void flog_config_set_output_file(FlogConfig *config, const char *output_file);
+FlogError flog_config_set_output_file(FlogConfig *config, const char *output_file);
 
 /*! \brief Get the log level value from a FlogConfig object.
  *
