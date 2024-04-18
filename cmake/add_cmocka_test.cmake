@@ -8,7 +8,7 @@ function(add_cmocka_test unit)
 
     target_include_directories(${test_target} PRIVATE ${CMAKE_SOURCE_DIR}/src)
 
-    target_compile_options(${test_target} PRIVATE ${CMOCKA_CFLAGS} PRIVATE ${POPT_CFLAGS})
+    target_compile_options(${test_target} PRIVATE ${CMOCKA_CFLAGS} PRIVATE ${POPT_CFLAGS} PRIVATE -O0)
     target_compile_definitions(${test_target} PRIVATE UNIT_TESTING)
 
     add_test(NAME ${test_target} COMMAND ${test_target})
