@@ -289,6 +289,8 @@ flog_config_set_message_from_args(FlogConfig *config, const char **args) {
     assert(config != NULL);
     assert(args != NULL);
 
+    config->message[0] = '\0';
+
     bool message_truncated = false;
     while (*args != NULL) {
         if (strlcat(config->message, *args, message_len) >= message_len) {
@@ -316,6 +318,7 @@ flog_config_set_message_from_stream(FlogConfig *config, FILE *restrict stream) {
 
     if (fread(config->message, sizeof(char), message_len, stream) >= message_len) {
         fprintf(stderr, "%s: message was truncated to %d bytes\n", PROGRAM_NAME, message_len - 1);
+        config->message[message_len - 1] = '\0';
     }
 }
 
