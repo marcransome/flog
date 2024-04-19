@@ -262,6 +262,53 @@ flog_config_new_with_long_level_opt_and_unknown_value_fails(void **state) {
     assert_int_equal(error, FLOG_ERROR_LVL);
 }
 
+static void
+flog_config_new_with_short_append_opt_and_long_path_fails(void **state) {
+    UNUSED(state);
+
+    char *path = malloc(PATH_MAX + 1);
+    memset(path, TEST_CHAR, PATH_MAX);
+    path[PATH_MAX] = '\0';
+
+    FlogError error = TEST_ERROR;
+    MOCK_ARGS(
+        TEST_PROGRAM_NAME,
+        TEST_OPTION_APPEND_SHORT,
+        path,
+        TEST_MESSAGE
+    )
+
+    FlogConfig *config = flog_config_new(mock_argc, mock_argv, &error);
+
+    assert_null(config);
+    assert_int_equal(error, FLOG_ERROR_FILE);
+
+    free(path);
+}
+
+static void
+flog_config_new_with_long_append_opt_and_long_path_fails(void **state) {
+    UNUSED(state);
+
+    char *path = malloc(PATH_MAX + 1);
+    memset(path, TEST_CHAR, PATH_MAX);
+    path[PATH_MAX] = '\0';
+
+    FlogError error = TEST_ERROR;
+    MOCK_ARGS(
+        TEST_PROGRAM_NAME,
+        TEST_OPTION_APPEND_LONG,
+        path,
+        TEST_MESSAGE
+    )
+
+    FlogConfig *config = flog_config_new(mock_argc, mock_argv, &error);
+
+    assert_null(config);
+    assert_int_equal(error, FLOG_ERROR_FILE);
+
+    free(path);
+}
 
 static void
 flog_config_new_with_message_succeeds(void **state) {
@@ -1247,6 +1294,8 @@ int main(void) {
         cmocka_unit_test(flog_config_new_with_stdin_tty_and_no_message_args_fails),
         cmocka_unit_test(flog_config_new_with_short_level_opt_and_unknown_value_fails),
         cmocka_unit_test(flog_config_new_with_long_level_opt_and_unknown_value_fails),
+        cmocka_unit_test(flog_config_new_with_short_append_opt_and_long_path_fails),
+        cmocka_unit_test(flog_config_new_with_long_append_opt_and_long_path_fails),
 
         // flog_config_new() success tests
         cmocka_unit_test(flog_config_new_with_message_succeeds),
