@@ -68,6 +68,8 @@
 
 #define TEST_ERROR 255
 
+#define TEST_CHAR 'x'
+
 #define MOCK_ARGS(...) \
     char *mock_argv[] = {__VA_ARGS__, NULL}; \
     int mock_argc = (sizeof(mock_argv) / sizeof(mock_argv[0]) - 1);
@@ -668,6 +670,7 @@ flog_config_set_subsystem_with_null_subsystem_arg_fails(void **state) {
     )
 
     FlogConfig *config = flog_config_new(mock_argc, mock_argv, &error);
+
     expect_assert_failure(flog_config_set_subsystem(config, NULL))
 
     flog_config_free(config);
@@ -684,6 +687,7 @@ flog_config_get_subsystem_succeeds(void **state) {
     )
 
     FlogConfig *config = flog_config_new(mock_argc, mock_argv, &error);
+
     assert_string_equal(flog_config_get_subsystem(config), "");
 
     flog_config_free(config);
@@ -700,6 +704,7 @@ flog_config_set_and_get_subsystem_succeeds(void **state) {
     )
 
     FlogConfig *config = flog_config_new(mock_argc, mock_argv, &error);
+
     flog_config_set_subsystem(config, TEST_SUBSYSTEM);
     assert_string_equal(flog_config_get_subsystem(config), TEST_SUBSYSTEM);
 
@@ -717,10 +722,11 @@ flog_config_set_subsystem_with_long_subsystem_truncates(void **state) {
     )
 
     char *subsystem = malloc(subsystem_len + 1);
-    memset(subsystem, 'x', subsystem_len);
+    memset(subsystem, TEST_CHAR, subsystem_len);
     subsystem[subsystem_len] = '\0';
 
     FlogConfig *config = flog_config_new(mock_argc, mock_argv, &error);
+
     flog_config_set_subsystem(config, subsystem);
     assert_int_equal(strlen(flog_config_get_subsystem(config)), strlen(subsystem) - 1);
 
@@ -751,6 +757,7 @@ flog_config_set_category_with_null_category_arg_fails(void **state) {
     )
 
     FlogConfig *config = flog_config_new(mock_argc, mock_argv, &error);
+
     expect_assert_failure(flog_config_set_category(config, NULL));
 
     flog_config_free(config);
@@ -767,6 +774,7 @@ flog_config_get_category_succeeds(void **state) {
     )
 
     FlogConfig *config = flog_config_new(mock_argc, mock_argv, &error);
+
     assert_string_equal(flog_config_get_category(config), "");
 
     flog_config_free(config);
@@ -783,6 +791,7 @@ flog_config_set_and_get_category_succeeds(void **state) {
     )
 
     FlogConfig *config = flog_config_new(mock_argc, mock_argv, &error);
+
     flog_config_set_category(config, TEST_CATEGORY);
     assert_string_equal(flog_config_get_category(config), TEST_CATEGORY);
 
@@ -800,10 +809,11 @@ flog_config_set_category_with_long_category_truncates(void **state) {
     )
 
     char *category = malloc(category_len + 1);
-    memset(category, 'x', category_len);
+    memset(category, TEST_CHAR, category_len);
     category[category_len] = '\0';
 
     FlogConfig *config = flog_config_new(mock_argc, mock_argv, &error);
+
     flog_config_set_category(config, category);
     assert_int_equal(strlen(flog_config_get_category(config)), strlen(category) - 1);
 
@@ -834,7 +844,7 @@ flog_config_set_output_file_with_long_path_fails(void **state) {
     )
 
     char *path = malloc(PATH_MAX + 1);
-    memset(path, 'x', PATH_MAX);
+    memset(path, TEST_CHAR, PATH_MAX);
     path[PATH_MAX] = '\0';
 
     FlogConfig *config = flog_config_new(mock_argc, mock_argv, &error);
@@ -879,6 +889,7 @@ flog_config_set_output_file_with_null_output_file_arg_fails(void **state) {
     )
 
     FlogConfig *config = flog_config_new(mock_argc, mock_argv, &error);
+
     expect_assert_failure(flog_config_set_output_file(config, NULL));
 
     flog_config_free(config);
@@ -895,6 +906,7 @@ flog_config_get_output_file_succeeds(void **state) {
     )
 
     FlogConfig *config = flog_config_new(mock_argc, mock_argv, &error);
+
     assert_string_equal(flog_config_get_output_file(config), "");
 
     flog_config_free(config);
@@ -911,22 +923,11 @@ flog_config_set_and_get_output_file_succeeds(void **state) {
     )
 
     FlogConfig *config = flog_config_new(mock_argc, mock_argv, &error);
+
     flog_config_set_output_file(config, TEST_OUTPUT_FILE);
     assert_string_equal(flog_config_get_output_file(config), TEST_OUTPUT_FILE);
 
     flog_config_free(config);
-}
-
-static void
-flog_config_set_message_from_args_with_null_config_arg_fails(void **state) {
-    UNUSED(state);
-
-    const char *mock_args[] = {
-        TEST_PROGRAM_NAME,
-        TEST_MESSAGE
-    };
-
-    expect_assert_failure(flog_config_set_message_from_args(NULL, mock_args));
 }
 
 static void
@@ -947,6 +948,7 @@ flog_config_get_message_succeeds(void **state) {
     )
 
     FlogConfig *config = flog_config_new(mock_argc, mock_argv, &error);
+
     assert_string_equal(flog_config_get_message(config), TEST_MESSAGE);
 
     flog_config_free(config);
@@ -965,6 +967,7 @@ flog_config_set_and_get_message_succeeds(void **state) {
     const char message[] = "0123456789ABCDEF";
 
     FlogConfig *config = flog_config_new(mock_argc, mock_argv, &error);
+
     flog_config_set_message(config, message);
     assert_string_equal(flog_config_get_message(config), message);
 
@@ -982,12 +985,13 @@ flog_config_set_message_with_long_message_truncates(void **state) {
     )
 
     char *message = malloc(message_len + 1);
-    memset(message, 'x', message_len);
+    memset(message, TEST_CHAR, message_len);
     message[message_len] = '\0';
 
     FlogConfig *config = flog_config_new(mock_argc, mock_argv, &error);
+
     flog_config_set_message(config, message);
-    assert_int_equal(strlen(flog_config_get_message(config)), strlen(message) - 1);
+    assert_int_equal(strlen(flog_config_get_message(config)), message_len - 1);
 
     flog_config_free(config);
     free(message);
@@ -1016,6 +1020,7 @@ flog_config_get_message_type_succeeds(void **state) {
     )
 
     FlogConfig *config = flog_config_new(mock_argc, mock_argv, &error);
+
     assert_int_equal(flog_config_get_message_type(config), MSG_PUBLIC);
 
     flog_config_free(config);
@@ -1032,10 +1037,196 @@ flog_config_set_and_get_message_type_succeeds(void **state) {
     )
 
     FlogConfig *config = flog_config_new(mock_argc, mock_argv, &error);
+
     flog_config_set_message_type(config, MSG_PRIVATE);
     assert_int_equal(flog_config_get_message_type(config), MSG_PRIVATE);
 
     flog_config_free(config);
+}
+
+static void
+flog_config_set_message_from_stream_with_null_config_arg_fails(void **state) {
+    UNUSED(state);
+
+    FILE mock_stream = {};
+    expect_assert_failure(flog_config_set_message_from_stream(NULL, &mock_stream));
+}
+
+static void
+flog_config_set_message_from_stream_with_null_stream_arg_fails(void **state) {
+    UNUSED(state);
+
+    FlogError error = TEST_ERROR;
+    MOCK_ARGS(
+        TEST_PROGRAM_NAME,
+        TEST_MESSAGE
+    )
+
+    FlogConfig *config = flog_config_new(mock_argc, mock_argv, &error);
+
+    expect_assert_failure(flog_config_set_message_from_stream(config, NULL));
+
+    flog_config_free(config);
+}
+
+static void
+flog_config_set_and_get_message_from_stream_succeeds(void **state) {
+    UNUSED(state);
+
+    FlogError error = TEST_ERROR;
+    MOCK_ARGS(
+        TEST_PROGRAM_NAME,
+        TEST_MESSAGE
+    )
+
+    char *message = "0123456789ABCDEF";
+
+    FILE *mock_stream = fmemopen(message, strlen(message), "r");
+    FlogConfig *config = flog_config_new(mock_argc, mock_argv, &error);
+
+    flog_config_set_message_from_stream(config, mock_stream);
+    assert_int_equal(strlen(flog_config_get_message(config)), strlen(message));
+    assert_string_equal(flog_config_get_message(config), message);
+
+    fclose(mock_stream);
+    flog_config_free(config);
+}
+
+static void
+flog_config_set_message_from_stream_with_long_message_truncates(void **state) {
+    UNUSED(state);
+
+    FlogError error = TEST_ERROR;
+    MOCK_ARGS(
+        TEST_PROGRAM_NAME,
+        TEST_MESSAGE
+    )
+
+    char *message = malloc(message_len + 1);
+    memset(message, TEST_CHAR, message_len);
+    message[message_len] = '\0';
+
+    FILE *mock_stream = fmemopen(message, strlen(message), "r");
+    FlogConfig *config = flog_config_new(mock_argc, mock_argv, &error);
+
+    flog_config_set_message_from_stream(config, mock_stream);
+    assert_int_equal(strlen(flog_config_get_message(config)), message_len - 1);
+
+    fclose(mock_stream);
+    flog_config_free(config);
+    free(message);
+}
+
+static void
+flog_config_set_message_from_args_with_null_config_arg_fails(void **state) {
+    UNUSED(state);
+
+    const char *mock_args[] = {
+        TEST_PROGRAM_NAME,
+        TEST_MESSAGE
+    };
+
+    expect_assert_failure(flog_config_set_message_from_args(NULL, mock_args));
+}
+
+static void
+flog_config_set_message_from_args_with_null_args_fails(void **state) {
+    UNUSED(state);
+
+    FlogError error = TEST_ERROR;
+    MOCK_ARGS(
+        TEST_PROGRAM_NAME,
+        TEST_MESSAGE
+    )
+
+    FlogConfig *config = flog_config_new(mock_argc, mock_argv, &error);
+
+    expect_assert_failure(flog_config_set_message_from_args(config, NULL));
+
+    flog_config_free(config);
+}
+
+static void
+flog_config_set_and_get_message_from_args_succeeds(void **state) {
+    UNUSED(state);
+
+    FlogError error = TEST_ERROR;
+    MOCK_ARGS(
+        TEST_PROGRAM_NAME,
+        TEST_MESSAGE
+    )
+
+    const char *mock_args[] = {
+        "abc",
+        "def",
+        "123",
+        "456",
+        NULL
+    };
+
+    FlogConfig *config = flog_config_new(mock_argc, mock_argv, &error);
+
+    flog_config_set_message_from_args(config, mock_args);
+    assert_string_equal(flog_config_get_message(config), "abc def 123 456");
+
+    flog_config_free(config);
+}
+
+static void
+flog_config_set_message_from_args_with_long_message_truncates(void **state) {
+    UNUSED(state);
+
+    FlogError error = TEST_ERROR;
+    MOCK_ARGS(
+        TEST_PROGRAM_NAME,
+        TEST_MESSAGE
+    )
+
+    char *message = malloc(message_len + 1);
+    memset(message, TEST_CHAR, message_len);
+    message[message_len] = '\0';
+
+    const char *mock_args[] = {
+        message,
+        NULL
+    };
+
+    FlogConfig *config = flog_config_new(mock_argc, mock_argv, &error);
+
+    flog_config_set_message_from_args(config, mock_args);
+    assert_int_equal(strlen(flog_config_get_message(config)), message_len - 1);
+
+    flog_config_free(config);
+    free(message);
+}
+
+static void
+flog_config_set_message_from_args_truncates_when_appending_space(void **state) {
+    UNUSED(state);
+
+    FlogError error = TEST_ERROR;
+    MOCK_ARGS(
+        TEST_PROGRAM_NAME,
+        TEST_MESSAGE
+    )
+
+    char *message = malloc(message_len);
+    memset(message, TEST_CHAR, message_len);
+    message[message_len - 1] = '\0';
+
+    const char *mock_args[] = {
+        message,
+        "abcdef123456",
+        NULL
+    };
+
+    FlogConfig *config = flog_config_new(mock_argc, mock_argv, &error);
+
+    flog_config_set_message_from_args(config, mock_args);
+    assert_int_equal(strlen(flog_config_get_message(config)), message_len - 1);
+
+    flog_config_free(config);
+    free(message);
 }
 
 int main(void) {
@@ -1132,7 +1323,28 @@ int main(void) {
 
         // flog_config_set_message_type() and flog_config_get_message_type() success tests
         cmocka_unit_test(flog_config_get_message_type_succeeds),
-        cmocka_unit_test(flog_config_set_and_get_message_type_succeeds)
+        cmocka_unit_test(flog_config_set_and_get_message_type_succeeds),
+
+        // flog_config_set_message_from_stream() precondition tests
+        cmocka_unit_test(flog_config_set_message_from_stream_with_null_config_arg_fails),
+        cmocka_unit_test(flog_config_set_message_from_stream_with_null_stream_arg_fails),
+
+        // flog_config_set_message_from_stream() success tests
+        cmocka_unit_test(flog_config_set_and_get_message_from_stream_succeeds),
+
+        // flog_config_set_message_from_stream() truncation tests
+        cmocka_unit_test(flog_config_set_message_from_stream_with_long_message_truncates),
+
+        // flog_config_set_message_from_args() precondition tests
+        cmocka_unit_test(flog_config_set_message_from_args_with_null_config_arg_fails),
+        cmocka_unit_test(flog_config_set_message_from_args_with_null_args_fails),
+
+        // flog_config_set_message_from_args() success tests
+        cmocka_unit_test(flog_config_set_and_get_message_from_args_succeeds),
+
+        // flog_config_set_message_from_args() truncation tests
+        cmocka_unit_test(flog_config_set_message_from_args_with_long_message_truncates),
+        cmocka_unit_test(flog_config_set_message_from_args_truncates_when_appending_space)
     };
 
     return cmocka_run_group_tests_name("FlogConfig tests", tests, NULL, NULL);
