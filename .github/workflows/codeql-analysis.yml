@@ -35,7 +35,7 @@ jobs:
           source-root: src
       - name: Build sources
         run: |
-          arch -arm64e cmake -S . -B build
-          arch -arm64e cmake --build build
+          cmake -S . -B build -D CMAKE_OSX_ARCHITECTURES=arm64
+          cmake --build build
       - name: Perform CodeQL analysis
         uses: github/codeql-action/analyze@c7f9125735019aa87cfc361530512d50ea439c71 # v3.25.1
