@@ -67,14 +67,14 @@ jobs:
           echo "sha256-checksum-darwin-${ARCHITECTURE}=$(cat "${ARTIFACT_NAME}.sha256" | base64)" >> "${GITHUB_OUTPUT}"
           echo "sha256-filename-darwin-${ARCHITECTURE}=${ARTIFACT_NAME}.sha256" >> "${GITHUB_OUTPUT}"
       - name: Upload build artifact
-        uses: actions/upload-artifact@1746f4ab65b179e0ea60a494b83293b640dd5bba # v4.3.2
+        uses: actions/upload-artifact@65462800fd760344b1a7b4382951275a0abb4808 # v4.3.3
         with:
           name: ${{ steps.artifact.outputs.name }}
           path: ${{ steps.artifact.outputs.name }}
           if-no-files-found: error
           retention-days: 7
       - name: Upload SHA-256 checksum file
-        uses: actions/upload-artifact@1746f4ab65b179e0ea60a494b83293b640dd5bba # v4.3.2
+        uses: actions/upload-artifact@65462800fd760344b1a7b4382951275a0abb4808 # v4.3.3
         with:
           name: ${{ steps.artifact.outputs.name }}.sha256
           path: ${{ steps.artifact.outputs.name }}.sha256
