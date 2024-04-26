@@ -66,6 +66,8 @@
 #define TEST_OPTION_INVALID_SHORT "-i"
 #define TEST_OPTION_INVALID_LONG "--invalid"
 
+#define TEST_PATH "/tmp/test-file"
+
 #define TEST_ERROR 255
 
 #define TEST_CHAR 'x'
@@ -495,6 +497,27 @@ flog_config_new_with_short_private_opt_and_message_succeeds(void **state) {
 }
 
 static void
+flog_config_new_with_short_append_opt_and_path_succeeds(void **state) {
+    UNUSED(state);
+
+    FlogError error = TEST_ERROR;
+    MOCK_ARGS(
+        TEST_PROGRAM_NAME,
+        TEST_OPTION_APPEND_SHORT,
+        TEST_PATH,
+        TEST_MESSAGE
+    )
+
+    FlogConfig *config = flog_config_new(mock_argc, mock_argv, &error);
+
+    assert_non_null(config);
+    assert_int_equal(error, FLOG_ERROR_NONE);
+    assert_string_equal(flog_config_get_output_file(config), TEST_PATH);
+
+    flog_config_free(config);
+}
+
+static void
 flog_config_new_with_long_level_opt_and_default_value_succeeds(void **state) {
     UNUSED(state);
 
@@ -633,6 +656,27 @@ flog_config_new_with_short_version_opt_succeeds(void **state) {
     assert_non_null(config);
     assert_true(flog_config_get_version_flag(config));
     assert_int_equal(error, FLOG_ERROR_NONE);
+
+    flog_config_free(config);
+}
+
+static void
+flog_config_new_with_long_append_opt_and_path_succeeds(void **state) {
+    UNUSED(state);
+
+    FlogError error = TEST_ERROR;
+    MOCK_ARGS(
+        TEST_PROGRAM_NAME,
+        TEST_OPTION_APPEND_LONG,
+        TEST_PATH,
+        TEST_MESSAGE
+    )
+
+    FlogConfig *config = flog_config_new(mock_argc, mock_argv, &error);
+
+    assert_non_null(config);
+    assert_int_equal(error, FLOG_ERROR_NONE);
+    assert_string_equal(flog_config_get_output_file(config), TEST_PATH);
 
     flog_config_free(config);
 }
@@ -1307,12 +1351,14 @@ int main(void) {
         cmocka_unit_test(flog_config_new_with_short_level_opt_and_error_value_succeeds),
         cmocka_unit_test(flog_config_new_with_short_level_opt_and_fault_value_succeeds),
         cmocka_unit_test(flog_config_new_with_short_private_opt_and_message_succeeds),
+        cmocka_unit_test(flog_config_new_with_short_append_opt_and_path_succeeds),
         cmocka_unit_test(flog_config_new_with_long_level_opt_and_default_value_succeeds),
         cmocka_unit_test(flog_config_new_with_long_level_opt_and_info_value_succeeds),
         cmocka_unit_test(flog_config_new_with_long_level_opt_and_debug_value_succeeds),
         cmocka_unit_test(flog_config_new_with_long_level_opt_and_error_value_succeeds),
         cmocka_unit_test(flog_config_new_with_long_level_opt_and_fault_value_succeeds),
         cmocka_unit_test(flog_config_new_with_long_private_opt_and_message_succeeds),
+        cmocka_unit_test(flog_config_new_with_long_append_opt_and_path_succeeds),
         cmocka_unit_test(flog_config_new_with_short_version_opt_succeeds),
         cmocka_unit_test(flog_config_new_with_long_version_opt_succeeds),
         cmocka_unit_test(flog_config_new_with_short_help_opt_succeeds),
