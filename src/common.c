@@ -32,6 +32,7 @@ flog_error_map[] = {
     [FLOG_ERROR_MSG]    = "message string required",
     [FLOG_ERROR_SUBSYS] = "category option requires subsystem option to be set",
     [FLOG_ERROR_OPTS]   = "invalid options",
+    [FLOG_ERROR_FILE]   = "file path too long",
 };
 
 const char *

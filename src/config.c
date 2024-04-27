@@ -40,9 +40,9 @@ extern void mock_assert(const int result, const char* const expression,
     mock_assert((int)(expression), #expression, __FILE__, __LINE__);
 #endif
 
-#define SUBSYSTEM_LEN 257
-#define CATEGORY_LEN  257
-#define MESSAGE_LEN   8193
+const int subsystem_len = 257;
+const int category_len  = 257;
+const int message_len   = 8193;
 
 FlogConfigLevel flog_config_parse_level(const char *str);
 
@@ -60,10 +60,10 @@ static struct poptOption options[] = {
 struct FlogConfigData {
     FlogConfigLevel level;
     FlogConfigMessageType message_type;
-    char subsystem[SUBSYSTEM_LEN];
-    char category[CATEGORY_LEN];
+    char subsystem[subsystem_len];
+    char category[category_len];
     char output_file[PATH_MAX];
-    char message[MESSAGE_LEN];
+    char message[message_len];
     bool version;
     bool help;
 };
@@ -83,7 +83,7 @@ flog_config_new(int argc, char *argv[], FlogError *error) {
     }
 
     flog_config_set_level(config, LVL_DEFAULT);
-    flog_config_set_message_type(config, Public);
+    flog_config_set_message_type(config, MSG_PUBLIC);
     flog_config_set_version_flag(config, false);
     flog_config_set_help_flag(config, false);
 
@@ -104,7 +104,12 @@ flog_config_new(int argc, char *argv[], FlogError *error) {
                 poptFreeContext(context);
                 return config;
             case 'a':
-                flog_config_set_output_file(config, option_argument);
+                *error = flog_config_set_output_file(config, option_argument);
+                if (*error != FLOG_ERROR_NONE) {
+                    flog_config_free(config);
+                    poptFreeContext(context);
+                    return NULL;
+                }
                 break;
             case 'l':
                 flog_config_set_level(config, flog_config_parse_level(option_argument));
@@ -117,13 +122,12 @@ flog_config_new(int argc, char *argv[], FlogError *error) {
                 break;
             case 's':
                 flog_config_set_subsystem(config, option_argument);
-
                 break;
             case 'c':
                 flog_config_set_category(config, option_argument);
                 break;
             case 'p':
-                flog_config_set_message_type(config, Private);
+                flog_config_set_message_type(config, MSG_PRIVATE);
                 break;
         }
 
@@ -187,8 +191,8 @@ flog_config_set_subsystem(FlogConfig *config, const char *subsystem) {
     assert(config != NULL);
     assert(subsystem != NULL);
 
-    if (strlcpy(config->subsystem, subsystem, SUBSYSTEM_LEN) >= SUBSYSTEM_LEN) {
-        fprintf(stderr, "%s: subsystem name truncated to %d bytes\n", PROGRAM_NAME, SUBSYSTEM_LEN - 1);
+    if (strlcpy(config->subsystem, subsystem, subsystem_len) >= subsystem_len) {
+        fprintf(stderr, "%s: subsystem name truncated to %d bytes\n", PROGRAM_NAME, subsystem_len - 1);
     }
 }
 
@@ -204,8 +208,8 @@ flog_config_set_category(FlogConfig *config, const char *category) {
     assert(config != NULL);
     assert(category != NULL);
 
-    if (strlcpy(config->category, category, CATEGORY_LEN) >= CATEGORY_LEN) {
-        fprintf(stderr, "%s: category name truncated to %d bytes\n", PROGRAM_NAME, CATEGORY_LEN - 1);
+    if (strlcpy(config->category, category, category_len) >= category_len) {
+        fprintf(stderr, "%s: category name truncated to %d bytes\n", PROGRAM_NAME, category_len - 1);
     }
 }
 
@@ -216,15 +220,16 @@ flog_config_get_output_file(const FlogConfig *config) {
     return config->output_file;
 }
 
-void
+FlogError
 flog_config_set_output_file(FlogConfig *config, const char *output_file) {
     assert(config != NULL);
     assert(output_file != NULL);
 
     if (strlcpy(config->output_file, output_file, PATH_MAX) >= PATH_MAX) {
-        fprintf(stderr, "%s: specify an output file path up to a maximum of %d characters\n", PROGRAM_NAME, PATH_MAX - 1);
-        exit(EXIT_FAILURE);
+        return FLOG_ERROR_FILE;
     }
+
+    return FLOG_ERROR_NONE;
 }
 
 FlogConfigLevel
@@ -274,8 +279,8 @@ flog_config_set_message(FlogConfig *config, const char *message) {
     assert(config != NULL);
     assert(message != NULL);
 
-    if (strlcpy(config->message, message, MESSAGE_LEN) >= MESSAGE_LEN) {
-        fprintf(stderr, "%s: message string was truncated to %d bytes\n", PROGRAM_NAME, MESSAGE_LEN - 1);
+    if (strlcpy(config->message, message, message_len) >= message_len) {
+        fprintf(stderr, "%s: message string was truncated to %d bytes\n", PROGRAM_NAME, message_len - 1);
     }
 }
 
@@ -284,14 +289,16 @@ flog_config_set_message_from_args(FlogConfig *config, const char **args) {
     assert(config != NULL);
     assert(args != NULL);
 
+    config->message[0] = '\0';
+
     bool message_truncated = false;
     while (*args != NULL) {
-        if (strlcat(config->message, *args, MESSAGE_LEN) >= MESSAGE_LEN) {
+        if (strlcat(config->message, *args, message_len) >= message_len) {
             message_truncated = true;
             break;
         }
         if (*(args + 1) != NULL) {
-            if (strlcat(config->message, " ", MESSAGE_LEN) >= MESSAGE_LEN) {
+            if (strlcat(config->message, " ", message_len) >= message_len) {
                 message_truncated = true;
                 break;
             }
@@ -300,7 +307,7 @@ flog_config_set_message_from_args(FlogConfig *config, const char **args) {
     }
 
     if (message_truncated) {
-        fprintf(stderr, "%s: message was truncated to %d bytes\n", PROGRAM_NAME, MESSAGE_LEN - 1);
+        fprintf(stderr, "%s: message was truncated to %d bytes\n", PROGRAM_NAME, message_len - 1);
     }
 }
 
@@ -309,8 +316,9 @@ flog_config_set_message_from_stream(FlogConfig *config, FILE *restrict stream) {
     assert(config != NULL);
     assert(stream != NULL);
 
-    if (fread(config->message, sizeof(char), MESSAGE_LEN, stream) >= MESSAGE_LEN) {
-        fprintf(stderr, "%s: message was truncated to %d bytes\n", PROGRAM_NAME, MESSAGE_LEN - 1);
+    if (fread(config->message, sizeof(char), message_len, stream) >= message_len) {
+        fprintf(stderr, "%s: message was truncated to %d bytes\n", PROGRAM_NAME, message_len - 1);
+        config->message[message_len - 1] = '\0';
     }
 }
 
