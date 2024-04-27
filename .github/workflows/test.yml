@@ -30,4 +30,4 @@ jobs:
         run: brew install popt just cmocka
       - name: Run unit tests
         shell: 'script -q /dev/null bash -e {0}'  # Ensure stdin is attached to tty for unit tests
-        run: just test-release
+        run: just test
