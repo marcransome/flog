@@ -1,16 +1,22 @@
-arch             := `uname -m`
-build_dir        := "build"
-debug_dir        := build_dir / "debug"
-debug_target     := debug_dir / "bin" / "flog"
-release_dir      := build_dir / "release"
-release_target   := release_dir / "bin" / "flog"
-man_dir          := "man"
-man_source       := man_dir / "flog.1.md"
-man_target       := man_dir / "flog.1"
-sarif_file       := "codeql-analysis.sarif"
-codeql_dir       := "codeql"
-codeql_build_dir := codeql_dir / "build"
-codeql_db_dir    := codeql_dir / "db"
+arch                  := `uname -m`
+build_dir             := "build"
+debug_dir             := build_dir / "debug"
+debug_target          := debug_dir / "bin" / "flog"
+debug_coverage_file   := debug_dir / "coverage.info"
+debug_coverage_dir    := debug_dir / "coverage"
+debug_coverage_html   := debug_coverage_dir / "index.html"
+release_dir           := build_dir / "release"
+release_target        := release_dir / "bin" / "flog"
+release_coverage_file := release_dir / "coverage.info"
+release_coverage_dir  := release_dir / "coverage"
+release_coverage_html := release_coverage_dir / "index.html"
+man_dir               := "man"
+man_source            := man_dir / "flog.1.md"
+man_target            := man_dir / "flog.1"
+sarif_file            := "codeql-analysis.sarif"
+codeql_dir            := "codeql"
+codeql_build_dir      := codeql_dir / "build"
+codeql_db_dir         := codeql_dir / "db"
 
 # generate build artifacts and run unit tests
 @all: build test
@@ -20,7 +26,12 @@ codeql_db_dir    := codeql_dir / "db"
     #!/usr/bin/env bash
     set -euo pipefail
     if [[ ! -d "{{debug_dir}}" ]]; then
-        cmake -S . -B "{{debug_dir}}" -DCMAKE_BUILD_TYPE=Debug -DUNIT_TESTING=on
+        cmake \
+            -S . \
+            -B "{{debug_dir}}" \
+            -DCMAKE_BUILD_TYPE=Debug \
+            -DUNIT_TESTING=ON \
+            -DENABLE_COVERAGE=ON
     fi
     cmake --build "{{debug_dir}}"
 
@@ -29,9 +40,28 @@ codeql_db_dir    := codeql_dir / "db"
     #!/usr/bin/env bash
     set -euo pipefail
     if [[ ! -d "{{release_dir}}" ]]; then
-        cmake -S . -B "{{release_dir}}" -DCMAKE_BUILD_TYPE=Release -DUNIT_TESTING=on
+        cmake \
+            -S . \
+            -B "{{release_dir}}" \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DUNIT_TESTING=ON \
+            -DENABLE_COVERAGE=ON
     fi
     cmake --build "{{release_dir}}"
+
+# generate debug build coverage report
+@coverage-debug: build test
+    mkdir -p "{{debug_coverage_dir}}"
+    lcov --directory "{{debug_dir}}" --capture --output-file "{{debug_coverage_file}}"
+    genhtml -o "{{debug_coverage_dir}}" "{{debug_coverage_file}}"
+    open "{{debug_coverage_html}}"
+
+# generate release build coverage report
+@coverage-release: build-release test-release
+    mkdir -p "{{release_coverage_dir}}"
+    lcov --directory "{{release_dir}}" --capture --output-file "{{release_coverage_file}}"
+    genhtml -o "{{release_coverage_dir}}" "{{release_coverage_file}}"
+    open "{{release_coverage_html}}"
 
 # run debug build unit tests
 @test: build
