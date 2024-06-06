@@ -38,7 +38,7 @@ extern void mock_assert(const int result, const char* const expression,
 #endif
 
 #define OS_LOG_FORMAT_PUBLIC "%{public}s"
-#define OS_LOG_FORMAT_PRIVATE "%s"
+#define OS_LOG_FORMAT_PRIVATE "%{private}s"
 
 void flog_commit_public_message(FlogCli *flog);
 void flog_commit_private_message(FlogCli *flog);
