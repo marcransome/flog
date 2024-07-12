@@ -11,4 +11,4 @@ Patches for security vulnerabilities will be made available at the earliest oppo
 
 ## Reporting a Vulnerability
 
-Please report suspected security vulnerabilities to **[marc.ransome@fidgetbox.co.uk](mailto:marc.ransome@fidgetbox.co.uk)**. You should expect a response within 48 hours. If the issue is confirmed, patches will be released as soon as possible depending on complexity.
+In the first instance, please report suspected security vulnerabilities using [private vulnerability reporting](https://docs.github.com/en/code-security/security-advisories/guidance-on-reporting-and-writing-information-about-vulnerabilities/privately-reporting-a-security-vulnerability#privately-reporting-a-security-vulnerability) by navigating to the [Security](https://github.com/marcransome/flog/security) tab of this repository and clicking "Report a vulnerability". Alternatively, submit your report by email to **[marc.ransome@fidgetbox.co.uk](mailto:marc.ransome@fidgetbox.co.uk)**. You should generally expect a response within 48 hours.
