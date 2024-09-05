@@ -78,7 +78,7 @@ codeql_db_dir         := codeql_dir / "db"
         "{{build_dir}}" \
         "{{man_target}}" \
         "{{sarif_file}}" \
-        *.xz
+        flog-*-darwin-*.tar.xz
 
 # build the man page
 @man:
