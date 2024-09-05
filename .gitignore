@@ -4,3 +4,4 @@ build/
 codeql/
 codeql-analysis.sarif
 man/flog.1
+flog-*-darwin-*.tar.xz
