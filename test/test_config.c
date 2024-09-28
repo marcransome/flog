@@ -682,6 +682,35 @@ flog_config_new_with_long_append_opt_and_path_succeeds(void **state) {
 }
 
 static void
+flog_config_new_with_message_from_stream_succeeds(void **state) {
+    UNUSED(state);
+
+    FlogError error = TEST_ERROR;
+    MOCK_ARGS(
+        TEST_PROGRAM_NAME,
+        TEST_MESSAGE
+    )
+
+    char *message = "0123456789ABCDEF";
+
+    FILE *saved_stdin = stdin;
+    stdin = fmemopen(message, strlen(message), "r");
+
+    FlogConfig *config = flog_config_new(mock_argc, mock_argv, &error);
+
+    // Ensure stdin stream is restored before making assertions in order to avoid impacting
+    // other tests if an assertion fails and leaves stdin pointing to the in-memory buffer
+    fclose(stdin);
+    stdin = saved_stdin;
+
+    assert_non_null(config);
+    assert_int_equal(error, FLOG_ERROR_NONE);
+    assert_string_equal(flog_config_get_message(config), message);
+
+    flog_config_free(config);
+}
+
+static void
 flog_config_new_with_long_version_opt_succeeds(void **state) {
     UNUSED(state);
 
@@ -1359,6 +1388,7 @@ int main(void) {
         cmocka_unit_test(flog_config_new_with_long_level_opt_and_fault_value_succeeds),
         cmocka_unit_test(flog_config_new_with_long_private_opt_and_message_succeeds),
         cmocka_unit_test(flog_config_new_with_long_append_opt_and_path_succeeds),
+        cmocka_unit_test(flog_config_new_with_message_from_stream_succeeds),
         cmocka_unit_test(flog_config_new_with_short_version_opt_succeeds),
         cmocka_unit_test(flog_config_new_with_long_version_opt_succeeds),
         cmocka_unit_test(flog_config_new_with_short_help_opt_succeeds),
