@@ -22,13 +22,14 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <unistd.h>
 #include "flog.h"
 #include "common.h"
 
 int
 main(int argc, char *argv[]) {
 
-    if (argc == 1 ) {
+    if (argc == 1 && isatty(fileno(stdin))) {
         flog_usage();
         return 1;
     }
