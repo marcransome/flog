@@ -79,23 +79,12 @@
 #define UNUSED(x) (void)(x)
 
 static void
-flog_config_new_with_zero_arg_count_fails(void **state) {
-    UNUSED(state);
-
-    FlogError error;        // should pass non-null assertion (&error)
-    int mock_argc = 0;      // should fail >1 assertion
-    char *mock_argv[] = {}; // should pass non-null assertion
-
-    expect_assert_failure(flog_config_new(mock_argc, mock_argv, &error));
-}
-
-static void
 flog_config_new_with_null_arg_values_fails(void **state) {
     UNUSED(state);
 
-    FlogError error;         // should pass non-null assertion (&error)
-    int mock_argc = 2;       // should pass >1 assertion
+    int mock_argc = 0;
     char **mock_argv = NULL; // should fail non-null assertion
+    FlogError error;         // should pass non-null assertion (&error)
 
     expect_assert_failure(flog_config_new(mock_argc, mock_argv, &error));
 }
@@ -103,7 +92,7 @@ flog_config_new_with_null_arg_values_fails(void **state) {
 static void test_new_config_with_no_error_ptr_calls_assert(void **state) {
     UNUSED(state);
 
-    int mock_argc = 2;      // should pass >1 assertion
+    int mock_argc = 0;
     char *mock_argv[] = {}; // should pass non-null assertion
 
     expect_assert_failure(flog_config_new(mock_argc, mock_argv, NULL));
@@ -687,8 +676,7 @@ flog_config_new_with_message_from_stream_succeeds(void **state) {
 
     FlogError error = TEST_ERROR;
     MOCK_ARGS(
-        TEST_PROGRAM_NAME,
-        TEST_MESSAGE
+        TEST_PROGRAM_NAME
     )
 
     char *message = "0123456789ABCDEF";
@@ -1354,7 +1342,6 @@ int main(void) {
 
     const struct CMUnitTest tests[] = {
         // flog_config_new() precondition tests
-        cmocka_unit_test(flog_config_new_with_zero_arg_count_fails),
         cmocka_unit_test(flog_config_new_with_null_arg_values_fails),
 
         // flog_config_new() failure tests
