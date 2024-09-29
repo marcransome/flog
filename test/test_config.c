@@ -79,23 +79,12 @@
 #define UNUSED(x) (void)(x)
 
 static void
-flog_config_new_with_zero_arg_count_fails(void **state) {
-    UNUSED(state);
-
-    FlogError error;        // should pass non-null assertion (&error)
-    int mock_argc = 0;      // should fail >1 assertion
-    char *mock_argv[] = {}; // should pass non-null assertion
-
-    expect_assert_failure(flog_config_new(mock_argc, mock_argv, &error));
-}
-
-static void
 flog_config_new_with_null_arg_values_fails(void **state) {
     UNUSED(state);
 
-    FlogError error;         // should pass non-null assertion (&error)
-    int mock_argc = 2;       // should pass >1 assertion
+    int mock_argc = 0;
     char **mock_argv = NULL; // should fail non-null assertion
+    FlogError error;         // should pass non-null assertion (&error)
 
     expect_assert_failure(flog_config_new(mock_argc, mock_argv, &error));
 }
@@ -103,7 +92,7 @@ flog_config_new_with_null_arg_values_fails(void **state) {
 static void test_new_config_with_no_error_ptr_calls_assert(void **state) {
     UNUSED(state);
 
-    int mock_argc = 2;      // should pass >1 assertion
+    int mock_argc = 0;
     char *mock_argv[] = {}; // should pass non-null assertion
 
     expect_assert_failure(flog_config_new(mock_argc, mock_argv, NULL));
@@ -677,6 +666,34 @@ flog_config_new_with_long_append_opt_and_path_succeeds(void **state) {
     assert_non_null(config);
     assert_int_equal(error, FLOG_ERROR_NONE);
     assert_string_equal(flog_config_get_output_file(config), TEST_PATH);
+
+    flog_config_free(config);
+}
+
+static void
+flog_config_new_with_message_from_stream_succeeds(void **state) {
+    UNUSED(state);
+
+    FlogError error = TEST_ERROR;
+    MOCK_ARGS(
+        TEST_PROGRAM_NAME
+    )
+
+    char *message = "0123456789ABCDEF";
+
+    FILE *saved_stdin = stdin;
+    stdin = fmemopen(message, strlen(message), "r");
+
+    FlogConfig *config = flog_config_new(mock_argc, mock_argv, &error);
+
+    // Ensure stdin stream is restored before making assertions in order to avoid impacting
+    // other tests if an assertion fails and leaves stdin pointing to the in-memory buffer
+    fclose(stdin);
+    stdin = saved_stdin;
+
+    assert_non_null(config);
+    assert_int_equal(error, FLOG_ERROR_NONE);
+    assert_string_equal(flog_config_get_message(config), message);
 
     flog_config_free(config);
 }
@@ -1325,7 +1342,6 @@ int main(void) {
 
     const struct CMUnitTest tests[] = {
         // flog_config_new() precondition tests
-        cmocka_unit_test(flog_config_new_with_zero_arg_count_fails),
         cmocka_unit_test(flog_config_new_with_null_arg_values_fails),
 
         // flog_config_new() failure tests
@@ -1359,6 +1375,7 @@ int main(void) {
         cmocka_unit_test(flog_config_new_with_long_level_opt_and_fault_value_succeeds),
         cmocka_unit_test(flog_config_new_with_long_private_opt_and_message_succeeds),
         cmocka_unit_test(flog_config_new_with_long_append_opt_and_path_succeeds),
+        cmocka_unit_test(flog_config_new_with_message_from_stream_succeeds),
         cmocka_unit_test(flog_config_new_with_short_version_opt_succeeds),
         cmocka_unit_test(flog_config_new_with_long_version_opt_succeeds),
         cmocka_unit_test(flog_config_new_with_short_help_opt_succeeds),
