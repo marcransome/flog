@@ -348,5 +348,5 @@ int main(void) {
         cmocka_unit_test_setup_teardown(flog_print_error_file_succeeds, capture_stderr, restore_stderr),
     };
 
-    return cmocka_run_group_tests_name("Common tests", tests, NULL, NULL);
+    return cmocka_run_group_tests_name("Common function tests", tests, NULL, NULL);
 }
