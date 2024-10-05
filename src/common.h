@@ -55,7 +55,7 @@ void flog_version(void);
  *
  * \return A pointer to a null-terminated string describing the error condition
  */
-const char * flog_get_error_string(FlogError error);
+const char * flog_error_string(FlogError error);
 
 /*! \brief Print a formatted error message representation of the error condition.
  *
