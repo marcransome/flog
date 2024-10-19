@@ -89,7 +89,8 @@ flog_config_new_with_null_arg_values_fails(void **state) {
     expect_assert_failure(flog_config_new(mock_argc, mock_argv, &error));
 }
 
-static void test_new_config_with_no_error_ptr_calls_assert(void **state) {
+static void
+test_new_config_with_no_error_ptr_calls_assert(void **state) {
     UNUSED(state);
 
     int mock_argc = 0;
@@ -168,7 +169,8 @@ flog_config_new_with_long_category_opt_and_no_subsystem_opt_fails(void **state) 
     assert_int_equal(error, FLOG_ERROR_SUBSYS);
 }
 
-static void flog_config_with_short_subsystem_opt_and_no_subsystem_fails(void **state) {
+static void
+flog_config_with_short_subsystem_opt_and_no_subsystem_fails(void **state) {
     UNUSED(state);
 
     FlogError error = TEST_ERROR;
@@ -184,7 +186,8 @@ static void flog_config_with_short_subsystem_opt_and_no_subsystem_fails(void **s
     assert_int_equal(error, FLOG_ERROR_OPTS);
 }
 
-static void flog_config_with_long_subsystem_opt_and_no_subsystem_fails(void **state) {
+static void
+flog_config_with_long_subsystem_opt_and_no_subsystem_fails(void **state) {
     UNUSED(state);
 
     FlogError error = TEST_ERROR;
