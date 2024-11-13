@@ -28,7 +28,7 @@ jobs:
       - name: Install dependencies
         run: brew install popt
       - name: Initialize CodeQL
-        uses: github/codeql-action/init@9278e421667d5d90a2839487a482448c4ec7df4d # v3.27.2
+        uses: github/codeql-action/init@396bb3e45325a47dd9ef434068033c6d5bb0d11a # v3.27.3
         with:
           languages: cpp
           queries: security-and-quality
@@ -38,4 +38,4 @@ jobs:
           cmake -S . -B build -D CMAKE_OSX_ARCHITECTURES=arm64
           cmake --build build
       - name: Perform CodeQL analysis
-        uses: github/codeql-action/analyze@9278e421667d5d90a2839487a482448c4ec7df4d # v3.27.2
+        uses: github/codeql-action/analyze@396bb3e45325a47dd9ef434068033c6d5bb0d11a # v3.27.3
