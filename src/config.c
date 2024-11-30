@@ -32,12 +32,7 @@
 #include <unistd.h>
 
 #ifdef UNIT_TESTING
-extern void mock_assert(const int result, const char* const expression,
-    const char * const file, const int line);
-
-#undef assert
-#define assert(expression) \
-    mock_assert((int)(expression), #expression, __FILE__, __LINE__);
+#include "testing.h"
 #endif
 
 const int subsystem_len = 257;
@@ -90,7 +85,7 @@ flog_config_new(int argc, char *argv[], FlogError *error) {
     poptReadDefaultConfig(context, 0);
 
     int option;
-    while ((option = poptGetNextOpt(context)) >= 0) {
+    while ((option = poptGetNextOpt(context)) > 0) {
         char *option_argument = poptGetOptArg(context);
 
         switch (option) {
@@ -129,8 +124,6 @@ flog_config_new(int argc, char *argv[], FlogError *error) {
                 flog_config_set_message_type(config, MSG_PRIVATE);
                 break;
         }
-
-        free(option_argument);
     }
 
     if (option < -1) {

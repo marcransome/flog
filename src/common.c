@@ -23,6 +23,10 @@
 #include "common.h"
 #include <stdio.h>
 
+#ifdef UNIT_TESTING
+#include "testing.h"
+#endif
+
 static const char *
 flog_error_map[] = {
     [FLOG_ERROR_NONE]   = "none",
