@@ -118,6 +118,8 @@ test_new_config_with_no_error_ptr_calls_assert(void **state) {
 
 static void
 flog_config_new_alloc_fails(void **state) {
+    UNUSED(state);
+
     FlogError error = TEST_ERROR;
     MOCK_ARGS(
         TEST_PROGRAM_NAME,
