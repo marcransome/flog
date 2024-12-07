@@ -25,6 +25,7 @@
 #include <setjmp.h>
 #include <cmocka.h>
 #include <string.h>
+#include <stdbool.h>
 #include <sys/syslimits.h>
 #include "config.h"
 #include "common.h"
@@ -78,6 +79,22 @@
 
 #define UNUSED(x) (void)(x)
 
+extern bool fail_calloc;
+
+static int
+enable_calloc_failure(void **state) {
+    UNUSED(state);
+    fail_calloc = true;
+    return 0;
+}
+
+static int
+disable_calloc_failure(void **state) {
+    UNUSED(state);
+    fail_calloc = false;
+    return 0;
+}
+
 static void
 flog_config_new_with_null_arg_values_fails(void **state) {
     UNUSED(state);
@@ -97,6 +114,20 @@ test_new_config_with_no_error_ptr_calls_assert(void **state) {
     char *mock_argv[] = {}; // should pass non-null assertion
 
     expect_assert_failure(flog_config_new(mock_argc, mock_argv, NULL));
+}
+
+static void
+flog_config_new_alloc_fails(void **state) {
+    FlogError error = TEST_ERROR;
+    MOCK_ARGS(
+        TEST_PROGRAM_NAME,
+        TEST_MESSAGE
+    )
+
+    FlogConfig *config = flog_config_new(mock_argc, mock_argv, &error);
+
+    assert_null(config);
+    assert_int_equal(error, FLOG_ERROR_ALLOC);
 }
 
 static void
@@ -1348,6 +1379,7 @@ int main(void) {
         cmocka_unit_test(flog_config_new_with_null_arg_values_fails),
 
         // flog_config_new() failure tests
+        cmocka_unit_test_setup_teardown(flog_config_new_alloc_fails, enable_calloc_failure, disable_calloc_failure),
         cmocka_unit_test(flog_config_new_with_short_invalid_opt_fails),
         cmocka_unit_test(flog_config_new_with_long_invalid_opt_fails),
         cmocka_unit_test(flog_config_new_with_short_category_opt_and_no_subsystem_opt_fails),
