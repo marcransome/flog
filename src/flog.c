@@ -29,7 +29,7 @@
 #include "config.h"
 
 #ifdef UNIT_TESTING
-#include "testing.h"
+#include "../test/testing.h"
 #endif
 
 #define OS_LOG_FORMAT_PUBLIC "%{public}s"
