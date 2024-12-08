@@ -24,7 +24,7 @@
 #include <stdio.h>
 
 #ifdef UNIT_TESTING
-#include "testing.h"
+#include "../test/testing.h"
 #endif
 
 static const char *

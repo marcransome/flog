@@ -32,7 +32,7 @@
 #include <unistd.h>
 
 #ifdef UNIT_TESTING
-#include "testing.h"
+#include "../test/testing.h"
 #endif
 
 const int subsystem_len = 257;
