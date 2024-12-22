@@ -60,8 +60,6 @@ const char * flog_error_string(FlogError error);
 /*! \brief Print a formatted error message representation of the error condition.
  *
  * \param[in] error A FlogError enumeration variant representing the error condition
- *
- * \return void
  */
 void flog_print_error(FlogError error);
 
