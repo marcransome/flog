@@ -37,6 +37,7 @@ flog_error_map[] = {
     [FLOG_ERROR_SUBSYS] = "category option requires subsystem option to be set",
     [FLOG_ERROR_OPTS]   = "invalid options",
     [FLOG_ERROR_FILE]   = "file path too long",
+    [FLOG_ERROR_STAT]   = "unable to determine state of stdin file descriptor",
 };
 
 const char *
