@@ -30,10 +30,13 @@
 #include <stdbool.h>
 #include <popt.h>
 #include <unistd.h>
+#include <sys/stat.h>
 
 #ifdef UNIT_TESTING
 #include "../test/testing.h"
 #endif
+
+bool is_regular_file_or_pipe(int fd, FlogError *error);
 
 const int subsystem_len = 257;
 const int category_len  = 257;
@@ -145,23 +148,42 @@ flog_config_new(int argc, char *argv[], FlogError *error) {
         return NULL;
     }
 
-    if (isatty(fileno(stdin))) {
-        const char **message_args = poptGetArgs(context);
-        if (message_args == NULL) {
+    const char **message_args;
+    FlogError stream_error = FLOG_ERROR_NONE;
+
+    if (is_regular_file_or_pipe(fileno(stdin), &stream_error)) {
+        if (stream_error == FLOG_ERROR_NONE) {
+            flog_config_set_message_from_stream(config, stdin);
+        } else {
             flog_config_free(config);
             poptFreeContext(context);
-            *error = FLOG_ERROR_MSG;
+            *error = stream_error;
             return NULL;
         }
-
+    } else if ((message_args = poptGetArgs(context)) != NULL) {
         flog_config_set_message_from_args(config, message_args);
     } else {
-        flog_config_set_message_from_stream(config, stdin);
+        flog_config_free(config);
+        poptFreeContext(context);
+        *error = FLOG_ERROR_MSG;
+        return NULL;
     }
 
     poptFreeContext(context);
 
     return config;
+}
+
+bool
+is_regular_file_or_pipe(int fd, FlogError *error) {
+    struct stat statbuf;
+
+    if (fstat(fd, &statbuf) == -1) {
+        *error = FLOG_ERROR_STAT;
+        return false;
+    }
+
+    return S_ISFIFO(statbuf.st_mode) || S_ISREG(statbuf.st_mode);
 }
 
 void

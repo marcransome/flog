@@ -27,6 +27,7 @@
 #include <string.h>
 #include <stdbool.h>
 #include <sys/syslimits.h>
+#include <unistd.h>
 #include "config.h"
 #include "common.h"
 
@@ -706,8 +707,9 @@ flog_config_new_with_long_append_opt_and_path_succeeds(void **state) {
     flog_config_free(config);
 }
 
+
 static void
-flog_config_new_with_message_from_stream_succeeds(void **state) {
+flog_config_new_with_message_from_pipe_stream_succeeds(void **state) {
     UNUSED(state);
 
     FlogError error = TEST_ERROR;
@@ -715,16 +717,36 @@ flog_config_new_with_message_from_stream_succeeds(void **state) {
         TEST_PROGRAM_NAME
     )
 
-    char *message = "0123456789ABCDEF";
+    int pipe_fd[2];
+    const char *message = "0123456789ABCDEF";
 
+    // Create a pipe and allocate a file descriptor pair for reading the message string
+    if (pipe(pipe_fd) == -1) {
+        perror("pipe");
+        fail();
+    };
+
+    // Write a test message to the write end of the pipe and close its file descriptor
+    write(pipe_fd[1], message, strlen(message));
+    close(pipe_fd[1]);
+
+    // Associate a stream with the read end of the pipe
+    FILE *pipe_file = fdopen(pipe_fd[0], "r");
+    if (pipe_file == NULL) {
+        perror("fdopen");
+        close(pipe_fd[0]);
+        fail();
+    }
+
+    // Save stdin and reassign temporarily to the pipe stream
     FILE *saved_stdin = stdin;
-    stdin = fmemopen(message, strlen(message), "r");
+    stdin = pipe_file;
 
     FlogConfig *config = flog_config_new(mock_argc, mock_argv, &error);
 
     // Ensure stdin stream is restored before making assertions in order to avoid impacting
-    // other tests if an assertion fails and leaves stdin pointing to the in-memory buffer
-    fclose(stdin);
+    // other tests if an assertion fails and leaves stdin pointing to the pipe stream
+    fclose(pipe_file);
     stdin = saved_stdin;
 
     assert_non_null(config);
@@ -732,6 +754,58 @@ flog_config_new_with_message_from_stream_succeeds(void **state) {
     assert_string_equal(flog_config_get_message(config), message);
 
     flog_config_free(config);
+}
+
+static void
+flog_config_new_with_message_from_regular_file_stream_succeeds(void **state) {
+    UNUSED(state);
+
+    FlogError error = TEST_ERROR;
+    MOCK_ARGS(
+        TEST_PROGRAM_NAME
+    )
+
+    int fd;
+    char template[] = "/tmp/flog.XXXXXXXX";
+
+    // Create a temporary file for reading the message string
+    if ((fd = mkstemp(template)) == -1) {
+        perror("mkstemp");
+        fail();
+    }
+
+    // Write test message to the temporary file
+    const char *message = "0123456789ABCDEF";
+    write(fd, message, strlen(message));
+
+    // Associate a stream with the temporary file
+    FILE *temp_file = fdopen(fd, "r");
+    if (temp_file == NULL) {
+        perror("fdopen");
+        close(fd);
+        fail();
+    }
+
+    // Set the file position indicator for the stream to the beginning of the file
+    rewind(temp_file);
+
+    // Save stdin and reassign temporarily to the temporary file stream
+    FILE *saved_stdin = stdin;
+    stdin = temp_file;
+
+    FlogConfig *config = flog_config_new(mock_argc, mock_argv, &error);
+
+    // Ensure stdin stream is restored before making assertions in order to avoid impacting
+    // other tests if an assertion fails and leaves stdin pointing to the temporary file stream
+    fclose(temp_file);
+    stdin = saved_stdin;
+
+    assert_non_null(config);
+    assert_int_equal(error, FLOG_ERROR_NONE);
+    assert_string_equal(flog_config_get_message(config), message);
+
+    flog_config_free(config);
+    unlink(template);
 }
 
 static void
@@ -1412,7 +1486,8 @@ int main(void) {
         cmocka_unit_test(flog_config_new_with_long_level_opt_and_fault_value_succeeds),
         cmocka_unit_test(flog_config_new_with_long_private_opt_and_message_succeeds),
         cmocka_unit_test(flog_config_new_with_long_append_opt_and_path_succeeds),
-        cmocka_unit_test(flog_config_new_with_message_from_stream_succeeds),
+        cmocka_unit_test(flog_config_new_with_message_from_pipe_stream_succeeds),
+        cmocka_unit_test(flog_config_new_with_message_from_regular_file_stream_succeeds),
         cmocka_unit_test(flog_config_new_with_short_version_opt_succeeds),
         cmocka_unit_test(flog_config_new_with_long_version_opt_succeeds),
         cmocka_unit_test(flog_config_new_with_short_help_opt_succeeds),
