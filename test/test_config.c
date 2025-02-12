@@ -774,7 +774,7 @@ flog_config_new_with_message_from_regular_file_stream_succeeds(void **state) {
         fail();
     }
 
-    // Write test message to the temporary file
+    // Write a test message to the temporary file
     const char *message = "0123456789ABCDEF";
     write(fd, message, strlen(message));
 
