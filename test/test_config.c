@@ -339,6 +339,29 @@ flog_config_new_with_long_append_opt_and_long_path_fails(void **state) {
 }
 
 static void
+flog_config_new_with_message_from_unsupported_stream_fails(void **state) {
+    UNUSED(state);
+
+    FlogError error = TEST_ERROR;
+    MOCK_ARGS(
+        TEST_PROGRAM_NAME
+    )
+
+    const char *message = "0123456789ABCDEF";
+
+    FILE *saved_stdin = stdin;
+    stdin = fmemopen(message, strlen(message), "r");
+
+    FlogConfig *config = flog_config_new(mock_argc, mock_argv, &error);
+
+    fclose(stdin);
+    stdin = saved_stdin;
+
+    assert_null(config);
+    assert_int_equal(error, FLOG_ERROR_STAT);
+}
+
+static void
 flog_config_new_with_message_succeeds(void **state) {
     UNUSED(state);
 
@@ -1467,6 +1490,7 @@ int main(void) {
         cmocka_unit_test(flog_config_new_with_long_level_opt_and_unknown_value_fails),
         cmocka_unit_test(flog_config_new_with_short_append_opt_and_long_path_fails),
         cmocka_unit_test(flog_config_new_with_long_append_opt_and_long_path_fails),
+        cmocka_unit_test(flog_config_new_with_message_from_unsupported_stream_fails),
 
         // flog_config_new() success tests
         cmocka_unit_test(flog_config_new_with_message_succeeds),
