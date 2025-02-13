@@ -347,7 +347,7 @@ flog_config_new_with_message_from_unsupported_stream_fails(void **state) {
         TEST_PROGRAM_NAME
     )
 
-    const char *message = "0123456789ABCDEF";
+    char *message = "0123456789ABCDEF";
 
     FILE *saved_stdin = stdin;
     stdin = fmemopen(message, strlen(message), "r");
