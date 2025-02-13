@@ -154,18 +154,17 @@ flog_config_new(int argc, char *argv[], FlogError *error) {
     if ((message_args = poptGetArgs(context)) != NULL) {
         flog_config_set_message_from_args(config, message_args);
     } else if (is_regular_file_or_pipe(fileno(stdin), &stream_error)) {
-        if (stream_error == FLOG_ERROR_NONE) {
-            flog_config_set_message_from_stream(config, stdin);
-        } else {
-            flog_config_free(config);
-            poptFreeContext(context);
-            *error = stream_error;
-            return NULL;
-        }
+        flog_config_set_message_from_stream(config, stdin);
     } else {
         flog_config_free(config);
         poptFreeContext(context);
-        *error = FLOG_ERROR_MSG;
+
+        if (stream_error != FLOG_ERROR_NONE) {
+            *error = stream_error;
+        } else {
+            *error = FLOG_ERROR_MSG;
+        }
+
         return NULL;
     }
 
