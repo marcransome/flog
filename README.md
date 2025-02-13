@@ -14,9 +14,7 @@
 
 `logger` doesn't support the full set of log levels offered by Apple's unified logging system, and it lacks support for _subsystem_ and _category_ strings. `flog` uses the C language APIs for the unified logging system and supports both.
 
-## Getting started
-
-### Installation
+## Installation
 
 Install with [Homebrew](https://brew.sh):
 
@@ -24,7 +22,7 @@ Install with [Homebrew](https://brew.sh):
 brew install marcransome/tap/flog
 ```
 
-### Logging messages
+## Logging messages
 
 To log a message using the `default` log level:
 
@@ -65,7 +63,7 @@ flog -a /var/log/some-script.log -l fault -s uk.co.fidgetbox -c general 'unrecov
 > [!WARNING]
 > Log message strings are _public_ by default and can be read using the `log(1)` command or [Console](https://support.apple.com/en-gb/guide/console/welcome/mac) app. To mark a message as private add the `-p|--private` option to the command. Doing so will redact the message string, which will be shown as `'<private>'` when accessed using the methods previously mentioned. [Device Management Profiles](https://developer.apple.com/documentation/devicemanagement) can be used to grant access to private log messages.
 
-### Reading log messages
+## Reading log messages
 
 Refer to the `log(1)` man page provided on macOS-based systems for extensive documentation on how to access system wide log messages, or alternatively use the [Console](https://support.apple.com/en-gb/guide/console/welcome/mac) app.
 
@@ -76,6 +74,28 @@ Here's an example log stream in Console, filtered by subsystem name, showing mes
 And here's a similar log stream viewed with Apple's `log(1)` command:
 
 <img width="995" alt="log" src="images/log.png">
+
+## Option Aliasing
+
+`flog` supports option aliasing (via the `libpopt` library). An alias is an arbitrary name which expands to one or more command-line options, making repeat operations less verbose and allowing for sets of options to be grouped contextually by name.
+
+For example, the `--runtime-failure` alias below expands to the command-line options `-l fault -s uk.co.fidgetbox.server -c runtime`:
+
+```shell
+$ flog --runtime-failure "Expected a numeric value to be provided"
+```
+
+User-defined aliases can be added to the files `/etc/popt` and `$HOME/.popt`, both of which can contain an arbitrary number of aliases. Each alias should be formatted as:
+
+```
+uk.co.fidgetbox.flog alias <alias-name> <options>
+```
+
+For the previous example, the entry would read:
+
+```
+uk.co.fidgetbox.flog alias --runtime--failure -l fault -s uk.co.fidgetbox.server -c runtime
+```
 
 ## Development
 
