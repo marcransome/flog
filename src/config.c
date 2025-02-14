@@ -329,17 +329,24 @@ flog_config_set_message_from_stream(FlogConfig *config, FILE *restrict stream) {
     assert(config != NULL);
     assert(stream != NULL);
 
+    config->message[0] = '\0';
+
     size_t bytes_read = fread(config->message, sizeof(char), message_len - 1, stream);
+
+    if (ferror(stream)) {
+        fprintf(stderr, "%s: error reading message from stream\n", PROGRAM_NAME);
+        clearerr(stream);
+        return;
+    }
+
+    // Ensure safe bounds and null termination
+    bytes_read = (bytes_read >= message_len - 1) ? message_len - 1 : bytes_read;
     config->message[bytes_read] = '\0';
 
     // Attempt to read another byte to determine if there's more data available
     char c;
     if (fread(&c, sizeof(char), 1, stream) > 0) {
         fprintf(stderr, "%s: message was truncated to %lu bytes\n", PROGRAM_NAME, message_len - 1);
-    }
-
-    if (ferror(stream)) {
-        fprintf(stderr, "%s: error reading message from stream\n", PROGRAM_NAME);
     }
 }
 
