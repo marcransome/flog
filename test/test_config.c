@@ -1322,6 +1322,49 @@ flog_config_set_message_from_stream_with_null_stream_arg_fails(void **state) {
 }
 
 static void
+flog_config_set_message_from_stream_with_broken_stream_fails(void **state) {
+    UNUSED(state);
+
+    FlogError error = TEST_ERROR;
+    MOCK_ARGS(
+        TEST_PROGRAM_NAME,
+        TEST_MESSAGE
+    )
+
+    int temp_fd;
+    char template[] = "/tmp/flog.XXXXXXXX";
+
+    // Create a temporary file
+    if ((temp_fd = mkstemp(template)) == -1) {
+        perror("mkstemp");
+        fail();
+    }
+
+    // Associate a stream with the temporary file
+    FILE *temp_stream = fdopen(temp_fd, "r+");
+    if (temp_stream == NULL) {
+        perror("fdopen");
+        close(temp_fd);
+        unlink(template);
+        fail();
+    }
+
+    // Simulate a broken stream
+    fclose(temp_stream);
+
+    // Initialise a FlogConfig object with message string from arguments
+    FlogConfig *config = flog_config_new(mock_argc, mock_argv, &error);
+
+    // Test message parsing when read from a broken stream
+    flog_config_set_message_from_stream(config, temp_stream);
+
+    assert_non_null(config);
+    assert_string_equal(flog_config_get_message(config), "");
+
+    flog_config_free(config);
+}
+
+static void
 flog_config_set_and_get_message_from_stream_succeeds(void **state) {
     UNUSED(state);
 
@@ -1614,6 +1657,9 @@ int main(void) {
         // flog_config_set_message_from_stream() precondition tests
         cmocka_unit_test(flog_config_set_message_from_stream_with_null_config_arg_fails),
         cmocka_unit_test(flog_config_set_message_from_stream_with_null_stream_arg_fails),
+
+        // flog_config_set_message_from_stream() failure tests
+        cmocka_unit_test(flog_config_set_message_from_stream_with_broken_stream_fails),
 
         // flog_config_set_message_from_stream() success tests
         cmocka_unit_test(flog_config_set_and_get_message_from_stream_succeeds),
