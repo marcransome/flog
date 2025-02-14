@@ -38,9 +38,9 @@
 
 bool is_regular_file_or_pipe(int fd, FlogError *error);
 
-const int subsystem_len = 257;
-const int category_len  = 257;
-const int message_len   = 8193;
+const size_t subsystem_len = 128;
+const size_t category_len  = 128;
+const size_t message_len   = 1024;
 
 FlogConfigLevel flog_config_parse_level(const char *str);
 
@@ -205,7 +205,7 @@ flog_config_set_subsystem(FlogConfig *config, const char *subsystem) {
     assert(subsystem != NULL);
 
     if (strlcpy(config->subsystem, subsystem, subsystem_len) >= subsystem_len) {
-        fprintf(stderr, "%s: subsystem name truncated to %d bytes\n", PROGRAM_NAME, subsystem_len - 1);
+        fprintf(stderr, "%s: subsystem name truncated to %lu bytes\n", PROGRAM_NAME, subsystem_len);
     }
 }
 
@@ -222,7 +222,7 @@ flog_config_set_category(FlogConfig *config, const char *category) {
     assert(category != NULL);
 
     if (strlcpy(config->category, category, category_len) >= category_len) {
-        fprintf(stderr, "%s: category name truncated to %d bytes\n", PROGRAM_NAME, category_len - 1);
+        fprintf(stderr, "%s: category name truncated to %lu bytes\n", PROGRAM_NAME, category_len);
     }
 }
 
@@ -293,7 +293,7 @@ flog_config_set_message(FlogConfig *config, const char *message) {
     assert(message != NULL);
 
     if (strlcpy(config->message, message, message_len) >= message_len) {
-        fprintf(stderr, "%s: message string was truncated to %d bytes\n", PROGRAM_NAME, message_len - 1);
+        fprintf(stderr, "%s: message string was truncated to %lu bytes\n", PROGRAM_NAME, message_len);
     }
 }
 
@@ -320,7 +320,7 @@ flog_config_set_message_from_args(FlogConfig *config, const char **args) {
     }
 
     if (message_truncated) {
-        fprintf(stderr, "%s: message was truncated to %d bytes\n", PROGRAM_NAME, message_len - 1);
+        fprintf(stderr, "%s: message was truncated to %lu bytes\n", PROGRAM_NAME, message_len);
     }
 }
 
@@ -329,9 +329,23 @@ flog_config_set_message_from_stream(FlogConfig *config, FILE *restrict stream) {
     assert(config != NULL);
     assert(stream != NULL);
 
-    if (fread(config->message, sizeof(char), message_len, stream) >= message_len) {
-        fprintf(stderr, "%s: message was truncated to %d bytes\n", PROGRAM_NAME, message_len - 1);
+    size_t bytes_read = 0;
+    size_t total_read = 0;
+
+    while ((bytes_read = fread(config->message, sizeof(char), message_len - total_read, stream)) > 0) {
+        total_read += bytes_read;
+    }
+
+    if (total_read >= message_len) {
         config->message[message_len - 1] = '\0';
+        fprintf(stderr, "%s: message was truncated to %lu bytes\n", PROGRAM_NAME, message_len);
+    } else {
+        config->message[total_read] = '\0';
+    }
+
+    if (ferror(stream)) {
+        fprintf(stderr, "%s: error reading message from stream\n", PROGRAM_NAME);
+        return;
     }
 }
 
