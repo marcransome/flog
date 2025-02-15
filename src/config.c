@@ -331,8 +331,8 @@ flog_config_set_message_from_stream(FlogConfig *config, FILE *restrict stream) {
 
     config->message[0] = '\0';
 
+    // Read message from stream
     size_t bytes_read = fread(config->message, sizeof(char), message_len - 1, stream);
-
     if (ferror(stream)) {
         fprintf(stderr, "%s: error reading message from stream\n", PROGRAM_NAME);
         clearerr(stream);
@@ -343,11 +343,12 @@ flog_config_set_message_from_stream(FlogConfig *config, FILE *restrict stream) {
     bytes_read = (bytes_read >= message_len - 1) ? message_len - 1 : bytes_read;
     config->message[bytes_read] = '\0';
 
-    // Attempt to read another byte to determine if there's more data available
+    // Check for message truncation
     char c;
     if (fread(&c, sizeof(char), 1, stream) > 0) {
-        fprintf(stderr, "%s: message was truncated to %lu bytes\n", PROGRAM_NAME, message_len - 1);
+        fprintf(stderr, "%s: message truncated to %lu bytes\n", PROGRAM_NAME, message_len - 1);
     }
+    clearerr(stream);
 }
 
 FlogConfigMessageType
