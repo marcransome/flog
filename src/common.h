@@ -28,8 +28,11 @@
  *  Constants, helper functions, and error handling types for common operations.
  */
 
+/* Program information */
 #define PROGRAM_NAME "flog"
-#define PROGRAM_VERSION "v1.7.2"
+#define PROGRAM_VERSION_MAJOR 1
+#define PROGRAM_VERSION_MINOR 7
+#define PROGRAM_VERSION_PATCH 2
 
 /*! \brief An enumerated type representing error conditions. */
 typedef enum FlogErrorData {
