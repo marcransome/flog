@@ -36,15 +36,20 @@
 
 /*! \brief An enumerated type representing error conditions. */
 typedef enum FlogErrorData {
+    /* General errors */
     FLOG_ERROR_NONE,
     FLOG_ERROR_ALLOC,
+
+    /* I/O errors */
     FLOG_ERROR_APPEND,
+    FLOG_ERROR_FILE,
+    FLOG_ERROR_STAT,
+
+    /* Configuration errors */
     FLOG_ERROR_LVL,
     FLOG_ERROR_MSG,
     FLOG_ERROR_OPTS,
-    FLOG_ERROR_SUBSYS,
-    FLOG_ERROR_FILE,
-    FLOG_ERROR_STAT,
+    FLOG_ERROR_SUBSYS
 } FlogError;
 
 /*! \brief Print usage information to stdout stream. */
