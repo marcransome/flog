@@ -205,7 +205,7 @@ flog_config_set_subsystem(FlogConfig *config, const char *subsystem) {
     assert(subsystem != NULL);
 
     if (strlcpy(config->subsystem, subsystem, subsystem_len) >= subsystem_len) {
-        fprintf(stderr, "%s: subsystem name truncated to %lu bytes\n", PROGRAM_NAME, subsystem_len);
+        fprintf(stderr, "%s: subsystem name truncated to %lu bytes\n", PROGRAM_NAME, subsystem_len - 1);
     }
 }
 
@@ -222,7 +222,7 @@ flog_config_set_category(FlogConfig *config, const char *category) {
     assert(category != NULL);
 
     if (strlcpy(config->category, category, category_len) >= category_len) {
-        fprintf(stderr, "%s: category name truncated to %lu bytes\n", PROGRAM_NAME, category_len);
+        fprintf(stderr, "%s: category name truncated to %lu bytes\n", PROGRAM_NAME, category_len - 1);
     }
 }
 
@@ -293,7 +293,7 @@ flog_config_set_message(FlogConfig *config, const char *message) {
     assert(message != NULL);
 
     if (strlcpy(config->message, message, message_len) >= message_len) {
-        fprintf(stderr, "%s: message string was truncated to %lu bytes\n", PROGRAM_NAME, message_len);
+        fprintf(stderr, "%s: message truncated to %lu bytes\n", PROGRAM_NAME, message_len - 1);
     }
 }
 
@@ -320,7 +320,7 @@ flog_config_set_message_from_args(FlogConfig *config, const char **args) {
     }
 
     if (message_truncated) {
-        fprintf(stderr, "%s: message was truncated to %lu bytes\n", PROGRAM_NAME, message_len);
+        fprintf(stderr, "%s: message truncated to %lu bytes\n", PROGRAM_NAME, message_len - 1);
     }
 }
 
