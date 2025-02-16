@@ -346,7 +346,7 @@ flog_config_set_message_from_stream(FlogConfig *config, FILE *restrict stream) {
     // Check for message truncation
     char c;
     if (fread(&c, sizeof(char), 1, stream) > 0) {
-        fprintf(stderr, "%s: message truncated to %lu bytes\n", PROGRAM_NAME, message_len - 1);
+        fprintf(stderr, "%s: message truncated to %zu bytes\n", PROGRAM_NAME, message_len - 1);
     }
     clearerr(stream);
 }
