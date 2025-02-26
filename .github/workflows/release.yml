@@ -121,19 +121,19 @@ jobs:
         with:
           egress-policy: audit
       - name: Download x86_64 build artifact
-        uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.8
+        uses: actions/download-artifact@cc203385981b70ca67e1cc392babf9cc229d5806 # v4.1.9
         with:
           name: ${{ needs.build.outputs.artifact-filename-darwin-x86_64 }}
       - name: Download x86_64 SHA-256 checksum file
-        uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.8
+        uses: actions/download-artifact@cc203385981b70ca67e1cc392babf9cc229d5806 # v4.1.9
         with:
           name: ${{ needs.build.outputs.sha256-filename-darwin-x86_64 }}
       - name: Download arm64 build artifact
-        uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.8
+        uses: actions/download-artifact@cc203385981b70ca67e1cc392babf9cc229d5806 # v4.1.9
         with:
           name: ${{ needs.build.outputs.artifact-filename-darwin-arm64 }}
       - name: Download arm64 SHA-256 checksum file
-        uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.8
+        uses: actions/download-artifact@cc203385981b70ca67e1cc392babf9cc229d5806 # v4.1.9
         with:
           name: ${{ needs.build.outputs.sha256-filename-darwin-arm64 }}
       - name: Upload release artifacts
