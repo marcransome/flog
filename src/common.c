@@ -53,7 +53,7 @@ flog_print_error(FlogError error) {
 void
 flog_usage(void) {
     printf(
-        "%s %s\n"
+        "%s v%d.%d.%d\n"
         "\n"
         "Usage:\n"
         "    %s [options] message\n"
@@ -73,12 +73,19 @@ flog_usage(void) {
         "    default, info, debug, error, fault\n"
         "\n",
         PROGRAM_NAME,
-        PROGRAM_VERSION,
+        PROGRAM_VERSION_MAJOR,
+        PROGRAM_VERSION_MINOR,
+        PROGRAM_VERSION_PATCH,
         PROGRAM_NAME
     );
 }
 
 void
 flog_version(void) {
-    printf("%s %s\n", PROGRAM_NAME, PROGRAM_VERSION);
+    printf("%s v%d.%d.%d\n",
+        PROGRAM_NAME,
+        PROGRAM_VERSION_MAJOR,
+        PROGRAM_VERSION_MINOR,
+        PROGRAM_VERSION_PATCH
+    );
 }
