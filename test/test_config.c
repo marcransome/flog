@@ -108,7 +108,7 @@ flog_config_new_with_null_arg_values_fails(void **state) {
 }
 
 static void
-test_new_config_with_no_error_ptr_calls_assert(void **state) {
+flog_config_new_with_no_error_ptr_fails(void **state) {
     UNUSED(state);
 
     int mock_argc = 0;
@@ -1476,6 +1476,7 @@ int main(void) {
     const struct CMUnitTest tests[] = {
         // flog_config_new() precondition tests
         cmocka_unit_test(flog_config_new_with_null_arg_values_fails),
+        cmocka_unit_test(flog_config_new_with_no_error_ptr_fails),
 
         // flog_config_new() failure tests
         cmocka_unit_test_setup_teardown(flog_config_new_alloc_fails, enable_calloc_failure, disable_calloc_failure),
