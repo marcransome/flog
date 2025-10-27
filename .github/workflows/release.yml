@@ -67,14 +67,14 @@ jobs:
           echo "sha256-checksum-darwin-${ARCHITECTURE}=$(cat "${ARTIFACT_NAME}.sha256" | base64)" >> "${GITHUB_OUTPUT}"
           echo "sha256-filename-darwin-${ARCHITECTURE}=${ARTIFACT_NAME}.sha256" >> "${GITHUB_OUTPUT}"
       - name: Upload build artifact
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
         with:
           name: ${{ steps.artifact.outputs.name }}
           path: ${{ steps.artifact.outputs.name }}
           if-no-files-found: error
           retention-days: 7
       - name: Upload SHA-256 checksum file
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
         with:
           name: ${{ steps.artifact.outputs.name }}.sha256
           path: ${{ steps.artifact.outputs.name }}.sha256
@@ -121,19 +121,19 @@ jobs:
         with:
           egress-policy: audit
       - name: Download x86_64 build artifact
-        uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0 # v5.0.0
+        uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53 # v6.0.0
         with:
           name: ${{ needs.build.outputs.artifact-filename-darwin-x86_64 }}
       - name: Download x86_64 SHA-256 checksum file
-        uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0 # v5.0.0
+        uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53 # v6.0.0
         with:
           name: ${{ needs.build.outputs.sha256-filename-darwin-x86_64 }}
       - name: Download arm64 build artifact
-        uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0 # v5.0.0
+        uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53 # v6.0.0
         with:
           name: ${{ needs.build.outputs.artifact-filename-darwin-arm64 }}
       - name: Download arm64 SHA-256 checksum file
-        uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0 # v5.0.0
+        uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53 # v6.0.0
         with:
           name: ${{ needs.build.outputs.sha256-filename-darwin-arm64 }}
       - name: Upload release artifacts
