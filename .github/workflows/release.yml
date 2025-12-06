@@ -10,7 +10,7 @@ jobs:
   build:
     strategy:
       matrix:
-        os: [macos-13, macos-14]
+        os: [macos-15, macos-15-intel]
     runs-on: ${{ matrix.os }}
     outputs:
       artifact-filename-darwin-arm64: ${{ steps.artifact.outputs.artifact-filename-darwin-arm64 }}
