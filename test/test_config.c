@@ -745,33 +745,42 @@ flog_config_new_with_message_from_pipe_stream_succeeds(void **state) {
     int pipe_fd[2];
     const char *message = "0123456789ABCDEF";
 
-    // Create a pipe and allocate a file descriptor pair for reading the message string
+    // Create a pipe and allocate a file descriptor pair for the message string
     if (pipe(pipe_fd) == -1) {
         perror("pipe");
         fail();
     };
 
-    // Write a test message to the write end of the pipe and close its file descriptor
-    write(pipe_fd[1], message, strlen(message));
-    close(pipe_fd[1]);
-
     // Associate a stream with the read end of the pipe
-    FILE *pipe_file = fdopen(pipe_fd[0], "r");
-    if (pipe_file == NULL) {
-        perror("fdopen");
+    FILE *pipe_read_stream = fdopen(pipe_fd[0], "r");
+    if (pipe_read_stream == NULL) {
+        perror("fdopen(pipe_fd[0])");
         close(pipe_fd[0]);
+        close(pipe_fd[1]);
         fail();
     }
 
+    // Associate a stream with the write end of the pipe
+    FILE *pipe_write_stream = fdopen(pipe_fd[1], "w");
+    if (pipe_write_stream == NULL) {
+        perror("fdopen(pipe_fd[1])");
+        close(pipe_fd[0]);
+        close(pipe_fd[1]);
+        fail();
+    }
+
+    // Write a test message to the pipe stream and close the stream and file descriptor
+    fprintf(pipe_write_stream, "%s", message);
+    fclose(pipe_write_stream);
+
     // Save stdin and reassign temporarily to the pipe stream
     FILE *saved_stdin = stdin;
-    stdin = pipe_file;
+    stdin = pipe_read_stream;
 
     FlogConfig *config = flog_config_new(mock_argc, mock_argv, &error);
 
     // Ensure stdin stream is restored before making assertions in order to avoid impacting
     // other tests if an assertion fails and leaves stdin pointing to the pipe stream
-    fclose(pipe_file);
     stdin = saved_stdin;
 
     assert_non_null(config);
@@ -779,6 +788,7 @@ flog_config_new_with_message_from_pipe_stream_succeeds(void **state) {
     assert_string_equal(flog_config_get_message(config), message);
 
     flog_config_free(config);
+    fclose(pipe_read_stream);
 }
 
 static void
@@ -790,39 +800,39 @@ flog_config_new_with_message_from_regular_file_stream_succeeds(void **state) {
         TEST_PROGRAM_NAME
     )
 
-    int fd;
+    int temp_fd;
     char template[] = "/tmp/flog.XXXXXXXX";
 
-    // Create a temporary file for reading the message string
-    if ((fd = mkstemp(template)) == -1) {
+    // Create a temporary file for the message string
+    if ((temp_fd = mkstemp(template)) == -1) {
         perror("mkstemp");
         fail();
     }
 
-    // Write a test message to the temporary file
-    const char *message = "0123456789ABCDEF";
-    write(fd, message, strlen(message));
-
     // Associate a stream with the temporary file
-    FILE *temp_file = fdopen(fd, "r");
-    if (temp_file == NULL) {
+    FILE *temp_stream = fdopen(temp_fd, "r+");
+    if (temp_stream == NULL) {
         perror("fdopen");
-        close(fd);
+        close(temp_fd);
+        unlink(template);
         fail();
     }
 
+    // Write a test message to the temporary file stream
+    const char *message = "0123456789ABCDEF";
+    fprintf(temp_stream, "%s", message);
+
     // Set the file position indicator for the stream to the beginning of the file
-    rewind(temp_file);
+    rewind(temp_stream);
 
     // Save stdin and reassign temporarily to the temporary file stream
     FILE *saved_stdin = stdin;
-    stdin = temp_file;
+    stdin = temp_stream;
 
     FlogConfig *config = flog_config_new(mock_argc, mock_argv, &error);
 
     // Ensure stdin stream is restored before making assertions in order to avoid impacting
     // other tests if an assertion fails and leaves stdin pointing to the temporary file stream
-    fclose(temp_file);
     stdin = saved_stdin;
 
     assert_non_null(config);
@@ -831,6 +841,7 @@ flog_config_new_with_message_from_regular_file_stream_succeeds(void **state) {
 
     flog_config_free(config);
     unlink(template);
+    fclose(temp_stream);
 }
 
 static void
@@ -1313,6 +1324,49 @@ flog_config_set_message_from_stream_with_null_stream_arg_fails(void **state) {
 }
 
 static void
+flog_config_set_message_from_stream_with_broken_stream_fails(void **state) {
+    UNUSED(state);
+
+    FlogError error = TEST_ERROR;
+    MOCK_ARGS(
+        TEST_PROGRAM_NAME,
+        TEST_MESSAGE
+    )
+
+    int temp_fd;
+    char template[] = "/tmp/flog.XXXXXXXX";
+
+    // Create a temporary file
+    if ((temp_fd = mkstemp(template)) == -1) {
+        perror("mkstemp");
+        fail();
+    }
+
+    // Associate a stream with the temporary file
+    FILE *temp_stream = fdopen(temp_fd, "r+");
+    if (temp_stream == NULL) {
+        perror("fdopen");
+        close(temp_fd);
+        unlink(template);
+        fail();
+    }
+
+    // Simulate a broken stream
+    fclose(temp_stream);
+
+    // Initialise a FlogConfig object with message string from arguments
+    FlogConfig *config = flog_config_new(mock_argc, mock_argv, &error);
+
+    // Test message parsing when read from a broken stream
+    flog_config_set_message_from_stream(config, temp_stream);
+
+    assert_non_null(config);
+    assert_string_equal(flog_config_get_message(config), "");
+
+    flog_config_free(config);
+}
+
+static void
 flog_config_set_and_get_message_from_stream_succeeds(void **state) {
     UNUSED(state);
 
@@ -1345,19 +1399,46 @@ flog_config_set_message_from_stream_with_long_message_truncates(void **state) {
         TEST_MESSAGE
     )
 
+    int temp_fd;
+    char template[] = "/tmp/flog.XXXXXXXX";
+
+    // Create a temporary file for the message string
+    if ((temp_fd = mkstemp(template)) == -1) {
+        perror("mkstemp");
+        fail();
+    }
+
+    // Associate a stream with the temporary file
+    FILE *temp_stream = fdopen(temp_fd, "r+");
+    if (temp_stream == NULL) {
+        perror("fdopen");
+        close(temp_fd);
+        unlink(template);
+        fail();
+    }
+
+    // Write a test message that exceeds message_len to the temporary file
     char *message = malloc(message_len + 1);
     memset(message, TEST_CHAR, message_len);
     message[message_len] = '\0';
+    fprintf(temp_stream, "%s", message);
 
-    FILE *mock_stream = fmemopen(message, strlen(message), "r");
+    // Set the file position indicator for the stream to the beginning of the file
+    rewind(temp_stream);
+
+    // Initialise a FlogConfig object with message string from arguments
     FlogConfig *config = flog_config_new(mock_argc, mock_argv, &error);
 
-    flog_config_set_message_from_stream(config, mock_stream);
+    // Test message truncation when read from a stream
+    flog_config_set_message_from_stream(config, temp_stream);
     assert_int_equal(strlen(flog_config_get_message(config)), message_len - 1);
+    assert_string_not_equal(flog_config_get_message(config), message);
+    message[message_len - 1] = '\0';
+    assert_string_equal(flog_config_get_message(config), message);
 
-    fclose(mock_stream);
     flog_config_free(config);
     free(message);
+    fclose(temp_stream);
 }
 
 static void
@@ -1579,6 +1660,9 @@ int main(void) {
         // flog_config_set_message_from_stream() precondition tests
         cmocka_unit_test(flog_config_set_message_from_stream_with_null_config_arg_fails),
         cmocka_unit_test(flog_config_set_message_from_stream_with_null_stream_arg_fails),
+
+        // flog_config_set_message_from_stream() failure tests
+        cmocka_unit_test(flog_config_set_message_from_stream_with_broken_stream_fails),
 
         // flog_config_set_message_from_stream() success tests
         cmocka_unit_test(flog_config_set_and_get_message_from_stream_succeeds),
