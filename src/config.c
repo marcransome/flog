@@ -38,9 +38,9 @@
 
 bool is_regular_file_or_pipe(int fd, FlogError *error);
 
-const int subsystem_len = 257;
-const int category_len  = 257;
-const int message_len   = 8193;
+const size_t subsystem_len = 128;
+const size_t category_len  = 128;
+const size_t message_len   = 1024;
 
 FlogConfigLevel flog_config_parse_level(const char *str);
 
@@ -205,7 +205,7 @@ flog_config_set_subsystem(FlogConfig *config, const char *subsystem) {
     assert(subsystem != NULL);
 
     if (strlcpy(config->subsystem, subsystem, subsystem_len) >= subsystem_len) {
-        fprintf(stderr, "%s: subsystem name truncated to %d bytes\n", PROGRAM_NAME, subsystem_len - 1);
+        fprintf(stderr, "%s: subsystem name truncated to %zu bytes\n", PROGRAM_NAME, subsystem_len - 1);
     }
 }
 
@@ -222,7 +222,7 @@ flog_config_set_category(FlogConfig *config, const char *category) {
     assert(category != NULL);
 
     if (strlcpy(config->category, category, category_len) >= category_len) {
-        fprintf(stderr, "%s: category name truncated to %d bytes\n", PROGRAM_NAME, category_len - 1);
+        fprintf(stderr, "%s: category name truncated to %zu bytes\n", PROGRAM_NAME, category_len - 1);
     }
 }
 
@@ -293,7 +293,7 @@ flog_config_set_message(FlogConfig *config, const char *message) {
     assert(message != NULL);
 
     if (strlcpy(config->message, message, message_len) >= message_len) {
-        fprintf(stderr, "%s: message string was truncated to %d bytes\n", PROGRAM_NAME, message_len - 1);
+        fprintf(stderr, "%s: message truncated to %zu bytes\n", PROGRAM_NAME, message_len - 1);
     }
 }
 
@@ -320,7 +320,7 @@ flog_config_set_message_from_args(FlogConfig *config, const char **args) {
     }
 
     if (message_truncated) {
-        fprintf(stderr, "%s: message was truncated to %d bytes\n", PROGRAM_NAME, message_len - 1);
+        fprintf(stderr, "%s: message truncated to %zu bytes\n", PROGRAM_NAME, message_len - 1);
     }
 }
 
@@ -329,10 +329,26 @@ flog_config_set_message_from_stream(FlogConfig *config, FILE *restrict stream) {
     assert(config != NULL);
     assert(stream != NULL);
 
-    if (fread(config->message, sizeof(char), message_len, stream) >= message_len) {
-        fprintf(stderr, "%s: message was truncated to %d bytes\n", PROGRAM_NAME, message_len - 1);
-        config->message[message_len - 1] = '\0';
+    config->message[0] = '\0';
+
+    // Read message from stream
+    size_t bytes_read = fread(config->message, sizeof(char), message_len - 1, stream);
+    if (ferror(stream)) {
+        fprintf(stderr, "%s: error reading message from stream\n", PROGRAM_NAME);
+        clearerr(stream);
+        return;
     }
+
+    // Ensure safe bounds and null termination
+    bytes_read = (bytes_read >= message_len - 1) ? message_len - 1 : bytes_read;
+    config->message[bytes_read] = '\0';
+
+    // Check for message truncation
+    char c;
+    if (fread(&c, sizeof(char), 1, stream) > 0) {
+        fprintf(stderr, "%s: message truncated to %zu bytes\n", PROGRAM_NAME, message_len - 1);
+    }
+    clearerr(stream);
 }
 
 FlogConfigMessageType

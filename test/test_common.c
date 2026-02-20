@@ -109,7 +109,7 @@ flog_usage_succeeds(void **state) {
 
     char expected_string[1024] = {0};
     sprintf(expected_string,
-        "%s %s\n"
+        "%s v%d.%d.%d\n"
         "\n"
         "Usage:\n"
         "    %s [options] message\n"
@@ -129,7 +129,9 @@ flog_usage_succeeds(void **state) {
         "    default, info, debug, error, fault\n"
         "\n",
         PROGRAM_NAME,
-        PROGRAM_VERSION,
+        PROGRAM_VERSION_MAJOR,
+        PROGRAM_VERSION_MINOR,
+        PROGRAM_VERSION_PATCH,
         PROGRAM_NAME
     );
 
@@ -143,7 +145,12 @@ flog_version_succeeds(void **state) {
     UNUSED(state);
 
     char expected_string[ERROR_STRING_LEN] = {0};
-    sprintf(expected_string, "%s %s\n", PROGRAM_NAME, PROGRAM_VERSION);
+    sprintf(expected_string, "%s v%d.%d.%d\n",
+        PROGRAM_NAME,
+        PROGRAM_VERSION_MAJOR,
+        PROGRAM_VERSION_MINOR,
+        PROGRAM_VERSION_PATCH
+    );
 
     flog_version();
 

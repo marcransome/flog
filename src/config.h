@@ -33,9 +33,9 @@
 #include <stdio.h>
 #include "common.h"
 
-extern const int subsystem_len;
-extern const int category_len;
-extern const int message_len;
+extern const size_t subsystem_len;
+extern const size_t category_len;
+extern const size_t message_len;
 
 /*! \brief An enumerated type representing the log level. */
 typedef enum FlogConfigLevelData {
