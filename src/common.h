@@ -29,7 +29,7 @@
  */
 
 #define PROGRAM_NAME "flog"
-#define PROGRAM_VERSION "v1.7.4"
+#define PROGRAM_VERSION "v1.8.0"
 
 /*! \brief An enumerated type representing error conditions. */
 typedef enum FlogErrorData {
