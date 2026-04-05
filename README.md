@@ -1,12 +1,16 @@
-<img alt="flog" src="images/trunk.png" width="180" align="right">
-
-# flog
-
-[![OpenSSF Scorecard](https://img.shields.io/ossf-scorecard/github.com/marcransome/flog?label=OpenSSF%20Scorecard)](https://securityscorecards.dev/viewer/?uri=github.com/marcransome/flog) [![CodeQL](https://github.com/marcransome/flog/actions/workflows/codeql-analysis.yml/badge.svg?branch=main)](https://github.com/marcransome/flog/actions/workflows/codeql-analysis.yml) [![Issues](https://img.shields.io/github/issues/marcransome/flog)](https://github.com/marcransome/flog/issues) [![License](https://img.shields.io/badge/license-MIT-blue)](https://opensource.org/licenses/mit-license.php) [![macOS](https://img.shields.io/badge/macOS-11+-blue)](https://www.apple.com/macos/)
-
-`flog` is a command-line tool for sending log messages to Apple's unified logging system and is primarily intended for use in scripts.
+<img alt="flog" src="images/flog.jpg">
 
 ---
+
+<div align="center"><code>flog</code> is a fast, script‑friendly tool for writing log messages to macOS’s unified logging system.</div>
+<br>
+<div align="center">
+  <a href="https://securityscorecards.dev/viewer/?uri=github.com/marcransome/flog"><img src="https://img.shields.io/ossf-scorecard/github.com/marcransome/flog?label=OpenSSF%20Scorecard" alt="OpenSSF Scorecard"></a>
+  <a href="https://github.com/marcransome/flog/actions/workflows/codeql-analysis.yml"><img src="https://github.com/marcransome/flog/actions/workflows/codeql-analysis.yml/badge.svg?branch=main" alt="CodeQL"></a>
+  <a href="https://github.com/marcransome/flog/issues"><img src="https://img.shields.io/github/issues/marcransome/flog" alt="Issues"></a>
+  <a href="https://opensource.org/licenses/mit-license.php"><img src="https://img.shields.io/badge/license-MIT-blue" alt="License"></a>
+  <a href="https://www.apple.com/macos/"><img src="https://img.shields.io/badge/macOS-11+-blue" alt="macOS"></a>
+</div>
 
 ## Rationale
 
@@ -141,10 +145,6 @@ just man
 ```
 
 The `flog.1` man page is output to the `man` directory and is converted from the source file `man/flog.1.md` using [Pandoc](https://github.com/jgm/pandoc).
-
-## Acknowledgements
-
-* Trunk icon made by [Freepik](https://www.flaticon.com/authors/freepik) from [www.flaticon.com](https://www.flaticon.com/)
 
 ## License
 
