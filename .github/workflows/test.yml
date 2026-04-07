@@ -23,7 +23,32 @@ jobs:
       - name: Harden runner
         uses: step-security/harden-runner@fe104658747b27e96e4f7e80cd0a94068e53901d # v2.16.1
         with:
-          egress-policy: audit
+          egress-policy: block
+          allowed-endpoints: >
+            0.pool.ntp.org:443
+            api.apple-cloudkit.com:443
+            calendars.icloud.com:443
+            configuration.apple.com:443
+            fbs.smoot.apple.com:443
+            formulae.brew.sh:443
+            gateway.icloud.com:443
+            gdmf.apple.com:443
+            ghcr.io:443
+            github.com:443
+            gsa.apple.com:443
+            gsp-ssl.ls.apple.com:443
+            gspe35-ssl.ls.apple.com:443
+            init.itunes.apple.com:443
+            ipcdn.apple.com:443
+            mask-api.icloud.com:443
+            mesu.apple.com:443
+            metrics.icloud.com:443
+            ocsp.sectigo.com:80
+            ocsp2.apple.com:443
+            pancake.apple.com:443
+            pkg-containers.githubusercontent.com:443
+            updates.cdn-apple.com:443
+            xp.apple.com:443
       - name: Checkout repository
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
       - name: Install dependencies
