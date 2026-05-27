@@ -114,7 +114,7 @@ flog_config_new_with_no_error_ptr_fails(void **state) {
     UNUSED(state);
 
     int mock_argc = 0;
-    char *mock_argv[] = {}; // should pass non-null assertion
+    char *mock_argv[] = {"flog", NULL}; // should pass non-null assertion
 
     expect_assert_failure(flog_config_new(mock_argc, mock_argv, NULL));
 }
