@@ -38,10 +38,6 @@
 
 bool is_regular_file_or_pipe(int fd, FlogError *error);
 
-const int subsystem_len = 257;
-const int category_len  = 257;
-const int message_len   = 8193;
-
 FlogConfigLevel flog_config_parse_level(const char *str);
 
 static struct poptOption options[] = {
@@ -58,10 +54,10 @@ static struct poptOption options[] = {
 struct FlogConfigData {
     FlogConfigLevel level;
     FlogConfigMessageType message_type;
-    char subsystem[subsystem_len];
-    char category[category_len];
+    char subsystem[SUBSYSTEM_LEN];
+    char category[CATEGORY_LEN];
     char output_file[PATH_MAX];
-    char message[message_len];
+    char message[MESSAGE_LEN];
     bool version;
     bool help;
 };
@@ -204,8 +200,8 @@ flog_config_set_subsystem(FlogConfig *config, const char *subsystem) {
     assert(config != NULL);
     assert(subsystem != NULL);
 
-    if (strlcpy(config->subsystem, subsystem, subsystem_len) >= subsystem_len) {
-        fprintf(stderr, "%s: subsystem name truncated to %d bytes\n", PROGRAM_NAME, subsystem_len - 1);
+    if (strlcpy(config->subsystem, subsystem, SUBSYSTEM_LEN) >= SUBSYSTEM_LEN) {
+        fprintf(stderr, "%s: subsystem name truncated to %d bytes\n", PROGRAM_NAME, SUBSYSTEM_LEN - 1);
     }
 }
 
@@ -221,8 +217,8 @@ flog_config_set_category(FlogConfig *config, const char *category) {
     assert(config != NULL);
     assert(category != NULL);
 
-    if (strlcpy(config->category, category, category_len) >= category_len) {
-        fprintf(stderr, "%s: category name truncated to %d bytes\n", PROGRAM_NAME, category_len - 1);
+    if (strlcpy(config->category, category, CATEGORY_LEN) >= CATEGORY_LEN) {
+        fprintf(stderr, "%s: category name truncated to %d bytes\n", PROGRAM_NAME, CATEGORY_LEN - 1);
     }
 }
 
@@ -292,8 +288,8 @@ flog_config_set_message(FlogConfig *config, const char *message) {
     assert(config != NULL);
     assert(message != NULL);
 
-    if (strlcpy(config->message, message, message_len) >= message_len) {
-        fprintf(stderr, "%s: message string was truncated to %d bytes\n", PROGRAM_NAME, message_len - 1);
+    if (strlcpy(config->message, message, MESSAGE_LEN) >= MESSAGE_LEN) {
+        fprintf(stderr, "%s: message string was truncated to %d bytes\n", PROGRAM_NAME, MESSAGE_LEN - 1);
     }
 }
 
@@ -306,12 +302,12 @@ flog_config_set_message_from_args(FlogConfig *config, const char **args) {
 
     bool message_truncated = false;
     while (*args != NULL) {
-        if (strlcat(config->message, *args, message_len) >= message_len) {
+        if (strlcat(config->message, *args, MESSAGE_LEN) >= MESSAGE_LEN) {
             message_truncated = true;
             break;
         }
         if (*(args + 1) != NULL) {
-            if (strlcat(config->message, " ", message_len) >= message_len) {
+            if (strlcat(config->message, " ", MESSAGE_LEN) >= MESSAGE_LEN) {
                 message_truncated = true;
                 break;
             }
@@ -320,7 +316,7 @@ flog_config_set_message_from_args(FlogConfig *config, const char **args) {
     }
 
     if (message_truncated) {
-        fprintf(stderr, "%s: message was truncated to %d bytes\n", PROGRAM_NAME, message_len - 1);
+        fprintf(stderr, "%s: message was truncated to %d bytes\n", PROGRAM_NAME, MESSAGE_LEN - 1);
     }
 }
 
@@ -329,9 +325,9 @@ flog_config_set_message_from_stream(FlogConfig *config, FILE *restrict stream) {
     assert(config != NULL);
     assert(stream != NULL);
 
-    if (fread(config->message, sizeof(char), message_len, stream) >= message_len) {
-        fprintf(stderr, "%s: message was truncated to %d bytes\n", PROGRAM_NAME, message_len - 1);
-        config->message[message_len - 1] = '\0';
+    if (fread(config->message, sizeof(char), MESSAGE_LEN, stream) >= MESSAGE_LEN) {
+        fprintf(stderr, "%s: message was truncated to %d bytes\n", PROGRAM_NAME, MESSAGE_LEN - 1);
+        config->message[MESSAGE_LEN - 1] = '\0';
     }
 }
 
