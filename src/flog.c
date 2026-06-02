@@ -72,7 +72,7 @@ void
 flog_cli_free(FlogCli *flog) {
     assert(flog != NULL);
 
-    if (flog->log != NULL) {
+    if (flog->log != NULL && flog->log != OS_LOG_DEFAULT) {
         os_release(flog->log);
     }
 
