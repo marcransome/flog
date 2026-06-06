@@ -964,9 +964,9 @@ flog_config_set_subsystem_with_long_subsystem_truncates(void **state) {
         TEST_MESSAGE
     )
 
-    char *subsystem = malloc(subsystem_len + 1);
-    memset(subsystem, TEST_CHAR, subsystem_len);
-    subsystem[subsystem_len] = '\0';
+    char *subsystem = malloc(SUBSYSTEM_LEN + 1);
+    memset(subsystem, TEST_CHAR, SUBSYSTEM_LEN);
+    subsystem[SUBSYSTEM_LEN] = '\0';
 
     FlogConfig *config = flog_config_new(mock_argc, mock_argv, &error);
 
@@ -1051,9 +1051,9 @@ flog_config_set_category_with_long_category_truncates(void **state) {
         TEST_MESSAGE
     )
 
-    char *category = malloc(category_len + 1);
-    memset(category, TEST_CHAR, category_len);
-    category[category_len] = '\0';
+    char *category = malloc(CATEGORY_LEN + 1);
+    memset(category, TEST_CHAR, CATEGORY_LEN);
+    category[CATEGORY_LEN] = '\0';
 
     FlogConfig *config = flog_config_new(mock_argc, mock_argv, &error);
 
@@ -1227,14 +1227,14 @@ flog_config_set_message_with_long_message_truncates(void **state) {
         TEST_MESSAGE
     )
 
-    char *message = malloc(message_len + 1);
-    memset(message, TEST_CHAR, message_len);
-    message[message_len] = '\0';
+    char *message = malloc(MESSAGE_LEN + 1);
+    memset(message, TEST_CHAR, MESSAGE_LEN);
+    message[MESSAGE_LEN] = '\0';
 
     FlogConfig *config = flog_config_new(mock_argc, mock_argv, &error);
 
     flog_config_set_message(config, message);
-    assert_int_equal(strlen(flog_config_get_message(config)), message_len - 1);
+    assert_int_equal(strlen(flog_config_get_message(config)), MESSAGE_LEN - 1);
 
     flog_config_free(config);
     free(message);
@@ -1345,15 +1345,15 @@ flog_config_set_message_from_stream_with_long_message_truncates(void **state) {
         TEST_MESSAGE
     )
 
-    char *message = malloc(message_len + 1);
-    memset(message, TEST_CHAR, message_len);
-    message[message_len] = '\0';
+    char *message = malloc(MESSAGE_LEN + 1);
+    memset(message, TEST_CHAR, MESSAGE_LEN);
+    message[MESSAGE_LEN] = '\0';
 
     FILE *mock_stream = fmemopen(message, strlen(message), "r");
     FlogConfig *config = flog_config_new(mock_argc, mock_argv, &error);
 
     flog_config_set_message_from_stream(config, mock_stream);
-    assert_int_equal(strlen(flog_config_get_message(config)), message_len - 1);
+    assert_int_equal(strlen(flog_config_get_message(config)), MESSAGE_LEN - 1);
 
     fclose(mock_stream);
     flog_config_free(config);
@@ -1425,9 +1425,9 @@ flog_config_set_message_from_args_with_long_message_truncates(void **state) {
         TEST_MESSAGE
     )
 
-    char *message = malloc(message_len + 1);
-    memset(message, TEST_CHAR, message_len);
-    message[message_len] = '\0';
+    char *message = malloc(MESSAGE_LEN + 1);
+    memset(message, TEST_CHAR, MESSAGE_LEN);
+    message[MESSAGE_LEN] = '\0';
 
     const char *mock_args[] = {
         message,
@@ -1437,7 +1437,7 @@ flog_config_set_message_from_args_with_long_message_truncates(void **state) {
     FlogConfig *config = flog_config_new(mock_argc, mock_argv, &error);
 
     flog_config_set_message_from_args(config, mock_args);
-    assert_int_equal(strlen(flog_config_get_message(config)), message_len - 1);
+    assert_int_equal(strlen(flog_config_get_message(config)), MESSAGE_LEN - 1);
 
     flog_config_free(config);
     free(message);
@@ -1453,9 +1453,9 @@ flog_config_set_message_from_args_truncates_when_appending_space(void **state) {
         TEST_MESSAGE
     )
 
-    char *message = malloc(message_len);
-    memset(message, TEST_CHAR, message_len);
-    message[message_len - 1] = '\0';
+    char *message = malloc(MESSAGE_LEN);
+    memset(message, TEST_CHAR, MESSAGE_LEN);
+    message[MESSAGE_LEN - 1] = '\0';
 
     const char *mock_args[] = {
         message,
@@ -1466,7 +1466,7 @@ flog_config_set_message_from_args_truncates_when_appending_space(void **state) {
     FlogConfig *config = flog_config_new(mock_argc, mock_argv, &error);
 
     flog_config_set_message_from_args(config, mock_args);
-    assert_int_equal(strlen(flog_config_get_message(config)), message_len - 1);
+    assert_int_equal(strlen(flog_config_get_message(config)), MESSAGE_LEN - 1);
 
     flog_config_free(config);
     free(message);
